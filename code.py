@@ -108,7 +108,7 @@ def main():
     battery_monitor.pack_size = PackSize.MAH2000
 
     logger.info("Temperature: {:.1f} C".format(temperature))
-    logger.info("Battery Percent: {:.2f} %".format(battery_monitor.cell_percent))
+    # logger.info("Battery Percent: {:.2f} %".format(battery_monitor.cell_percent))
 
     try:
         # Connect to Wi-Fi

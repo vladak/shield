@@ -32,7 +32,8 @@ mqtt_topic = "devices/terasa/shield"
 
 # Duration of sleep in seconds. Default is 600 seconds (10 minutes).
 # Feather will sleep for this duration between sensor readings.
-sleep_duration = 10
+sleep_duration = 300
+
 
 def log(msg):
     logger = logging.getLogger(__name__)
@@ -74,6 +75,7 @@ def go_to_sleep(sleep_period):
 
 
 def main():
+    global sleep_duration
 
     # TODO: setup logger formatter to include timestamp
     logger = logging.getLogger(__name__)
@@ -99,7 +101,7 @@ def main():
         log(f"IP: {wifi.radio.ipv4_address}")
     except Exception as e:  # pylint: disable=broad-except
         logger.error("Troubles getting IP connectivity: {e}")
-        sleep_duration = 60
+        go_to_sleep(sleep_duration // 5)
         return
 
     # Create a socket pool
@@ -118,14 +120,12 @@ def main():
     mqtt_client.on_disconnect = disconnect
     mqtt_client.on_publish = publish
 
-    global sleep_duration
-
     log("Attempting to connect to MQTT broker %s" % mqtt_client.broker)
     try:
         mqtt_client.connect()
     except Exception as e:
-        logger.error(f"Got exception when connecting to MQTT broker, shortening sleep timeout to 60s: {e}")
-        sleep_duration = 60
+        logger.error(f"Got exception when connecting to MQTT broker: {e}")
+        go_to_sleep(sleep_duration // 5)
         return
 
     logger.info(f"Publishing to {mqtt_topic}")
@@ -133,7 +133,13 @@ def main():
         "temperature": "{:.1f}".format(temperature),
         "battery_level": "{:.2f}".format(battery_monitor.cell_percent),
     }
-    mqtt_client.publish(mqtt_topic, json.dumps(data))
+    try:
+        mqtt_client.publish(mqtt_topic, json.dumps(data))
+    except Exception as e:
+        logger.error(f"Got exception when publishing to MQTT broker: {e}")
+        go_to_sleep(sleep_duration // 5)
+        return
+
     mqtt_client.disconnect()
 
     # TODO: blink the LED only in debug mode (to save the battery)

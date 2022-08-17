@@ -12,3 +12,19 @@ connected via STEMMA QT and this works fine.
 
 This repository is called 'shield' as an allude to [Stevenson screen](https://en.wikipedia.org/wiki/Stevenson_screen) because
 the Feather with the sensor is placed into a plastic screen.
+
+## Usage
+
+There needs to be a `secrets.py` file that contains Wi-Fi credentials and information about the MQTT broker.
+It can look like this:
+```python
+# This file is where you keep secret settings, passwords, and tokens!
+# If you put them in the code you risk committing that info or sharing it
+
+secrets = {
+    "ssid": "foo",
+    "password": "bar",
+    "broker": "172.40.0.3",
+    "broker_port": 1883,
+}
+```

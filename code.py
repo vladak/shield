@@ -139,8 +139,8 @@ def main():
     log("Attempting to connect to MQTT broker %s" % mqtt_client.broker)
     try:
         mqtt_client.connect()
-    except Exception as e:
-        logger.error(f"Got exception when connecting to MQTT broker: {e}")
+    except Exception as exc:
+        logger.error(f"Got exception when connecting to MQTT broker: {exc}")
         go_to_sleep(sleep_duration // 5)
         return
 

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2021 Kattni Rembor for Adafruit Industries
 # SPDX-License-Identifier: Unlicense
 """
-CircuitPython Simple Example for BME280 and LC709203 Sensors
+Demonstrates MQTT client hang. Run 'nc -l 4444' on the '172.40.0.3' server first.
 """
 import alarm
 import time
@@ -11,33 +11,24 @@ import digitalio
 import ssl
 import socketpool
 import json
-import board
-#import neopixel
 import time
 import sys
-import adafruit_logging as logging
-import adafruit_tmp117
-# from adafruit_bme280 import basic as adafruit_bme280
-from adafruit_lc709203f import LC709203F, PackSize
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 try:
     from secrets import secrets
 except ImportError:
     print("WiFi and Adafruit IO credentials are kept in secrets.py, please add them there!")
     raise
-
+    
 # MQTT Topic
 # Use this topic if you'd like to connect to a standard MQTT broker
 mqtt_topic = "devices/terasa/shield"
 
 # Duration of sleep in seconds. Default is 600 seconds (10 minutes).
 # Feather will sleep for this duration between sensor readings.
-sleep_duration = 10
+sleep_duration = 20
 
-def log(msg):
-    logger = logging.getLogger(__name__)
-
-    # TODO: replace with logger
+def log(msg):    
     print(f"{time.monotonic()}: {msg}")
 
 ### Code ###
@@ -46,8 +37,8 @@ def log(msg):
 def connect(mqtt_client, userdata, flags, rc):
     # This function will be called when the mqtt_client is connected
     # successfully to the broker.
-    logger.info("Connected to MQTT Broker!")
-    logger.debug("Flags: {0}\n RC: {1}".format(flags, rc))
+    log("Connected to MQTT Broker!")
+    log("Flags: {0}\n RC: {1}".format(flags, rc))
 
 
 def disconnect(mqtt_client, userdata, rc):
@@ -73,23 +64,7 @@ def go_to_sleep(sleep_period):
 
 
 def main():
-
-    # TODO: setup logger formatter to include timestamp
-    logger = logging.getLogger(__name__)
-
-    logger.info("Running")
-
-    # Create sensor objects, using the board's default I2C bus.
-    i2c = board.I2C()
-    # bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
-    tmp117 = adafruit_tmp117.TMP117(i2c)
-    temperature = tmp117.temperature
-    battery_monitor = LC709203F(board.I2C())
-    battery_monitor.pack_size = PackSize.MAH2000
-
-    logger.info("Temperature: {:.1f} C".format(temperature))
-    logger.info("Battery Percent: {:.2f} %".format(battery_monitor.cell_percent))
-
+    log(f"Running with {MQTT.__version__}")
     try:
         # Connect to Wi-Fi
         log("Connecting to wifi")
@@ -98,7 +73,7 @@ def main():
         log(f"IP: {wifi.radio.ipv4_address}")
     except Exception as e:  # pylint: disable=broad-except
         logger.error("Troubles getting IP connectivity: {e}")
-        sleep_duration = 60
+        go_to_sleep(60)
         return
 
     # Create a socket pool
@@ -118,33 +93,28 @@ def main():
     mqtt_client.on_publish = publish
 
     log("Attempting to connect to MQTT broker %s" % mqtt_client.broker)
+    
     try:
         mqtt_client.connect()
     except Exception as e:
-        logger.error(f"Got exception when connecting to MQTT broker, shortening sleep timeout to 60s: {e}")
-        sleep_duration = 60
+        log(f"Got exception when connecting to MQTT broker, shortening sleep timeout to 60s: {e}")
+        go_to_sleep(60)
         return
 
     logger.info(f"Publishing to {mqtt_topic}")
     data = {
-        "temperature": "{:.1f}".format(temperature),
-        "battery_level": "{:.2f}".format(battery_monitor.cell_percent),
+        "foo": "bar",
     }
     mqtt_client.publish(mqtt_topic, json.dumps(data))
+    log("Disconnecting from MQTT broker")
     mqtt_client.disconnect()
 
-    # TODO: blink the LED only in debug mode (to save the battery)
-    #pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
-
-    #pixel.brightness = 0.3
-    #pixel.fill((0, 255, 0))
-    #time.sleep(0.5)
-
-    logger.info(f"Going to sleep for {sleep_duration} seconds")
+    log("Going to sleep")
     go_to_sleep(sleep_duration)
-
+    
 
 try:
     main()
 except Exception as e:
     log(f"error: {e}")
+

@@ -15,3 +15,14 @@ secrets = {
     "broker_port": 4444,
 }
 ```
+
+## Setup in CircuitPython-less environment
+
+In this environment, the Wi-Fi credentials will not be used. Instead, the default socket implementation will be used.
+
+```
+python3 -m venv env
+. ./env/bin/activate
+pip install -r requirements.txt
+./code.py
+```

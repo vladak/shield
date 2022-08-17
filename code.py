@@ -152,8 +152,8 @@ def main():
     }
     try:
         mqtt_client.publish(mqtt_topic, json.dumps(data))
-    except Exception as e:
-        logger.error(f"Got exception when publishing to MQTT broker: {e}")
+    except Exception as exc:
+        logger.error(f"Got exception when publishing to MQTT broker: {exc}")
         go_to_sleep(sleep_duration // 5)
         return
 

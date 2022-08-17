@@ -1,4 +1,5 @@
-# shield
+# Shield
+
 code for ESP32 Adafruit Feather to measure temperature and send it to MQTT broker
 
 This is used specifically on [Adafruit ESP32-S2 Feather with BME280 Sensor](https://www.adafruit.com/product/5303). 
@@ -28,3 +29,5 @@ secrets = {
     "broker_port": 1883,
 }
 ```
+
+To load this onto the Feather, I recommend to use the [Mu editor](https://codewith.mu/).

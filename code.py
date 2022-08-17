@@ -20,6 +20,12 @@ import adafruit_tmp117
 # from adafruit_bme280 import basic as adafruit_bme280
 from adafruit_lc709203f import LC709203F, PackSize
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
+from microcontroller import watchdog
+from watchdog import WatchDogMode
+import microcontroller
+import supervisor
+import traceback
+
 try:
     from secrets import secrets
 except ImportError:
@@ -84,6 +90,9 @@ def blink():
 
 def main():
     global sleep_duration
+
+    watchdog.timeout = sleep_duration * 2
+    watchdog.mode = WatchDogMode.RAISE
 
     # TODO: setup logger formatter to include timestamp
     logger = logging.getLogger(__name__)
@@ -150,6 +159,8 @@ def main():
 
     mqtt_client.disconnect()
 
+    watchdog.feed()
+
     # TODO: blink the LED only in debug mode (to save the battery)
     # blink()
 
@@ -160,4 +171,16 @@ def main():
 try:
     main()
 except Exception as e:
-    log(f"error: {e}")
+    print(f'Code stopped by unhandled exception:')
+    print(traceback.format_exception(None, e, e.__traceback__))
+    # Can we log here?
+    print('Performing a supervisor reload in 15s')
+    time.sleep(15)  # TODO: Make sure this is shorter than watchdog timeout
+    supervisor.reload()
+except watchdog.WatchDogTimeout as e:
+    print('Code stopped by WatchDog timeout!')
+    # supervisor.reload()
+    # NB, sometimes soft reset is not enough! need to do hard reset here
+    print('Performing hard reset in 15s')
+    time.sleep(15)
+    microcontroller.reset()

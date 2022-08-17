@@ -6,15 +6,16 @@ Demonstrates MQTT client hang. Run 'nc -l 4444' on the '172.40.0.3' server first
 """
 try:
     import alarm
-    alarm_present = True
+    import board
+    import wifi
+    import socketpool
+    circuitpython_present = True
 except ModuleNotFoundError:
-    alarm_present = False
+    circuitpython_present = False
+    import socket
 import time
-import board
-import wifi
 import digitalio
 import ssl
-import socketpool
 import json
 import time
 import sys
@@ -58,31 +59,37 @@ def publish(mqtt_client, userdata, topic, pid):
 
 
 def go_to_sleep(sleep_period):
-    # Turn off I2C power by setting it to input
-    i2c_power = digitalio.DigitalInOut(board.I2C_POWER)
-    i2c_power.switch_to_input()
+    if circuitpython_present:
+        log("Going to sleep")
+        # Turn off I2C power by setting it to input
+        i2c_power = digitalio.DigitalInOut(board.I2C_POWER)
+        i2c_power.switch_to_input()
 
-    # Create an alarm that will trigger sleep_period number of seconds from now.
-    time_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + sleep_period)
-    # Exit and deep sleep until the alarm wakes us.
-    alarm.exit_and_deep_sleep_until_alarms(time_alarm)
+        # Create an alarm that will trigger sleep_period number of seconds from now.
+        time_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + sleep_period)
+        # Exit and deep sleep until the alarm wakes us.
+        alarm.exit_and_deep_sleep_until_alarms(time_alarm)
 
 
 def main():
     log(f"Running with {MQTT.__version__}")
     try:
-        # Connect to Wi-Fi
-        log("Connecting to wifi")
-        wifi.radio.connect(secrets["ssid"], secrets["password"], timeout=10)
-        log("Connected to {}!".format(secrets["ssid"]))
-        log(f"IP: {wifi.radio.ipv4_address}")
+        if circuitpython_present:
+            # Connect to Wi-Fi
+            log("Connecting to wifi")
+            wifi.radio.connect(secrets["ssid"], secrets["password"], timeout=10)
+            log("Connected to {}!".format(secrets["ssid"]))
+            log(f"IP: {wifi.radio.ipv4_address}")
     except Exception as e:  # pylint: disable=broad-except
-        logger.error("Troubles getting IP connectivity: {e}")
+        log(f"Troubles getting IP connectivity: {e}")
         go_to_sleep(60)
         return
 
     # Create a socket pool
-    pool = socketpool.SocketPool(wifi.radio)
+    if circuitpython_present:
+        pool = socketpool.SocketPool(wifi.radio)
+    else:
+        pool = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # Set up a MiniMQTT Client
     mqtt_client = MQTT.MQTT(
@@ -102,7 +109,7 @@ def main():
     try:
         mqtt_client.connect()
     except Exception as e:
-        log(f"Got exception when connecting to MQTT broker, shortening sleep timeout to 60s: {e}")
+        log(f"Got exception when connecting to MQTT broker, setting sleep timeout to 60s: {e}")
         go_to_sleep(60)
         return
 
@@ -114,9 +121,7 @@ def main():
     log("Disconnecting from MQTT broker")
     mqtt_client.disconnect()
 
-    if alarm_present:
-        log("Going to sleep")
-        go_to_sleep(sleep_duration)
+    go_to_sleep(sleep_duration)
     
 
 try:

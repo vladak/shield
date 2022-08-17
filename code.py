@@ -40,10 +40,11 @@ def log(msg):
     # TODO: replace with logger
     print(f"{time.monotonic()}: {msg}")
 
-### Code ###
-# Define callback methods which are called when events occur
+
 # pylint: disable=unused-argument, redefined-outer-name
 def connect(mqtt_client, userdata, flags, rc):
+    logger = logging.getLogger(__name__)
+
     # This function will be called when the mqtt_client is connected
     # successfully to the broker.
     logger.info("Connected to MQTT Broker!")

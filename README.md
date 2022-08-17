@@ -8,7 +8,7 @@ readings using the built-in BME280 sensor showed that the skew of the metric due
 the WiFi/SoC chip is too high - for ambient temperature of twenty/thirty-ish degrees of Celsius, the sensor
 readings were forty-ish degrees of Celsius even though the code ran every couple of minutes to let the circuitry cool down.
 
-This, I bought the [Adafruit TMP117 ±0.1°C High Accuracy I2C Temperature Sensor](https://www.adafruit.com/product/4821),
+Thus, I bought the [Adafruit TMP117 ±0.1°C High Accuracy I2C Temperature Sensor](https://www.adafruit.com/product/4821),
 connected via STEMMA QT and this works fine.
 
 This repository is called 'shield' as an allude to [Stevenson screen](https://en.wikipedia.org/wiki/Stevenson_screen) because

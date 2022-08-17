@@ -1,9 +1,14 @@
+#!/usr/bin/env python3
 # SPDX-FileCopyrightText: 2021 Kattni Rembor for Adafruit Industries
 # SPDX-License-Identifier: Unlicense
 """
 Demonstrates MQTT client hang. Run 'nc -l 4444' on the '172.40.0.3' server first.
 """
-import alarm
+try:
+    import alarm
+    alarm_present = True
+except ModuleNotFoundError:
+    alarm_present = False
 import time
 import board
 import wifi
@@ -109,8 +114,9 @@ def main():
     log("Disconnecting from MQTT broker")
     mqtt_client.disconnect()
 
-    log("Going to sleep")
-    go_to_sleep(sleep_duration)
+    if alarm_present:
+        log("Going to sleep")
+        go_to_sleep(sleep_duration)
     
 
 try:

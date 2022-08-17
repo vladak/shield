@@ -21,7 +21,7 @@ import adafruit_tmp117
 from adafruit_lc709203f import LC709203F, PackSize
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 from microcontroller import watchdog
-from watchdog import WatchDogMode
+from watchdog import WatchDogMode, WatchDogTimeout
 import microcontroller
 import supervisor
 import traceback
@@ -177,7 +177,7 @@ except Exception as e:
     print('Performing a supervisor reload in 15s')
     time.sleep(15)  # TODO: Make sure this is shorter than watchdog timeout
     supervisor.reload()
-except watchdog.WatchDogTimeout as e:
+except WatchDogTimeout:
     print('Code stopped by WatchDog timeout!')
     # supervisor.reload()
     # NB, sometimes soft reset is not enough! need to do hard reset here

@@ -118,6 +118,8 @@ def main():
     mqtt_client.on_disconnect = disconnect
     mqtt_client.on_publish = publish
 
+    global sleep_duration
+
     log("Attempting to connect to MQTT broker %s" % mqtt_client.broker)
     try:
         mqtt_client.connect()

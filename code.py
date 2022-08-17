@@ -171,7 +171,7 @@ def main():
 try:
     main()
 except Exception as e:
-    print(f'Code stopped by unhandled exception:')
+    print("Code stopped by unhandled exception:")
     print(traceback.format_exception(None, e, e.__traceback__))
     # Can we log here?
     print('Performing a supervisor reload in 15s')

@@ -19,6 +19,9 @@ secrets = {
 
 ## Setup in CircuitPython-less environment
 
+When debugging the issue, it occured to me that it will be much easier to debug with standard CPython than with CircuitPython.
+Luckily, the adafruit_minimqtt was recently adapted to run with CPython.
+
 In this environment, the Wi-Fi credentials will not be used. Instead, the default socket implementation will be used.
 
 ```

@@ -3,28 +3,27 @@
 """
 Acquire temperature and battery level and publish it to MQTT topic.
 """
-import alarm
-import time
-import board
-import wifi
-import digitalio
-import ssl
-import socketpool
 import json
-import board
-import neopixel
-import time
+import ssl
 import sys
+import time
+import traceback
+
 import adafruit_logging as logging
+import adafruit_minimqtt.adafruit_minimqtt as MQTT
 import adafruit_tmp117
+import alarm
+import board
+import digitalio
+import microcontroller
+import neopixel
+import socketpool
+import supervisor
+import wifi
 # from adafruit_bme280 import basic as adafruit_bme280
 from adafruit_lc709203f import LC709203F, PackSize
-import adafruit_minimqtt.adafruit_minimqtt as MQTT
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
-import microcontroller
-import supervisor
-import traceback
 
 try:
     from secrets import secrets

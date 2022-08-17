@@ -117,7 +117,7 @@ def main():
         log("Connected to {}!".format(secrets["ssid"]))
         log(f"IP: {wifi.radio.ipv4_address}")
     except Exception as e:  # pylint: disable=broad-except
-        logger.error("Troubles getting IP connectivity: {e}")
+        logger.error(f"Troubles getting IP connectivity: {e}")
         go_to_sleep(sleep_duration // 5)
         return
 

@@ -89,7 +89,7 @@ def main():
     if circuitpython_present:
         pool = socketpool.SocketPool(wifi.radio)
     else:
-        pool = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        pool = socket
 
     # Set up a MiniMQTT Client
     mqtt_client = MQTT.MQTT(
@@ -113,7 +113,7 @@ def main():
         go_to_sleep(60)
         return
 
-    logger.info(f"Publishing to {mqtt_topic}")
+    log(f"Publishing to {mqtt_topic}")
     data = {
         "foo": "bar",
     }

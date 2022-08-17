@@ -4,7 +4,7 @@ Originally, this contained code for ESP32 Adafruit Feather to measure temperatur
 however during the course of getting this up and running, I discovered 
 [serious issue](https://github.com/adafruit/Adafruit_CircuitPython_MiniMQTT/issues/115) with 
 [Adafruit MQTT library](https://github.com/adafruit/Adafruit_CircuitPython_MiniMQTT/)
-(or CircuitPython) so this branch contains code to reproduce this.
+(or CircuitPython) so this branch contains minimal code to reproduce this issue.
 The `master` branch contains the code with temperature measurement etc.
 
 The `secrets.py` file should contain stuff like this:

@@ -12,7 +12,7 @@ import ssl
 import socketpool
 import json
 import board
-#import neopixel
+import neopixel
 import time
 import sys
 import adafruit_logging as logging
@@ -72,6 +72,14 @@ def go_to_sleep(sleep_period):
     time_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + sleep_period)
     # Exit and deep sleep until the alarm wakes us.
     alarm.exit_and_deep_sleep_until_alarms(time_alarm)
+
+
+def blink():
+    pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
+
+    pixel.brightness = 0.3
+    pixel.fill((0, 255, 0))
+    time.sleep(0.5)
 
 
 def main():
@@ -143,11 +151,7 @@ def main():
     mqtt_client.disconnect()
 
     # TODO: blink the LED only in debug mode (to save the battery)
-    #pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
-
-    #pixel.brightness = 0.3
-    #pixel.fill((0, 255, 0))
-    #time.sleep(0.5)
+    # blink()
 
     logger.info(f"Going to sleep for {sleep_duration} seconds")
     go_to_sleep(sleep_duration)

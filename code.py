@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2021 Kattni Rembor for Adafruit Industries
 # SPDX-License-Identifier: Unlicense
 """
-CircuitPython Simple Example for BME280 and LC709203 Sensors
+Acquire temperature and battery level and publish it to MQTT topic.
 """
 import alarm
 import time

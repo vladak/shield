@@ -5,7 +5,6 @@ Acquire temperature and battery level and publish it to MQTT topic.
 """
 import json
 import ssl
-import sys
 import time
 import traceback
 

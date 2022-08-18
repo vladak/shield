@@ -12,7 +12,7 @@ Thus, I bought the [Adafruit TMP117 ±0.1°C High Accuracy I2C Temperature Senso
 connected via STEMMA QT and this provides accurate temperature measurements.
 
 This repository is called 'shield' as an allude to [Stevenson screen](https://en.wikipedia.org/wiki/Stevenson_screen) because
-the Feather with the sensor is placed into a plastic screen.
+the Feather with the sensor is placed into a plastic screen, sometimes called "radiation shield".
 
 ## Usage
 

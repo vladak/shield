@@ -173,6 +173,6 @@ except WatchDogTimeout:
     print("Code stopped by WatchDog timeout!")
     # NB, sometimes soft reset is not enough! need to do hard reset here
     reset_time = 15
-    print(f"Performing hard reset in {reset_time}")
+    print(f"Performing hard reset in {reset_time} seconds")
     time.sleep(reset_time)
     microcontroller.reset()

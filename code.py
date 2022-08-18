@@ -33,6 +33,10 @@ except ImportError:
     )
     raise
 
+# Estimated run time in seconds with some extra room.
+# This is used to compute the watchdog timeout.
+ESTIMATED_RUN_TIME = 20
+
 
 # pylint: disable=unused-argument, redefined-outer-name
 def connect(mqtt_client, userdata, flags, rc):
@@ -86,11 +90,7 @@ def blink():
 def main():
     sleep_duration = secrets["sleep_duration"]
 
-    # Estimated run time in seconds with some extra room.
-    # This is used to compute the watchdog timeout.
-    estimated_run_time = 20
-
-    watchdog.timeout = sleep_duration + estimated_run_time
+    watchdog.timeout = sleep_duration + ESTIMATED_RUN_TIME
     watchdog.mode = WatchDogMode.RAISE
 
     log_level = get_log_level(secrets["log_level"])
@@ -110,16 +110,11 @@ def main():
     # TODO: this cannot be displayed due to 'incomplete format' - maybe it needs to wait for something ?
     # logger.info("Battery Percent: {:.2f} %".format(battery_monitor.cell_percent))
 
-    try:
-        # Connect to Wi-Fi
-        logger.info("Connecting to wifi")
-        wifi.radio.connect(secrets["ssid"], secrets["password"], timeout=10)
-        logger.info("Connected to {}!".format(secrets["ssid"]))
-        logger.debug(f"IP: {wifi.radio.ipv4_address}")
-    except Exception as e:  # pylint: disable=broad-except
-        logger.error(f"Troubles getting IP connectivity: {e}")
-        go_to_sleep(sleep_duration // 5)
-        return
+    # Connect to Wi-Fi
+    logger.info("Connecting to wifi")
+    wifi.radio.connect(secrets["ssid"], secrets["password"], timeout=10)
+    logger.info("Connected to {}!".format(secrets["ssid"]))
+    logger.debug(f"IP: {wifi.radio.ipv4_address}")
 
     # Create a socket pool
     pool = socketpool.SocketPool(wifi.radio)
@@ -138,12 +133,7 @@ def main():
     mqtt_client.on_publish = publish
 
     logger.info(f"Attempting to connect to MQTT broker {mqtt_client.broker}")
-    try:
-        mqtt_client.connect()
-    except Exception as exc:
-        logger.error(f"Got exception when connecting to MQTT broker: {exc}")
-        go_to_sleep(sleep_duration // 5)
-        return
+    mqtt_client.connect()
 
     mqtt_topic = secrets["mqtt_topic"]
     logger.info(f"Publishing to {mqtt_topic}")
@@ -151,13 +141,7 @@ def main():
         "temperature": "{:.1f}".format(temperature),
         "battery_level": "{:.2f}".format(battery_monitor.cell_percent),
     }
-    try:
-        mqtt_client.publish(mqtt_topic, json.dumps(data))
-    except Exception as exc:
-        logger.error(f"Got exception when publishing to MQTT broker: {exc}")
-        go_to_sleep(sleep_duration // 5)
-        return
-
+    mqtt_client.publish(mqtt_topic, json.dumps(data))
     mqtt_client.disconnect()
 
     watchdog.feed()
@@ -171,12 +155,14 @@ def main():
 
 
 try:
+    stamp = time.monotonic()
     main()
 except Exception as e:
     print("Code stopped by unhandled exception:")
     print(traceback.format_exception(None, e, e.__traceback__))
-    print("Performing a supervisor reload in 15s")
-    time.sleep(15)  # TODO: Make sure this is shorter than watchdog timeout
+    reload_time = ESTIMATED_RUN_TIME - (time.monotonic() - stamp)
+    print(f"Performing a supervisor reload in {reload_time}")
+    time.sleep(reload_time)
     supervisor.reload()
 except WatchDogTimeout:
     print("Code stopped by WatchDog timeout!")

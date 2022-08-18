@@ -31,7 +31,9 @@ secrets = {
     "password": "bar",
     "broker": "172.40.0.3",
     "broker_port": 1883,
+    "mqtt_topic": "devices/terasa/shield",
+    "sleep_duration": 300,
 }
 ```
 
-To load this onto the Feather, I recommend to use the [Mu editor](https://codewith.mu/).
+To load this onto the Feather, I recommend using the [Mu editor](https://codewith.mu/).

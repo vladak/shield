@@ -165,7 +165,7 @@ def main():
     if log_level == logging.DEBUG:
         blink()
 
-    logger.info(f"Going to sleep for {sleep_duration} seconds")
+    logger.info(f"Going to deep sleep for {sleep_duration} seconds")
     go_to_sleep(sleep_duration)
 
 

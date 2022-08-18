@@ -20,7 +20,6 @@ import socketpool
 import supervisor
 import wifi
 
-# from adafruit_bme280 import basic as adafruit_bme280
 from adafruit_lc709203f import LC709203F, PackSize
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
@@ -106,7 +105,6 @@ def main():
 
     # Create sensor objects, using the board's default I2C bus.
     i2c = board.I2C()
-    # bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
     tmp117 = adafruit_tmp117.TMP117(i2c)
     temperature = tmp117.temperature
     battery_monitor = LC709203F(board.I2C())

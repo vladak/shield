@@ -33,11 +33,11 @@ except ImportError:
 
 # MQTT Topic
 # Use this topic if you'd like to connect to a standard MQTT broker
-mqtt_topic = "devices/terasa/shield"
+MQTT_TOPIC = "devices/terasa/shield"
 
 # Duration of sleep in seconds. Default is 600 seconds (10 minutes).
 # Feather will sleep for this duration between sensor readings.
-sleep_duration = 300
+SLEEP_DURATION = 300
 
 
 def log(msg):
@@ -88,9 +88,9 @@ def blink():
 
 
 def main():
-    global sleep_duration
+    global SLEEP_DURATION
 
-    watchdog.timeout = sleep_duration * 2
+    watchdog.timeout = SLEEP_DURATION * 2
     watchdog.mode = WatchDogMode.RAISE
 
     # TODO: setup logger formatter to include timestamp
@@ -117,7 +117,7 @@ def main():
         log(f"IP: {wifi.radio.ipv4_address}")
     except Exception as e:  # pylint: disable=broad-except
         logger.error(f"Troubles getting IP connectivity: {e}")
-        go_to_sleep(sleep_duration // 5)
+        go_to_sleep(SLEEP_DURATION // 5)
         return
 
     # Create a socket pool
@@ -141,19 +141,19 @@ def main():
         mqtt_client.connect()
     except Exception as exc:
         logger.error(f"Got exception when connecting to MQTT broker: {exc}")
-        go_to_sleep(sleep_duration // 5)
+        go_to_sleep(SLEEP_DURATION // 5)
         return
 
-    logger.info(f"Publishing to {mqtt_topic}")
+    logger.info(f"Publishing to {MQTT_TOPIC}")
     data = {
         "temperature": "{:.1f}".format(temperature),
         "battery_level": "{:.2f}".format(battery_monitor.cell_percent),
     }
     try:
-        mqtt_client.publish(mqtt_topic, json.dumps(data))
+        mqtt_client.publish(MQTT_TOPIC, json.dumps(data))
     except Exception as exc:
         logger.error(f"Got exception when publishing to MQTT broker: {exc}")
-        go_to_sleep(sleep_duration // 5)
+        go_to_sleep(SLEEP_DURATION // 5)
         return
 
     mqtt_client.disconnect()
@@ -163,8 +163,8 @@ def main():
     # TODO: blink the LED only in debug mode (to save the battery)
     # blink()
 
-    logger.info(f"Going to sleep for {sleep_duration} seconds")
-    go_to_sleep(sleep_duration)
+    logger.info(f"Going to sleep for {SLEEP_DURATION} seconds")
+    go_to_sleep(SLEEP_DURATION)
 
 
 try:

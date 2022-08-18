@@ -80,10 +80,13 @@ def go_to_sleep(sleep_period):
 
 
 def blink():
+    """
+    Blink the Neo pixel blue.
+    """
     pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
 
     pixel.brightness = 0.3
-    pixel.fill((0, 255, 0))
+    pixel.fill((0, 0, 255))
     time.sleep(0.5)
 
 

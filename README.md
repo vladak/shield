@@ -14,6 +14,8 @@ connected via STEMMA QT and this provides accurate temperature measurements.
 This repository is called 'shield' as an allude to [Stevenson screen](https://en.wikipedia.org/wiki/Stevenson_screen) because
 the Feather with the sensor is placed into a plastic screen, sometimes called "radiation shield": ![shield](/shield.jpg)
 
+The cable running to the screen comes from a solar charger.
+
 ## Usage
 
 There needs to be a `secrets.py` file that contains Wi-Fi credentials and information about the MQTT broker.

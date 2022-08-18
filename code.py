@@ -175,7 +175,6 @@ try:
 except Exception as e:
     print("Code stopped by unhandled exception:")
     print(traceback.format_exception(None, e, e.__traceback__))
-    # Can we log here?
     print("Performing a supervisor reload in 15s")
     time.sleep(15)  # TODO: Make sure this is shorter than watchdog timeout
     supervisor.reload()

@@ -20,6 +20,7 @@ import neopixel
 import socketpool
 import supervisor
 import wifi
+
 # from adafruit_bme280 import basic as adafruit_bme280
 from adafruit_lc709203f import LC709203F, PackSize
 from microcontroller import watchdog
@@ -28,7 +29,9 @@ from watchdog import WatchDogMode, WatchDogTimeout
 try:
     from secrets import secrets
 except ImportError:
-    print("WiFi and Adafruit IO credentials are kept in secrets.py, please add them there!")
+    print(
+        "WiFi and Adafruit IO credentials are kept in secrets.py, please add them there!"
+    )
     raise
 
 # MQTT Topic
@@ -38,6 +41,10 @@ MQTT_TOPIC = "devices/terasa/shield"
 # Duration of sleep in seconds. Default is 600 seconds (10 minutes).
 # Feather will sleep for this duration between sensor readings.
 SLEEP_DURATION = 300
+
+# Estimated run time in seconds with some extra room.
+# This is used to compute the watchdog timeout.
+ESTIMATED_RUN_TIME = 20
 
 
 def log(msg):
@@ -90,7 +97,7 @@ def blink():
 def main():
     global SLEEP_DURATION
 
-    watchdog.timeout = SLEEP_DURATION * 2
+    watchdog.timeout = SLEEP_DURATION + ESTIMATED_RUN_TIME
     watchdog.mode = WatchDogMode.RAISE
 
     # TODO: setup logger formatter to include timestamp
@@ -173,13 +180,13 @@ except Exception as e:
     print("Code stopped by unhandled exception:")
     print(traceback.format_exception(None, e, e.__traceback__))
     # Can we log here?
-    print('Performing a supervisor reload in 15s')
+    print("Performing a supervisor reload in 15s")
     time.sleep(15)  # TODO: Make sure this is shorter than watchdog timeout
     supervisor.reload()
 except WatchDogTimeout:
-    print('Code stopped by WatchDog timeout!')
+    print("Code stopped by WatchDog timeout!")
     # supervisor.reload()
     # NB, sometimes soft reset is not enough! need to do hard reset here
-    print('Performing hard reset in 15s')
+    print("Performing hard reset in 15s")
     time.sleep(15)
     microcontroller.reset()

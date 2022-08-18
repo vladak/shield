@@ -32,13 +32,6 @@ except ImportError:
     raise
 
 
-def log(msg):
-    logger = logging.getLogger(__name__)
-
-    # TODO: replace with logger
-    print(f"{time.monotonic()}: {msg}")
-
-
 # pylint: disable=unused-argument, redefined-outer-name
 def connect(mqtt_client, userdata, flags, rc):
     """
@@ -55,14 +48,18 @@ def disconnect(mqtt_client, userdata, rc):
     """
     This method is called when the mqtt_client disconnects from the broker.
     """
-    log("Disconnected from MQTT Broker!")
+    logger = logging.getLogger(__name__)
+
+    logger.info("Disconnected from MQTT Broker!")
 
 
 def publish(mqtt_client, userdata, topic, pid):
     """
     This method is called when the mqtt_client publishes data to a feed.
     """
-    log("Published to {0} with PID {1}".format(topic, pid))
+    logger = logging.getLogger(__name__)
+
+    logger.info("Published to {0} with PID {1}".format(topic, pid))
 
 
 def go_to_sleep(sleep_period):
@@ -94,7 +91,6 @@ def main():
     watchdog.timeout = sleep_duration + estimated_run_time
     watchdog.mode = WatchDogMode.RAISE
 
-    # TODO: setup logger formatter to include timestamp
     logger = logging.getLogger(__name__)
 
     logger.info("Running")
@@ -111,10 +107,10 @@ def main():
 
     try:
         # Connect to Wi-Fi
-        log("Connecting to wifi")
+        logger.info("Connecting to wifi")
         wifi.radio.connect(secrets["ssid"], secrets["password"], timeout=10)
-        log("Connected to {}!".format(secrets["ssid"]))
-        log(f"IP: {wifi.radio.ipv4_address}")
+        logger.info("Connected to {}!".format(secrets["ssid"]))
+        logger.debug(f"IP: {wifi.radio.ipv4_address}")
     except Exception as e:  # pylint: disable=broad-except
         logger.error(f"Troubles getting IP connectivity: {e}")
         go_to_sleep(sleep_duration // 5)
@@ -136,7 +132,7 @@ def main():
     mqtt_client.on_disconnect = disconnect
     mqtt_client.on_publish = publish
 
-    log(f"Attempting to connect to MQTT broker {mqtt_client.broker}")
+    logger.info(f"Attempting to connect to MQTT broker {mqtt_client.broker}")
     try:
         mqtt_client.connect()
     except Exception as exc:

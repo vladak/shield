@@ -179,7 +179,6 @@ except Exception as e:
     supervisor.reload()
 except WatchDogTimeout:
     print("Code stopped by WatchDog timeout!")
-    # supervisor.reload()
     # NB, sometimes soft reset is not enough! need to do hard reset here
     print("Performing hard reset in 15s")
     time.sleep(15)

@@ -1,3 +1,5 @@
+[![Python checks](https://github.com/vladak/shield/actions/workflows/python-checks.yml/badge.svg)](https://github.com/vladak/shield/actions/workflows/python-checks.yml)
+
 # Shield
 
 code for ESP32 Adafruit Feather to measure temperature and send it to MQTT broker

@@ -54,22 +54,27 @@ def log(msg):
 
 # pylint: disable=unused-argument, redefined-outer-name
 def connect(mqtt_client, userdata, flags, rc):
+    """
+    This function will be called when the mqtt_client is connected
+    successfully to the broker.
+    """
     logger = logging.getLogger(__name__)
 
-    # This function will be called when the mqtt_client is connected
-    # successfully to the broker.
     logger.info("Connected to MQTT Broker!")
     logger.debug("Flags: {0}\n RC: {1}".format(flags, rc))
 
 
 def disconnect(mqtt_client, userdata, rc):
-    # This method is called when the mqtt_client disconnects
-    # from the broker.
+    """
+    This method is called when the mqtt_client disconnects from the broker.
+    """
     log("Disconnected from MQTT Broker!")
 
 
 def publish(mqtt_client, userdata, topic, pid):
-    # This method is called when the mqtt_client publishes data to a feed.
+    """
+    This method is called when the mqtt_client publishes data to a feed.
+    """
     log("Published to {0} with PID {1}".format(topic, pid))
 
 

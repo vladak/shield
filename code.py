@@ -88,10 +88,10 @@ def blink():
 
 
 def main():
-    sleep_duration = secrets["sleep_duration"]
-
-    watchdog.timeout = sleep_duration + ESTIMATED_RUN_TIME
+    watchdog.timeout = ESTIMATED_RUN_TIME
     watchdog.mode = WatchDogMode.RAISE
+
+    sleep_duration = secrets["sleep_duration"]
 
     log_level = get_log_level(secrets["log_level"])
     logger = logging.getLogger(__name__)
@@ -151,22 +151,25 @@ def main():
         blink()
 
     logger.info(f"Going to deep sleep for {sleep_duration} seconds")
+    watchdog.deinit()
     go_to_sleep(sleep_duration)
 
 
 try:
-    stamp = time.monotonic()
     main()
 except Exception as e:
+    # This assumes that such exceptions are quite rare. Otherwise this would drain the battery quickly.
+    watchdog.deinit()
     print("Code stopped by unhandled exception:")
     print(traceback.format_exception(None, e, e.__traceback__))
-    reload_time = ESTIMATED_RUN_TIME - (time.monotonic() - stamp)
-    print(f"Performing a supervisor reload in {reload_time}")
+    reload_time = 10
+    print(f"Performing a supervisor reload in {reload_time} seconds")
     time.sleep(reload_time)
     supervisor.reload()
 except WatchDogTimeout:
     print("Code stopped by WatchDog timeout!")
     # NB, sometimes soft reset is not enough! need to do hard reset here
-    print("Performing hard reset in 15s")
-    time.sleep(15)
+    reset_time = 15
+    print(f"Performing hard reset in {reset_time}")
+    time.sleep(reset_time)
     microcontroller.reset()

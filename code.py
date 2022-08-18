@@ -23,6 +23,8 @@ from adafruit_lc709203f import LC709203F, PackSize
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
 
+from logutil import get_log_level
+
 try:
     from secrets import secrets
 except ImportError:
@@ -91,7 +93,9 @@ def main():
     watchdog.timeout = sleep_duration + estimated_run_time
     watchdog.mode = WatchDogMode.RAISE
 
+    log_level = get_log_level(secrets["log_level"])
     logger = logging.getLogger(__name__)
+    logger.setLevel(log_level)
 
     logger.info("Running")
 
@@ -157,8 +161,9 @@ def main():
 
     watchdog.feed()
 
-    # TODO: blink the LED only in debug mode (to save the battery)
-    # blink()
+    # Blink the LED only in debug mode (to save the battery).
+    if log_level == logging.DEBUG:
+        blink()
 
     logger.info(f"Going to sleep for {sleep_duration} seconds")
     go_to_sleep(sleep_duration)

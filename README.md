@@ -33,6 +33,7 @@ secrets = {
     "broker_port": 1883,
     "mqtt_topic": "devices/terasa/shield",
     "sleep_duration": 300,
+    "log_level": "INFO",
 }
 ```
 

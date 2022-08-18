@@ -107,6 +107,7 @@ def main():
     battery_monitor.pack_size = PackSize.MAH2000
 
     logger.info("Temperature: {:.1f} C".format(temperature))
+    # TODO: this cannot be displayed due to 'incomplete format' - maybe it needs to wait for something ?
     # logger.info("Battery Percent: {:.2f} %".format(battery_monitor.cell_percent))
 
     try:

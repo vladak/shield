@@ -38,7 +38,7 @@ except ImportError:
 ESTIMATED_RUN_TIME = 20
 
 
-# pylint: disable=unused-argument, redefined-outer-name
+# pylint: disable=unused-argument, redefined-outer-name, invalid-name
 def connect(mqtt_client, userdata, flags, rc):
     """
     This function will be called when the mqtt_client is connected
@@ -50,7 +50,7 @@ def connect(mqtt_client, userdata, flags, rc):
     logger.debug("Flags: {0}\n RC: {1}".format(flags, rc))
 
 
-# pylint: disable=unused-argument
+# pylint: disable=unused-argument, invalid-name
 def disconnect(mqtt_client, userdata, rc):
     """
     This method is called when the mqtt_client disconnects from the broker.
@@ -66,7 +66,7 @@ def publish(mqtt_client, userdata, topic, pid):
     """
     logger = logging.getLogger(__name__)
 
-    logger.info("Published to {0} with PID {1}".format(topic, pid))
+    logger.info(f"Published to {topic} with PID {pid}")
 
 
 def go_to_sleep(sleep_period):
@@ -95,6 +95,10 @@ def blink():
 
 
 def main():
+    """
+    Collect temperature from the tmp117 sensor and battery level
+    and publish with MQTT.
+    """
     watchdog.timeout = ESTIMATED_RUN_TIME
     watchdog.mode = WatchDogMode.RAISE
 
@@ -121,7 +125,7 @@ def main():
     # Connect to Wi-Fi
     logger.info("Connecting to wifi")
     wifi.radio.connect(secrets["ssid"], secrets["password"], timeout=10)
-    logger.info("Connected to {}!".format(secrets["ssid"]))
+    logger.info("Connected to {}".format(secrets["ssid"]))
     logger.debug(f"IP: {wifi.radio.ipv4_address}")
 
     # Create a socket pool
@@ -165,6 +169,7 @@ def main():
 
 try:
     main()
+# pylint: disable=broad-except
 except Exception as e:
     # This assumes that such exceptions are quite rare.
     # Otherwise this would drain the battery quickly.

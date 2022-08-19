@@ -2,3 +2,4 @@ adafruit-circuitpython-minimqtt
 adafruit-circuitpython-logging
 adafruit-blinka
 adafruit-circuitpython-tmp117
+adafruit-circuitpython-neopixel

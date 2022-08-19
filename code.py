@@ -50,6 +50,7 @@ def connect(mqtt_client, userdata, flags, rc):
     logger.debug("Flags: {0}\n RC: {1}".format(flags, rc))
 
 
+# pylint: disable=unused-argument
 def disconnect(mqtt_client, userdata, rc):
     """
     This method is called when the mqtt_client disconnects from the broker.
@@ -69,6 +70,9 @@ def publish(mqtt_client, userdata, topic, pid):
 
 
 def go_to_sleep(sleep_period):
+    """
+    Enters "deep sleep".
+    """
     # Turn off I2C power by setting it to input
     i2c_power = digitalio.DigitalInOut(board.I2C_POWER)
     i2c_power.switch_to_input()
@@ -110,7 +114,8 @@ def main():
     battery_monitor.pack_size = PackSize.MAH2000
 
     logger.info("Temperature: {:.1f} C".format(temperature))
-    # TODO: this cannot be displayed due to 'incomplete format' - maybe it needs to wait for something ?
+    # TODO: this cannot be displayed due to 'incomplete format'
+    #       - maybe it needs to wait for something ?
     # logger.info("Battery Percent: {:.2f} %".format(battery_monitor.cell_percent))
 
     # Connect to Wi-Fi
@@ -161,18 +166,19 @@ def main():
 try:
     main()
 except Exception as e:
-    # This assumes that such exceptions are quite rare. Otherwise this would drain the battery quickly.
+    # This assumes that such exceptions are quite rare.
+    # Otherwise this would drain the battery quickly.
     watchdog.deinit()
     print("Code stopped by unhandled exception:")
     print(traceback.format_exception(None, e, e.__traceback__))
-    reload_time = 10
-    print(f"Performing a supervisor reload in {reload_time} seconds")
-    time.sleep(reload_time)
+    RELOAD_TIME = 10
+    print(f"Performing a supervisor reload in {RELOAD_TIME} seconds")
+    time.sleep(RELOAD_TIME)
     supervisor.reload()
 except WatchDogTimeout:
     print("Code stopped by WatchDog timeout!")
     # NB, sometimes soft reset is not enough! need to do hard reset here
-    reset_time = 15
-    print(f"Performing hard reset in {reset_time} seconds")
-    time.sleep(reset_time)
+    RESET_TIME = 15
+    print(f"Performing hard reset in {RESET_TIME} seconds")
+    time.sleep(RESET_TIME)
     microcontroller.reset()

@@ -18,6 +18,57 @@ the Feather with the sensor is placed into a plastic screen, sometimes called "r
 
 The cable running to the screen comes from a solar charger.
 
+## Configuration
+
+### Prometheus MQTT exporter
+
+The contents of `/etc/prometheus/mqtt-exporter.yaml` should look like this:
+
+```yml
+mqtt:
+  # The MQTT broker to connect to
+  server: tcp://localhost:1883
+  # The Topic path to subscribe to. Be aware that you have to specify the wildcard.
+  topic_path: devices/#
+  # Optional: Regular expression to extract the device ID from the topic path. The default regular expression, assumes
+  # that the last "element" of the topic_path is the device id.
+  # The regular expression must contain a named capture group with the name deviceid
+  # For example the expression for tasamota based sensors is "tele/(?P<deviceid>.*)/.*"
+  device_id_regex: "(.*/)?(?P<deviceid>.*)"
+  # The MQTT QoS level
+  qos: 0
+cache:
+  # Timeout. Each received metric will be presented for this time if no update is send via MQTT.
+  # Set the timeout to -1 to disable the deletion of metrics from the cache. The exporter presents the ingest timestamp
+  # to prometheus.
+  timeout: 60m
+# This is a list of valid metrics. Only metrics listed here will be exported
+metrics:
+  -
+    # The name of the metric in prometheus
+    prom_name: temperature
+    # The name of the metric in a MQTT JSON message
+    mqtt_name: temperature
+    # The prometheus help text for this metric
+    help: temperature reading
+    # The prometheus type for this metric. Valid values are: "gauge" and "counter"
+    type: gauge
+```
+
+### Prometheus
+
+Under the `scrape_configs` section in `/etc/prometheus/prometheus.yml` there should be:
+```yml
+
+  - job_name: mqtt
+    # The MQTT based sensor publish the data only now and then.
+    scrape_interval: 5m
+
+    # If prometheus-mqtt-exporter is installed, grab metrics from external sensors.
+    static_configs:
+      - targets: ['localhost:9641']
+```
+
 ## Usage
 
 There needs to be a `secrets.py` file that contains Wi-Fi credentials and information about the MQTT broker.

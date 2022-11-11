@@ -21,6 +21,7 @@ import supervisor
 import wifi
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
+from digitalio import DigitalInOut
 
 from logutil import get_log_level
 
@@ -46,7 +47,7 @@ def connect(mqtt_client, userdata, flags, rc):
     logger = logging.getLogger(__name__)
 
     logger.info("Connected to MQTT Broker!")
-    logger.debug("Flags: {0}\n RC: {1}".format(flags, rc))
+    logger.debug(f"Flags: {flags}\n RC: {rc}")
 
 
 # pylint: disable=unused-argument, invalid-name
@@ -94,10 +95,6 @@ def main():
     Collect temperature from the tmp117 sensor and battery level
     and publish with MQTT.
     """
-    watchdog.timeout = ESTIMATED_RUN_TIME
-    watchdog.mode = WatchDogMode.RAISE
-
-    sleep_duration = secrets["sleep_duration"]
 
     log_level = get_log_level(secrets["log_level"])
     logger = logging.getLogger(__name__)
@@ -105,13 +102,25 @@ def main():
 
     logger.info("Running")
 
+    # If the 'SW38' button on the ESP32 V2 was pressed, exit the program so that
+    # web based workflow can be used.
+    button = DigitalInOut(board.BUTTON)
+    if button.value:
+        logger.info("button pressed, exiting")
+        return
+
+    watchdog.timeout = ESTIMATED_RUN_TIME
+    watchdog.mode = WatchDogMode.RAISE
+
+    sleep_duration = secrets["sleep_duration"]
+
     # Create sensor objects, using the board's default I2C bus.
     i2c = board.I2C()
     tmp117 = adafruit_tmp117.TMP117(i2c)
     temperature = tmp117.temperature
     battery_monitor = adafruit_max1704x.MAX17048(i2c)
 
-    logger.info("Temperature: {:.1f} C".format(temperature))
+    logger.info(f"Temperature: {temperature:.1f} C")
     # TODO: this cannot be displayed due to 'incomplete format'
     #       - maybe it needs to wait for something ?
     # logger.info("Battery Percent: {:.2f} %".format(battery_monitor.cell_percent))
@@ -119,7 +128,7 @@ def main():
     # Connect to Wi-Fi
     logger.info("Connecting to wifi")
     wifi.radio.connect(secrets["ssid"], secrets["password"], timeout=10)
-    logger.info("Connected to {}".format(secrets["ssid"]))
+    logger.info(f"Connected to {secrets['ssid']}")
     logger.debug(f"IP: {wifi.radio.ipv4_address}")
 
     # Create a socket pool
@@ -144,10 +153,10 @@ def main():
     mqtt_topic = secrets["mqtt_topic"]
     logger.info(f"Publishing to {mqtt_topic}")
     data = {
-        "temperature": "{:.1f}".format(temperature),
+        "temperature": f"{temperature:.1f}",
     }
     if battery_monitor:
-        data["battery_level"] = "{:.2f}".format(battery_monitor.cell_percent)
+        data["battery_level"] = f"{battery_monitor.cell_percent:.2f}"
 
     mqtt_client.publish(mqtt_topic, json.dumps(data))
     mqtt_client.disconnect()

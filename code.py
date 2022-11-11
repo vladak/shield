@@ -12,8 +12,7 @@ import adafruit_logging as logging
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 import adafruit_tmp117
 import alarm
-import boardx
-import digitalio
+import board
 import adafruit_max1704x
 import microcontroller
 import neopixel
@@ -73,10 +72,6 @@ def go_to_sleep(sleep_period):
     """
     Enters "deep sleep".
     """
-    # Turn off I2C power by setting it to input
-    #i2c_power = digitalio.DigitalInOut(board.I2C_POWER)
-    #i2c_power.switch_to_input()
-
     # Create an alarm that will trigger sleep_period number of seconds from now.
     time_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + sleep_period)
     # Exit and deep sleep until the alarm wakes us.

@@ -3,3 +3,4 @@ adafruit-circuitpython-logging
 adafruit-blinka
 adafruit-circuitpython-tmp117
 adafruit-circuitpython-neopixel
+adafruit-circuitpython-max1704x

@@ -14,12 +14,12 @@ import adafruit_tmp117
 import alarm
 import board
 import digitalio
+import adafruit_max1704x
 import microcontroller
 import neopixel
 import socketpool
 import supervisor
 import wifi
-from adafruit_lc709203f import LC709203F, PackSize
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
 
@@ -114,8 +114,7 @@ def main():
     i2c = board.I2C()
     tmp117 = adafruit_tmp117.TMP117(i2c)
     temperature = tmp117.temperature
-    battery_monitor = LC709203F(board.I2C())
-    battery_monitor.pack_size = PackSize.MAH2000
+    battery_monitor = adafruit_max1704x.MAX17048(i2c)
 
     logger.info("Temperature: {:.1f} C".format(temperature))
     # TODO: this cannot be displayed due to 'incomplete format'
@@ -151,8 +150,10 @@ def main():
     logger.info(f"Publishing to {mqtt_topic}")
     data = {
         "temperature": "{:.1f}".format(temperature),
-        "battery_level": "{:.2f}".format(battery_monitor.cell_percent),
     }
+    if battery_monitor:
+        data["battery_level"] = "{:.2f}".format(battery_monitor.cell_percent)
+
     mqtt_client.publish(mqtt_topic, json.dumps(data))
     mqtt_client.disconnect()
 

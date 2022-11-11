@@ -19,9 +19,9 @@ import neopixel
 import socketpool
 import supervisor
 import wifi
+from digitalio import DigitalInOut
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
-from digitalio import DigitalInOut
 
 from logutil import get_log_level
 

@@ -12,7 +12,7 @@ import adafruit_logging as logging
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 import adafruit_tmp117
 import alarm
-import board
+import boardx
 import digitalio
 import adafruit_max1704x
 import microcontroller
@@ -162,6 +162,11 @@ def main():
     # Blink the LED only in debug mode (to save the battery).
     if log_level == logging.DEBUG:
         blink()
+
+    # Sleep a bit so one can break to the REPL when using console via web workflow.
+    close_sleep = 10
+    logger.info(f"Sleeping for {close_sleep} seconds")
+    time.sleep(close_sleep)  # ugh, ESTIMATED_RUN_TIME
 
     logger.info(f"Going to deep sleep for {sleep_duration} seconds")
     watchdog.deinit()

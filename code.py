@@ -9,11 +9,11 @@ import time
 import traceback
 
 import adafruit_logging as logging
+import adafruit_max1704x
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 import adafruit_tmp117
 import alarm
 import board
-import adafruit_max1704x
 import microcontroller
 import neopixel
 import socketpool

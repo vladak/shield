@@ -2,9 +2,21 @@
 
 # Shield
 
-code for ESP32 Adafruit Feather to measure temperature and send it to MQTT broker
+This repository contains code for ESP32 Adafruit Feather to measure temperature and send it to MQTT broker via WiFi.
+The Feather is located outside on a balcony, running from a battery that is charged using a small solar panel.
 
-This is used specifically on [Adafruit ESP32-S2 Feather with BME280 Sensor](https://www.adafruit.com/product/5303). 
+This repository is called 'shield' as an allude to [Stevenson screen](https://en.wikipedia.org/wiki/Stevenson_screen) because
+the Feather with the sensor is placed into a plastic screen, sometimes called "radiation shield": ![shield](/shield.jpg)
+
+The cable running to the screen comes from a solar charger.
+
+## Hardware
+
+## Genesis
+
+### Temperature sensor
+
+Initially, [Adafruit ESP32-S2 Feather with BME280 Sensor](https://www.adafruit.com/product/5303) was used. 
 This looked to be a fine all-in-one package, however initial experiments with temperature
 readings using the built-in BME280 sensor showed that the skew of the metric due to the board being warmed up by 
 the WiFi/SoC chip is too high - for ambient temperature of twenty/thirty-ish degrees of Celsius, the sensor
@@ -13,10 +25,15 @@ readings were forty-ish degrees of Celsius even though the code ran every couple
 Thus, I bought the [Adafruit TMP117 ±0.1°C High Accuracy I2C Temperature Sensor](https://www.adafruit.com/product/4821),
 connected via STEMMA QT and this provides accurate temperature measurements.
 
-This repository is called 'shield' as an allude to [Stevenson screen](https://en.wikipedia.org/wiki/Stevenson_screen) because
-the Feather with the sensor is placed into a plastic screen, sometimes called "radiation shield": ![shield](/shield.jpg)
+### ESP32
 
-The cable running to the screen comes from a solar charger.
+XXX
+
+### Solar charging
+
+Initially, I used a small freebie solar charger with built-in batter that supplied power via USB cable. It was not enough to charge the ESP32, and likely the battery had very small capacity because it laid in the storage for couple of years.
+
+XXX
 
 ## Configuration
 

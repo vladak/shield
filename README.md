@@ -14,6 +14,8 @@ The cable running to the screen comes from the solar panel.
 
 ## Hardware
 
+Here is a bill of materials:
+
 Purpose | Name
 ---|---
 microcontroller | [ESP32 Feather V2 with w.FL antenna connector](https://www.adafruit.com/product/5438)

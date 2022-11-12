@@ -51,7 +51,7 @@ XXX
 
 ### Solar charging
 
-Initially, I used a small freebie solar charger with built-in batter that supplied power via USB cable. It was not enough to charge the ESP32, and likely the battery had very small capacity because it laid in the storage for couple of years.
+Initially, I used a small freebie solar charger with built-in battery that supplied power via USB cable. It was not enough to charge the ESP32, and likely the battery had very small capacity because it laid in the storage for couple of years.
 
 XXX
 

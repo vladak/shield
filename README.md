@@ -62,7 +62,7 @@ I wanted to monitor the capacity of the battery. In practice, that this metric w
 
 At that point, I noted a hint of desperation and frustration in my mind - was not sure whether building this seemingly trivial project at that point is actually feasible given the hardware/software/firmware constraints.
 
-To avoid charging the LiPo battery when freezing, I needed to solder a thermistor to the charger.
+To avoid charging the LiPo battery when freezing, I needed to solder a thermistor to the charger and fasten it to the battery so that the charger can measure the temperature of the battery. It has a built-in logic that prevents charging if the temperature of the battery is too low or too high.
 
 ### Packaging
 

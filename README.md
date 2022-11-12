@@ -13,7 +13,7 @@ the Feather with the cicuitry is placed into a plastic screen, sometimes called 
 The cable running to the screen comes from the solar panel.
 
 All in all, that's a lot of trouble and materials to get a simple temperature measurement from the outside.
-However, I used that as a way to learn more about solar charging, CircuitPython, microcontrollers, electronics etc. and I mostly enjoyed the process of building it.
+However, I used that as a way to learn more about solar charging, [CircuitPython](https://circuitpython.org/), microcontrollers, electronics etc. and I mostly enjoyed the process of building it.
 
 ## Hardware
 

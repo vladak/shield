@@ -12,6 +12,9 @@ the Feather with the cicuitry is placed into a plastic screen, sometimes called 
 
 The cable running to the screen comes from the solar panel.
 
+All in all, that's a lot of trouble and materials to get a simple temperature measurement from the outside.
+However, I used that as a way to learn more about solar charging, CircuitPython, microcontrollers, electronics etc. and I mostly enjoyed the process of building it.
+
 ## Hardware
 
 Here is a bill of materials:
@@ -55,7 +58,7 @@ I suspected this is caused by some networking problem. Even though the ESP32 was
 
 Initially, I used a small freebie solar charger with built-in battery that supplied power via USB cable. It was not enough to charge the ESP32, and likely the battery had very small capacity because it laid in the storage for couple of years.
 
-XXX
+I wanted to monitor the capacity of the battery. In practice, that this metric will be published as MQTT message and eventually consumed by Grafana. This way, Grafana can provide alerting if the capacity drops too low. Since the [Adafruit bq24074 charger](https://www.adafruit.com/product/4755) does not provide such capability, I needed external battery monitor. Of course, ideally connected via STEMMA QT. Initially, for some reason, I chose [Adafruit LC709203F LiPoly / LiIon Fuel Gauge and Battery Monitor](https://www.adafruit.com/product/4712) even though it is no longer manufactured. This posed a bunch of challenges, in particular not being able to get the data from the sensor due to [some weird ESP/CircuitPython bug](https://forums.adafruit.com/viewtopic.php?p=947796), so I rather went with the newer [Adafruit MAX17048 gauge](https://www.adafruit.com/product/5580) instead.
 
 ## Configuration
 

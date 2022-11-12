@@ -10,9 +10,11 @@ the Feather with the cicuitry is placed into a plastic screen, sometimes called 
 
 <img src="shield.jpg" alt="drawing" width="400"/>
 
-The cable running to the screen comes from a solar charger.
+The cable running to the screen comes from the solar panel.
 
 ## Hardware
+
+XXX
 
 ## Genesis
 

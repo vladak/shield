@@ -6,7 +6,7 @@ This repository contains code for ESP32 Adafruit Feather to measure temperature 
 The Feather is located outside on a balcony, running from a battery that is charged using a small solar panel.
 
 This repository is called 'shield' as an allude to [Stevenson screen](https://en.wikipedia.org/wiki/Stevenson_screen) because
-the Feather with the sensor is placed into a plastic screen, sometimes called "radiation shield": 
+the Feather with the cicuitry is placed into a plastic screen, sometimes called "radiation shield": 
 
 <img src="shield.jpg" alt="drawing" width="400"/>
 

@@ -64,6 +64,8 @@ At that point, I noted a hint of desperation and frustration in my mind - was no
 
 To avoid charging the LiPo battery when freezing (which would damage it), I needed to solder a thermistor to the charger and fasten it to the battery so that the charger can measure the temperature of the battery. It has a built-in logic that prevents charging if the temperature of the battery is too low or too high.
 
+As for sizing, this is something I will yet have to [figure out](https://forums.adafruit.com/viewtopic.php?p=946668).
+
 ### Packaging
 
 Initially, it was just the ESP32 connected to external solar charger. Then I added temperature sensor, then swapped the ESP32 for another with external antenna, added solar charger, battery gauge and suddently it's a bunch of connected circuits.

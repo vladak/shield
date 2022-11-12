@@ -60,6 +60,8 @@ Initially, I used a small freebie solar charger with built-in battery that suppl
 
 I wanted to monitor the capacity of the battery. In practice, that this metric will be published as MQTT message and eventually consumed by Grafana. This way, Grafana can provide alerting if the capacity drops too low. Since the [Adafruit bq24074 charger](https://www.adafruit.com/product/4755) does not provide such capability, I needed external battery monitor. Of course, ideally connected via STEMMA QT. Initially, for some reason, I chose [Adafruit LC709203F LiPoly / LiIon Fuel Gauge and Battery Monitor](https://www.adafruit.com/product/4712) even though it is no longer manufactured. This posed a bunch of challenges, in particular not being able to get the data from the sensor due to [some weird ESP/CircuitPython bug](https://forums.adafruit.com/viewtopic.php?p=947796), so I rather went with the newer [Adafruit MAX17048 gauge](https://www.adafruit.com/product/5580) instead.
 
+At that point, I noted a hint of desperation and frustration in my mind - was not sure whether building this seemingly trivial project at that point is actually feasible given the hardware/software/firmware constraints.
+
 To avoid charging the LiPo battery when freezing, I needed to solder a thermistor to the charger.
 
 ### Packaging

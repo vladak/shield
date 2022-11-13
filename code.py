@@ -9,9 +9,19 @@ import time
 import traceback
 
 import adafruit_logging as logging
-import adafruit_max1704x
+try:
+    import adafruit_max1704x
+except:
+    pass
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
-import adafruit_tmp117
+try:
+    import adafruit_tmp117
+except:
+    pass
+try:
+    import adafruit_ahtx0
+except:
+    pass
 import alarm
 import board
 import microcontroller
@@ -20,6 +30,7 @@ import socketpool
 import supervisor
 import wifi
 from digitalio import DigitalInOut
+import busio
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
 
@@ -116,12 +127,33 @@ def main():
     sleep_duration = secrets["sleep_duration"]
 
     # Create sensor objects, using the board's default I2C bus.
-    i2c = board.I2C()
-    tmp117 = adafruit_tmp117.TMP117(i2c)
-    temperature = tmp117.temperature
-    battery_monitor = adafruit_max1704x.MAX17048(i2c)
+    try:
+        i2c = board.I2C()
+    except:
+        i2c = busio.I2C(board.SCL1, board.SDA1)
 
-    logger.info(f"Temperature: {temperature:.1f} C")
+    temperature = None
+    try:
+        tmp117 = adafruit_tmp117.TMP117(i2c)
+        temperature = tmp117.temperature
+    except:
+        logger.info("No data from tmp117 sensor")
+
+    try:
+        aht20 = adafruit_ahtx0.AHTx0(i2c)
+        temperature = aht20.temperature
+    except:
+        logger.info("No data from ath20 sensor")
+
+    if temperature:
+        logger.info(f"Temperature: {temperature:.1f} C")
+
+    battery_monitor = None
+    try:
+        battery_monitor = adafruit_max1704x.MAX17048(i2c)
+    except:
+        logger.info("No max17048")
+
     # TODO: this cannot be displayed due to 'incomplete format'
     #       - maybe it needs to wait for something ?
     # logger.info("Battery Percent: {:.2f} %".format(battery_monitor.cell_percent))
@@ -151,15 +183,17 @@ def main():
     logger.info(f"Attempting to connect to MQTT broker {mqtt_client.broker}")
     mqtt_client.connect()
 
-    mqtt_topic = secrets["mqtt_topic"]
-    logger.info(f"Publishing to {mqtt_topic}")
-    data = {
-        "temperature": f"{temperature:.1f}",
-    }
+    data = {}
+    if temperature:
+        data["temperature"] = f"{temperature:.1f}"
     if battery_monitor:
         data["battery_level"] = f"{battery_monitor.cell_percent:.2f}"
 
-    mqtt_client.publish(mqtt_topic, json.dumps(data))
+    if len(data) > 0:
+        mqtt_topic = secrets["mqtt_topic"]
+        logger.info(f"Publishing to {mqtt_topic}")
+        mqtt_client.publish(mqtt_topic, json.dumps(data))
+
     mqtt_client.disconnect()
 
     watchdog.feed()

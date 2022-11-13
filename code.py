@@ -26,13 +26,13 @@ except:
     pass
 import alarm
 import board
+import busio
 import microcontroller
 import neopixel
 import socketpool
 import supervisor
 import wifi
 from digitalio import DigitalInOut
-import busio
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
 

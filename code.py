@@ -132,6 +132,7 @@ def main():
     try:
         i2c = board.I2C()
     except:
+        # QtPy
         i2c = busio.I2C(board.SCL1, board.SDA1)
 
     temperature = None
@@ -156,7 +157,7 @@ def main():
     try:
         battery_monitor = adafruit_max1704x.MAX17048(i2c)
     except:
-        logger.info("No max17048")
+        logger.info("No battery gauge (max17048)")
 
     # TODO: this cannot be displayed due to 'incomplete format'
     #       - maybe it needs to wait for something ?

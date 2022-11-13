@@ -159,10 +159,6 @@ def main():
     except:
         logger.info("No battery gauge (max17048)")
 
-    # TODO: this cannot be displayed due to 'incomplete format'
-    #       - maybe it needs to wait for something ?
-    # logger.info("Battery Percent: {:.2f} %".format(battery_monitor.cell_percent))
-
     # Connect to Wi-Fi
     logger.info("Connecting to wifi")
     wifi.radio.connect(secrets["ssid"], secrets["password"], timeout=10)

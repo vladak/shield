@@ -9,11 +9,13 @@ import time
 import traceback
 
 import adafruit_logging as logging
+
 try:
     import adafruit_max1704x
 except:
     pass
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
+
 try:
     import adafruit_tmp117
 except:
@@ -115,8 +117,8 @@ def main():
 
     # If the 'SW38' button on the ESP32 V2 was pressed, exit the program so that
     # web based workflow can be used.
-    #button = DigitalInOut(board.BUTTON)
-    #if button.value:
+    # button = DigitalInOut(board.BUTTON)
+    # if button.value:
     #    logger.info("button pressed, exiting")
     #    button.value = False
     #    return

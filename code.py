@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2021 Kattni Rembor for Adafruit Industries
 # SPDX-License-Identifier: Unlicense
 """
-Acquire temperature and battery level and publish it to MQTT topic.
+Acquire values from various sensors and publish it to MQTT topic.
 """
 import json
 import ssl

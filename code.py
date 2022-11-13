@@ -150,9 +150,6 @@ def main():
     except:
         logger.info("No data from ath20 sensor")
 
-    if temperature:
-        logger.info(f"Temperature: {temperature:.1f} C")
-
     battery_monitor = None
     try:
         battery_monitor = adafruit_max1704x.MAX17048(i2c)
@@ -186,11 +183,15 @@ def main():
 
     data = {}
     if temperature:
+        logger.info(f"Temperature: {temperature:.1f} C")
         data["temperature"] = f"{temperature:.1f}"
     if humidity:
+        logger.info(f"Humidity: {humidity:.1f} %")
         data["humidity"] = f"{humidity:.1f}"
     if battery_monitor:
-        data["battery_level"] = f"{battery_monitor.cell_percent:.2f}"
+        capacity = battery_monitor.cell_percent
+        logger.info(f"Battery capacity {capacity:.2f}")
+        data["battery_level"] = f"{capacity:.2f}"
 
     logger.debug(f"data: {data}")
 

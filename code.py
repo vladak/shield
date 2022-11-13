@@ -141,9 +141,11 @@ def main():
     except:
         logger.info("No data from tmp117 sensor")
 
+    humidity = None
     try:
         aht20 = adafruit_ahtx0.AHTx0(i2c)
         temperature = aht20.temperature
+        humidity = aht20.relative_humidity
     except:
         logger.info("No data from ath20 sensor")
 
@@ -188,8 +190,12 @@ def main():
     data = {}
     if temperature:
         data["temperature"] = f"{temperature:.1f}"
+    if humidity:
+        data["humidity"] = f"{humidity:.1f}"
     if battery_monitor:
         data["battery_level"] = f"{battery_monitor.cell_percent:.2f}"
+
+    logger.debug(f"data: {data}")
 
     if len(data) > 0:
         mqtt_topic = secrets["mqtt_topic"]

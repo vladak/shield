@@ -145,7 +145,9 @@ def main():
     humidity = None
     try:
         aht20 = adafruit_ahtx0.AHTx0(i2c)
-        temperature = aht20.temperature
+        # Prefer temperature from the tmp117.
+        if not temperature:
+            temperature = aht20.temperature
         humidity = aht20.relative_humidity
     except:
         logger.info("No data from ath20 sensor")

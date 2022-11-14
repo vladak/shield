@@ -139,32 +139,7 @@ def main():
         # QtPy
         i2c = busio.I2C(board.SCL1, board.SDA1)
 
-    temperature = None
-    try:
-        tmp117 = adafruit_tmp117.TMP117(i2c)
-        temperature = tmp117.temperature
-    except:
-        logger.info("No data from tmp117 sensor")
-
-    humidity = None
-    try:
-        sht40 = adafruit_sht4x.SHT4x(i2c)
-        if not temperature:
-            temperature = sht40.temperature
-        humidity = sht40.relative_humidity
-    except:
-        logger.info("No data from sht40 sensor")
-
-    try:
-        aht20 = adafruit_ahtx0.AHTx0(i2c)
-        # Prefer temperature measurement from the tmp117/sht40 as they have higher accuracy.
-        if not temperature:
-            temperature = aht20.temperature
-        # Prefer humidity measurement from sht40 as it has higher accuracy.
-        if not humidity:
-            humidity = aht20.relative_humidity
-    except:
-        logger.info("No data from ath20 sensor")
+    humidity, temperature = get_measurements(i2c)
 
     battery_monitor = None
     try:
@@ -232,6 +207,43 @@ def main():
     logger.info(f"Going to deep sleep for {sleep_duration} seconds")
     watchdog.deinit()
     go_to_sleep(sleep_duration)
+
+
+def get_measurements(i2c):
+    """
+    Acquire temperature and humidity measurements. Try various sensors,
+    prefer higher precision measurements.
+    Return tuple of humidity and temperature (either can be None).
+    """
+
+    logger = logging.getLogger(__name__)
+
+    temperature = None
+    try:
+        tmp117 = adafruit_tmp117.TMP117(i2c)
+        temperature = tmp117.temperature
+    except:
+        logger.info("No data from tmp117 sensor")
+    humidity = None
+    try:
+        sht40 = adafruit_sht4x.SHT4x(i2c)
+        if not temperature:
+            temperature = sht40.temperature
+        humidity = sht40.relative_humidity
+    except:
+        logger.info("No data from sht40 sensor")
+    try:
+        aht20 = adafruit_ahtx0.AHTx0(i2c)
+        # Prefer temperature measurement from the tmp117/sht40 as they have higher accuracy.
+        if not temperature:
+            temperature = aht20.temperature
+        # Prefer humidity measurement from sht40 as it has higher accuracy.
+        if not humidity:
+            humidity = aht20.relative_humidity
+    except:
+        logger.info("No data from ath20 sensor")
+
+    return humidity, temperature
 
 
 try:

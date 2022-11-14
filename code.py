@@ -12,21 +12,21 @@ import adafruit_logging as logging
 
 try:
     import adafruit_max1704x
-except:
+except ImportError:
     pass
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 
 try:
     import adafruit_tmp117
-except:
+except ImportError:
     pass
 try:
     import adafruit_ahtx0
-except:
+except ImportError:
     pass
 try:
     import adafruit_sht4x
-except:
+except ImportError:
     pass
 import alarm
 import board

@@ -24,6 +24,10 @@ try:
     import adafruit_ahtx0
 except:
     pass
+try:
+    import adafruit_sht4x
+except:
+    pass
 import alarm
 import board
 import busio
@@ -144,11 +148,21 @@ def main():
 
     humidity = None
     try:
+        sht40 = adafruit_sht4x.SHT4x(i2c)
+        if not temperature:
+            temperature = sht40.temperature
+        humidity = sht40.relative_humidity
+    except:
+        logger.info("No data from sht40 sensor")
+
+    try:
         aht20 = adafruit_ahtx0.AHTx0(i2c)
-        # Prefer temperature from the tmp117.
+        # Prefer temperature measurement from the tmp117/sht40 as they have higher accuracy.
         if not temperature:
             temperature = aht20.temperature
-        humidity = aht20.relative_humidity
+        # Prefer humidity measurement from sht40 as it has higher accuracy.
+        if not humidity:
+            humidity = aht20.relative_humidity
     except:
         logger.info("No data from ath20 sensor")
 

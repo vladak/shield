@@ -181,7 +181,7 @@ def main():
         data["humidity"] = f"{humidity:.1f}"
     if battery_monitor:
         capacity = battery_monitor.cell_percent
-        logger.info(f"Battery capacity {capacity:.2f}")
+        logger.info(f"Battery capacity {capacity:.2f} %%")
         data["battery_level"] = f"{capacity:.2f}"
 
     logger.debug(f"data: {data}")

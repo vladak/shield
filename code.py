@@ -223,7 +223,7 @@ def get_measurements(i2c):
         tmp117 = adafruit_tmp117.TMP117(i2c)
         temperature = tmp117.temperature
     except NameError:
-        logger.info(f"No library for the tmp117 sensor")
+        logger.info("No library for the tmp117 sensor")
 
     humidity = None
     try:

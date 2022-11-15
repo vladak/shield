@@ -224,6 +224,7 @@ def get_measurements(i2c):
         temperature = tmp117.temperature
     except:
         logger.info("No data from tmp117 sensor")
+
     humidity = None
     try:
         sht40 = adafruit_sht4x.SHT4x(i2c)
@@ -232,6 +233,7 @@ def get_measurements(i2c):
         humidity = sht40.relative_humidity
     except:
         logger.info("No data from sht40 sensor")
+
     try:
         aht20 = adafruit_ahtx0.AHTx0(i2c)
         # Prefer temperature measurement from the tmp117/sht40 as they have higher accuracy.

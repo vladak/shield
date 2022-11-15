@@ -28,15 +28,20 @@ try:
     import adafruit_sht4x
 except ImportError:
     pass
+# pylint: disable=import-error
 import alarm
 import board
 import busio
 import microcontroller
 import neopixel
 import socketpool
+
+# pylint: disable=import-error
 import supervisor
 import wifi
-from digitalio import DigitalInOut
+
+# from digitalio import DigitalInOut
+# pylint: disable=no-name-in-module
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
 
@@ -154,7 +159,7 @@ def main():
     logger.debug(f"IP: {wifi.radio.ipv4_address}")
 
     # Create a socket pool
-    pool = socketpool.SocketPool(wifi.radio)
+    pool = socketpool.SocketPool(wifi.radio)  # pylint: disable=no-member
 
     mqtt_client = mqtt_client_setup(pool)
 
@@ -173,7 +178,7 @@ def main():
     watchdog.feed()
 
     # Blink the LED only in debug mode (to save the battery).
-    if log_level == logging.DEBUG:
+    if log_level == logging.DEBUG:  # pylint: disable=no-member
         blink()
 
     # Sleep a bit so one can break to the REPL when using console via web workflow.
@@ -287,4 +292,4 @@ except WatchDogTimeout:
     RESET_TIME = 15
     print(f"Performing hard reset in {RESET_TIME} seconds")
     time.sleep(RESET_TIME)
-    microcontroller.reset()
+    microcontroller.reset()  # pylint: disable=no-member

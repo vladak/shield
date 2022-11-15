@@ -144,8 +144,8 @@ def main():
     battery_monitor = None
     try:
         battery_monitor = adafruit_max1704x.MAX17048(i2c)
-    except:
-        logger.info("No battery gauge (max17048)")
+    except NameError:
+        logger.info("No library for battery gauge (max17048)")
 
     # Connect to Wi-Fi
     logger.info("Connecting to wifi")

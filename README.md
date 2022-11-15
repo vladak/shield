@@ -75,7 +75,7 @@ Will need to find a way how to neatly package it all inside the radiation shield
 ## Install
 
 - Firstly, the microcontroller needs to be converted to run CircuitPython
-- copy `code.py` to the `CIRCUITPY` volume
+- copy `*.py` to the `CIRCUITPY` volume
 - `python3 -m pip install circup`
 - `circup install -a code.py`
 

@@ -156,35 +156,12 @@ def main():
     # Create a socket pool
     pool = socketpool.SocketPool(wifi.radio)
 
-    # Set up a MiniMQTT Client
-    mqtt_client = MQTT.MQTT(
-        broker=secrets["broker"],
-        port=secrets["broker_port"],
-        socket_pool=pool,
-        ssl_context=ssl.create_default_context(),
-    )
-
-    # Connect callback handlers to mqtt_client
-    mqtt_client.on_connect = connect
-    mqtt_client.on_disconnect = disconnect
-    mqtt_client.on_publish = publish
+    mqtt_client = mqtt_client_setup(pool)
 
     logger.info(f"Attempting to connect to MQTT broker {mqtt_client.broker}")
     mqtt_client.connect()
 
-    data = {}
-    if temperature:
-        logger.info(f"Temperature: {temperature:.1f} C")
-        data["temperature"] = f"{temperature:.1f}"
-    if humidity:
-        logger.info(f"Humidity: {humidity:.1f} %%")
-        data["humidity"] = f"{humidity:.1f}"
-    if battery_monitor:
-        capacity = battery_monitor.cell_percent
-        logger.info(f"Battery capacity {capacity:.2f} %%")
-        data["battery_level"] = f"{capacity:.2f}"
-
-    logger.debug(f"data: {data}")
+    data = fill_data_dict(battery_monitor, humidity, temperature)
 
     if len(data) > 0:
         mqtt_topic = secrets["mqtt_topic"]
@@ -207,6 +184,49 @@ def main():
     logger.info(f"Going to deep sleep for {sleep_duration} seconds")
     watchdog.deinit()
     go_to_sleep(sleep_duration)
+
+
+def fill_data_dict(battery_monitor, humidity, temperature):
+    """
+    Produce a dictionary out of the metrics.
+    """
+
+    logger = logging.getLogger(__name__)
+
+    data = {}
+    if temperature:
+        logger.info(f"Temperature: {temperature:.1f} C")
+        data["temperature"] = f"{temperature:.1f}"
+    if humidity:
+        logger.info(f"Humidity: {humidity:.1f} %%")
+        data["humidity"] = f"{humidity:.1f}"
+    if battery_monitor:
+        capacity = battery_monitor.cell_percent
+        logger.info(f"Battery capacity {capacity:.2f} %%")
+        data["battery_level"] = f"{capacity:.2f}"
+
+    logger.debug(f"data: {data}")
+
+    return data
+
+
+def mqtt_client_setup(pool):
+    """
+    Set up a MiniMQTT Client
+    """
+
+    mqtt_client = MQTT.MQTT(
+        broker=secrets["broker"],
+        port=secrets["broker_port"],
+        socket_pool=pool,
+        ssl_context=ssl.create_default_context(),
+    )
+    # Connect callback handlers to mqtt_client
+    mqtt_client.on_connect = connect
+    mqtt_client.on_disconnect = disconnect
+    mqtt_client.on_publish = publish
+
+    return mqtt_client
 
 
 def get_measurements(i2c):

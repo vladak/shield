@@ -135,7 +135,7 @@ def main():
     # Create sensor objects, using the board's default I2C bus.
     try:
         i2c = board.I2C()
-    except:
+    except RuntimeError:
         # QtPy
         i2c = busio.I2C(board.SCL1, board.SDA1)
 
@@ -222,8 +222,8 @@ def get_measurements(i2c):
     try:
         tmp117 = adafruit_tmp117.TMP117(i2c)
         temperature = tmp117.temperature
-    except:
-        logger.info("No data from tmp117 sensor")
+    except NameError:
+        logger.info(f"No library for the tmp117 sensor")
 
     humidity = None
     try:
@@ -231,8 +231,8 @@ def get_measurements(i2c):
         if not temperature:
             temperature = sht40.temperature
         humidity = sht40.relative_humidity
-    except:
-        logger.info("No data from sht40 sensor")
+    except NameError:
+        logger.info("No library for the sht40 sensor")
 
     try:
         aht20 = adafruit_ahtx0.AHTx0(i2c)
@@ -242,8 +242,8 @@ def get_measurements(i2c):
         # Prefer humidity measurement from sht40 as it has higher accuracy.
         if not humidity:
             humidity = aht20.relative_humidity
-    except:
-        logger.info("No data from ath20 sensor")
+    except NameError:
+        logger.info("No library for the ath20 sensor")
 
     return humidity, temperature
 

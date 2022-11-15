@@ -66,11 +66,18 @@ To avoid charging the LiPo battery when freezing (which would damage it), I need
 
 As for sizing, this is something I will yet have to [figure out](https://forums.adafruit.com/viewtopic.php?p=946668), esp. during the winter.
 
-### Packaging
+### Physical packaging
 
 Initially, it was just the ESP32 connected to external solar charger. Then I added temperature sensor, then swapped the ESP32 for another with external antenna, added solar charger, battery gauge and suddently it's a bunch of connected circuits.
 
 Will need to find a way how to neatly package it all inside the radiation shield.
+
+## Install
+
+- Firstly, the microcontroller needs to be converted to run CircuitPython
+- copy `code.py` to the `CIRCUITPY` volume
+- `python3 -m pip install circup`
+- `circup install -a code.py`
 
 ## Configuration
 

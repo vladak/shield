@@ -114,6 +114,26 @@ metrics:
     help: temperature reading
     # The prometheus type for this metric. Valid values are: "gauge" and "counter"
     type: gauge
+  -
+    # The name of the metric in prometheus
+    prom_name: humidity
+    # The name of the metric in a MQTT JSON message
+    mqtt_name: humidity
+    # The prometheus help text for this metric
+    help: humidity reading
+    # The prometheus type for this metric. Valid values are: "gauge" and "counter"
+    type: gauge
+    # A map of string to string for constant labels. This labels will be attached to every prometheus metric
+    #const_labels:
+    #  sensor_type: dht22
+  -
+    # The name of the metric in prometheus
+    prom_name: battery_level
+    # The name of the metric in a MQTT JSON message
+    mqtt_name: battery_level
+    help: Battery level
+    # The prometheus type for this metric. Valid values are: "gauge" and "counter"
+    type: gauge
 ```
 
 ### Prometheus

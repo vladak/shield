@@ -139,6 +139,10 @@ metrics:
 
 ### Prometheus
 
+The MQTT exporter by itself sets the `sensor` tag to the last component of the topic,
+which in this case is the device name. To get also the location (2nd component of the topic), 
+re-labeling in Prometheus itself is used.
+
 Under the `scrape_configs` section in `/etc/prometheus/prometheus.yml` there should be:
 ```yml
 

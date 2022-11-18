@@ -250,6 +250,7 @@ def get_measurements(i2c):
     try:
         tmp117 = adafruit_tmp117.TMP117(i2c)
         temperature = tmp117.temperature
+        logger.debug("Acquired temperature from tmp117")
     except NameError:
         logger.info("No library for the tmp117 sensor")
 
@@ -258,7 +259,9 @@ def get_measurements(i2c):
         sht40 = adafruit_sht4x.SHT4x(i2c)
         if not temperature:
             temperature = sht40.temperature
+            logger.debug("Acquired temperature from sht40")
         humidity = sht40.relative_humidity
+        logger.debug("Acquired humidity from sht40")
     except NameError:
         logger.info("No library for the sht40 sensor")
 
@@ -267,9 +270,11 @@ def get_measurements(i2c):
         # Prefer temperature measurement from the tmp117/sht40 as they have higher accuracy.
         if not temperature:
             temperature = aht20.temperature
+            logger.debug("Acquired temperature from aht20")
         # Prefer humidity measurement from sht40 as it has higher accuracy.
         if not humidity:
             humidity = aht20.relative_humidity
+            logger.debug("Acquired humidity from aht20")
     except NameError:
         logger.info("No library for the ath20 sensor")
 

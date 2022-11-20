@@ -73,11 +73,11 @@ Initially, it was just the ESP32 connected to external solar charger. Then I add
 
 Will need to find a way how to neatly package it all inside the radiation shield.
 
-## Install
+## Software/firmware install
 
-Firstly, the microcontroller needs to be converted to run CircuitPython
+Firstly, the microcontroller needs to be converted to run CircuitPython. To do that, for ESP32 V2, I chose the [command line `esptool`](https://learn.adafruit.com/circuitpython-with-esp32-quick-start/command-line-esptool) on a Linux computer (since macOS appeared to have flaky serial connection for some reason). For ESP32-S2 this procedure is simpler.
 
-When the microcontroller was ESP32-S2 based, the following could be used:
+Once CicuitPython is installed, the following could be used:
 - copy `*.py` to the `CIRCUITPY` volume
 - `python3 -m pip install circup`
 - `circup install -a code.py`

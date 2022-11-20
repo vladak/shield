@@ -8,7 +8,7 @@ The Feather is located outside on a balcony, running from a battery that is char
 This repository is called 'shield' as an allude to [Stevenson screen](https://en.wikipedia.org/wiki/Stevenson_screen) because
 the Feather with the cicuitry is placed into a plastic screen, sometimes called "radiation shield": 
 
-<img src="shield.jpg" alt="drawing" width="400"/>
+<img src="img/shield.jpg" alt="drawing" width="400"/>
 
 The cable running to the screen comes from the solar panel.
 

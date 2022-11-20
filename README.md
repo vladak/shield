@@ -187,3 +187,9 @@ secrets = {
 ```
 
 To transfer the file to the microcontroller, the same method as in the Install section should be used.
+
+## Guide links
+
+Adafruit has largely such a good documentation that the links are worth putting here for quick reference:
+- [SHT40 guide](https://learn.adafruit.com/adafruit-sht40-temperature-humidity-sensor/python-circuitpython)
+- [MAX17048 guide](https://learn.adafruit.com/adafruit-max17048-lipoly-liion-fuel-gauge-and-battery-monitor)

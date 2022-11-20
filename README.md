@@ -79,8 +79,7 @@ Firstly, the microcontroller needs to be converted to run CircuitPython. To do t
 
 Once CicuitPython is installed, the following could be used:
 - copy `*.py` to the `CIRCUITPY` volume
-- `python3 -m pip install circup`
-- `circup install -a code.py`
+- copy all necessary libraries from Adafruit CircuitPython bundle to `CIRCUITPY/lib` directory 
 
 Since switching to ESP32 V2, web based workflow has to be used, which means the process of
 copying the Python files and Adafruit CircuitPython bundle libraries has to be done by hand,

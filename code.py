@@ -94,7 +94,7 @@ def publish(mqtt_client, userdata, topic, pid):
     logger.info(f"Published to {topic} with PID {pid}")
 
 
-def go_to_sleep(sleep_period):
+def enter_deep_sleep(sleep_period):
     """
     Enters "deep sleep".
     """
@@ -191,7 +191,7 @@ def main():
 
     logger.info(f"Going to deep sleep for {sleep_duration} seconds")
     watchdog.deinit()
-    go_to_sleep(sleep_duration)
+    enter_deep_sleep(sleep_duration)
 
 
 def fill_data_dict(battery_monitor, humidity, temperature):

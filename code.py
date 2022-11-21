@@ -10,6 +10,7 @@ import json
 import ssl
 import time
 import traceback
+from enum import Enum
 
 import adafruit_logging as logging
 
@@ -94,30 +95,31 @@ def publish(mqtt_client, userdata, topic, pid):
     logger.info(f"Published to {topic} with PID {pid}")
 
 
-def enter_light_sleep(sleep_period):
+class SleepKind(Enum):
     """
-    Enters "light sleep".
+    Sleep kind.
     """
-    logger = logging.getLogger(__name__)
 
-    logger.info(f"Going to light sleep for {sleep_period} seconds")
-
-    time_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + sleep_period)
-    alarm.light_sleep_until_alarms(time_alarm)
+    LIGHT = 1
+    DEEP = 2
 
 
-def enter_deep_sleep(sleep_period):
+def enter_sleep(sleep_period: int, sleep_kind: SleepKind) -> None:
     """
-    Enters "deep sleep".
+    Enters light or deep sleep.
     """
     logger = logging.getLogger(__name__)
 
-    logger.info(f"Going to deep sleep for {sleep_period} seconds")
+    logger.info(f"Going to {sleep_kind} sleep for {sleep_period} seconds")
 
     # Create an alarm that will trigger sleep_period number of seconds from now.
     time_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + sleep_period)
-    # Exit and deep sleep until the alarm wakes us.
-    alarm.exit_and_deep_sleep_until_alarms(time_alarm)
+
+    if sleep_kind == SleepKind.LIGHT:
+        alarm.light_sleep_until_alarms(time_alarm)
+    else:
+        # Exit and deep sleep until the alarm wakes us.
+        alarm.exit_and_deep_sleep_until_alarms(time_alarm)
 
 
 def blink():
@@ -201,11 +203,11 @@ def main():
         blink()
 
     # Sleep a bit so one can break to the REPL when using console via web workflow.
-    enter_light_sleep(10)  # ugh, ESTIMATED_RUN_TIME
+    enter_sleep(10, SleepKind.LIGHT)  # ugh, ESTIMATED_RUN_TIME
 
     watchdog.deinit()
 
-    enter_deep_sleep(sleep_duration)
+    enter_sleep(sleep_duration, SleepKind.DEEP)
 
 
 def fill_data_dict(battery_monitor, humidity, temperature):

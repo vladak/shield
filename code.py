@@ -94,10 +94,26 @@ def publish(mqtt_client, userdata, topic, pid):
     logger.info(f"Published to {topic} with PID {pid}")
 
 
+def enter_light_sleep(sleep_period):
+    """
+    Enters "light sleep".
+    """
+    logger = logging.getLogger(__name__)
+
+    logger.info(f"Going to light sleep for {sleep_period} seconds")
+
+    time_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + sleep_period)
+    alarm.light_sleep_until_alarms(time_alarm)
+
+
 def enter_deep_sleep(sleep_period):
     """
     Enters "deep sleep".
     """
+    logger = logging.getLogger(__name__)
+
+    logger.info(f"Going to deep sleep for {sleep_period} seconds")
+
     # Create an alarm that will trigger sleep_period number of seconds from now.
     time_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + sleep_period)
     # Exit and deep sleep until the alarm wakes us.
@@ -185,12 +201,10 @@ def main():
         blink()
 
     # Sleep a bit so one can break to the REPL when using console via web workflow.
-    close_sleep = 10
-    logger.info(f"Sleeping for {close_sleep} seconds")
-    time.sleep(close_sleep)  # ugh, ESTIMATED_RUN_TIME
+    enter_light_sleep(10)  # ugh, ESTIMATED_RUN_TIME
 
-    logger.info(f"Going to deep sleep for {sleep_duration} seconds")
     watchdog.deinit()
+
     enter_deep_sleep(sleep_duration)
 
 

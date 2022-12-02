@@ -10,7 +10,6 @@ import json
 import ssl
 import time
 import traceback
-from enum import Enum
 
 import adafruit_logging as logging
 
@@ -95,13 +94,32 @@ def publish(mqtt_client, userdata, topic, pid):
     logger.info(f"Published to {topic} with PID {pid}")
 
 
-class SleepKind(Enum):
+# pylint: disable=too-few-public-methods
+# There is no Enum class in CircuitPython so this is a bare class.
+class SleepKind:
     """
     Sleep kind.
     """
 
     LIGHT = 1
     DEEP = 2
+
+    def __init__(self, kind: int):
+        if kind not in (self.LIGHT, self.DEEP):
+            raise ValueError("not a valid kind")
+
+        self.kind = kind
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        if self.kind == self.LIGHT:
+            return "light"
+        if self.kind == self.DEEP:
+            return "deep"
+
+        return "N/A"
 
 
 def enter_sleep(sleep_period: int, sleep_kind: SleepKind) -> None:
@@ -115,7 +133,7 @@ def enter_sleep(sleep_period: int, sleep_kind: SleepKind) -> None:
     # Create an alarm that will trigger sleep_period number of seconds from now.
     time_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + sleep_period)
 
-    if sleep_kind == SleepKind.LIGHT:
+    if sleep_kind.kind == SleepKind.LIGHT:
         alarm.light_sleep_until_alarms(time_alarm)
     else:
         # Exit and deep sleep until the alarm wakes us.
@@ -204,11 +222,11 @@ def main():
         blink()
 
     # Sleep a bit so one can break to the REPL when using console via web workflow.
-    enter_sleep(10, SleepKind.LIGHT)  # ugh, ESTIMATED_RUN_TIME
+    enter_sleep(10, SleepKind(SleepKind.LIGHT))  # ugh, ESTIMATED_RUN_TIME
 
     watchdog.deinit()
 
-    enter_sleep(sleep_duration, SleepKind.DEEP)
+    enter_sleep(sleep_duration, SleepKind(SleepKind.DEEP))
 
 
 def fill_data_dict(data, battery_monitor, humidity, temperature):

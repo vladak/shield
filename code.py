@@ -187,7 +187,8 @@ def main():
     logger.info(f"Attempting to connect to MQTT broker {mqtt_client.broker}")
     mqtt_client.connect()
 
-    data = fill_data_dict(battery_monitor, humidity, temperature)
+    data = {}
+    fill_data_dict(data, battery_monitor, humidity, temperature)
 
     if len(data) > 0:
         mqtt_topic = secrets["mqtt_topic"]
@@ -210,14 +211,13 @@ def main():
     enter_sleep(sleep_duration, SleepKind.DEEP)
 
 
-def fill_data_dict(battery_monitor, humidity, temperature):
+def fill_data_dict(data, battery_monitor, humidity, temperature):
     """
-    Produce a dictionary out of the metrics.
+    Put the metrics into dictionary.
     """
 
     logger = logging.getLogger(__name__)
 
-    data = {}
     if temperature:
         logger.info(f"Temperature: {temperature:.1f} C")
         data["temperature"] = f"{temperature:.1f}"
@@ -230,8 +230,6 @@ def fill_data_dict(battery_monitor, humidity, temperature):
         data["battery_level"] = f"{capacity:.2f}"
 
     logger.debug(f"data: {data}")
-
-    return data
 
 
 def mqtt_client_setup(pool):

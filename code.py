@@ -17,8 +17,6 @@ try:
 except ImportError:
     pass
 
-# pylint: disable=import-error
-import alarm
 import board
 import busio
 import microcontroller
@@ -37,6 +35,7 @@ from watchdog import WatchDogMode, WatchDogTimeout
 from logutil import get_log_level
 from mqtt import mqtt_client_setup
 from sensors import get_measurements
+from sleep import SleepKind, enter_sleep
 
 try:
     from secrets import secrets
@@ -49,52 +48,6 @@ except ImportError:
 # Estimated run time in seconds with some extra room.
 # This is used to compute the watchdog timeout.
 ESTIMATED_RUN_TIME = 20
-
-
-# pylint: disable=too-few-public-methods
-# There is no Enum class in CircuitPython so this is a bare class.
-class SleepKind:
-    """
-    Sleep kind.
-    """
-
-    LIGHT = 1
-    DEEP = 2
-
-    def __init__(self, kind: int):
-        if kind not in (self.LIGHT, self.DEEP):
-            raise ValueError("not a valid kind")
-
-        self.kind = kind
-
-    def __repr__(self):
-        return self.__str__()
-
-    def __str__(self):
-        if self.kind == self.LIGHT:
-            return "light"
-        if self.kind == self.DEEP:
-            return "deep"
-
-        return "N/A"
-
-
-def enter_sleep(sleep_period: int, sleep_kind: SleepKind) -> None:
-    """
-    Enters light or deep sleep.
-    """
-    logger = logging.getLogger(__name__)
-
-    logger.info(f"Going to {sleep_kind} sleep for {sleep_period} seconds")
-
-    # Create an alarm that will trigger sleep_period number of seconds from now.
-    time_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + sleep_period)
-
-    if sleep_kind.kind == SleepKind.LIGHT:
-        alarm.light_sleep_until_alarms(time_alarm)
-    else:
-        # Exit and deep sleep until the alarm wakes us.
-        alarm.exit_and_deep_sleep_until_alarms(time_alarm)
 
 
 def blink():

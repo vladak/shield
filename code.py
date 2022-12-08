@@ -7,7 +7,6 @@ This is meant for battery powered devices such as QtPy or ESP32 based devices
 from Adafruit.
 """
 import json
-import ssl
 import time
 import traceback
 
@@ -17,7 +16,6 @@ try:
     import adafruit_max1704x
 except ImportError:
     pass
-import adafruit_minimqtt.adafruit_minimqtt as MQTT
 
 # pylint: disable=import-error
 import alarm
@@ -37,6 +35,7 @@ from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
 
 from logutil import get_log_level
+from mqtt import mqtt_client_setup
 from sensors import get_measurements
 
 try:
@@ -50,37 +49,6 @@ except ImportError:
 # Estimated run time in seconds with some extra room.
 # This is used to compute the watchdog timeout.
 ESTIMATED_RUN_TIME = 20
-
-
-# pylint: disable=unused-argument, redefined-outer-name, invalid-name
-def connect(mqtt_client, userdata, flags, rc):
-    """
-    This function will be called when the mqtt_client is connected
-    successfully to the broker.
-    """
-    logger = logging.getLogger(__name__)
-
-    logger.info("Connected to MQTT Broker!")
-    logger.debug(f"Flags: {flags}\n RC: {rc}")
-
-
-# pylint: disable=unused-argument, invalid-name
-def disconnect(mqtt_client, userdata, rc):
-    """
-    This method is called when the mqtt_client disconnects from the broker.
-    """
-    logger = logging.getLogger(__name__)
-
-    logger.info("Disconnected from MQTT Broker!")
-
-
-def publish(mqtt_client, userdata, topic, pid):
-    """
-    This method is called when the mqtt_client publishes data to a feed.
-    """
-    logger = logging.getLogger(__name__)
-
-    logger.info(f"Published to {topic} with PID {pid}")
 
 
 # pylint: disable=too-few-public-methods
@@ -189,7 +157,7 @@ def main():
     # Create a socket pool
     pool = socketpool.SocketPool(wifi.radio)  # pylint: disable=no-member
 
-    mqtt_client = mqtt_client_setup(pool)
+    mqtt_client = mqtt_client_setup(pool, secrets["broker"], secrets["broker_port"])
 
     logger.info(f"Attempting to connect to MQTT broker {mqtt_client.broker}")
     mqtt_client.connect()
@@ -237,25 +205,6 @@ def fill_data_dict(data, battery_monitor, humidity, temperature):
         data["battery_level"] = f"{capacity:.2f}"
 
     logger.debug(f"data: {data}")
-
-
-def mqtt_client_setup(pool):
-    """
-    Set up a MiniMQTT Client
-    """
-
-    mqtt_client = MQTT.MQTT(
-        broker=secrets["broker"],
-        port=secrets["broker_port"],
-        socket_pool=pool,
-        ssl_context=ssl.create_default_context(),
-    )
-    # Connect callback handlers to mqtt_client
-    mqtt_client.on_connect = connect
-    mqtt_client.on_disconnect = disconnect
-    mqtt_client.on_publish = publish
-
-    return mqtt_client
 
 
 try:

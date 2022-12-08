@@ -142,8 +142,8 @@ def blink():
 
 def main():
     """
-    Collect temperature from the tmp117 sensor and battery level
-    and publish with MQTT.
+    Collect temperature/humidity and battery level
+    and publish to MQTT topic.
     """
 
     log_level = get_log_level(secrets["log_level"])

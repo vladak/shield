@@ -21,6 +21,7 @@ import board
 import busio
 import microcontroller
 import neopixel
+
 # pylint: disable=import-error
 import socketpool
 

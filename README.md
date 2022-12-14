@@ -185,6 +185,7 @@ secrets = {
     "broker": "172.40.0.3",
     "broker_port": 1883,
     "mqtt_topic": "devices/terasa/shield",
+    "log_topic": "logs/terasa/shield",
     "sleep_duration": 300,
     "log_level": "INFO",
 }

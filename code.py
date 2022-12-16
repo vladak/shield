@@ -71,7 +71,7 @@ def main():
     """
 
     log_level = get_log_level(secrets["log_level"])
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger()
     logger.setLevel(log_level)
 
     logger.info("Running")
@@ -156,7 +156,7 @@ def fill_data_dict(data, battery_monitor, humidity, temperature):
     Put the metrics into dictionary.
     """
 
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger()
 
     if temperature:
         logger.info(f"Temperature: {temperature:.1f} C")

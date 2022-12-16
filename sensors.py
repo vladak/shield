@@ -24,7 +24,7 @@ def get_measurements(i2c):
     Return tuple of humidity and temperature (either can be None).
     """
 
-    logger = logging.getLogger('')
+    logger = logging.getLogger("")
 
     temperature = None
     try:

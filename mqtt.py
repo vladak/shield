@@ -13,7 +13,7 @@ def connect(mqtt_client, userdata, flags, rc):
     This function will be called when the mqtt_client is connected
     successfully to the broker.
     """
-    logger = logging.getLogger('')
+    logger = logging.getLogger("")
 
     logger.info("Connected to MQTT Broker!")
     logger.debug(f"Flags: {flags}\n RC: {rc}")
@@ -24,7 +24,7 @@ def disconnect(mqtt_client, userdata, rc):
     """
     This method is called when the mqtt_client disconnects from the broker.
     """
-    logger = logging.getLogger('')
+    logger = logging.getLogger("")
 
     logger.info("Disconnected from MQTT Broker!")
 
@@ -33,7 +33,7 @@ def publish(mqtt_client, userdata, topic, pid):
     """
     This method is called when the mqtt_client publishes data to a feed.
     """
-    logger = logging.getLogger('')
+    logger = logging.getLogger("")
 
     logger.info(f"Published to {topic} with PID {pid}")
 

@@ -67,6 +67,11 @@ To avoid charging the LiPo battery when freezing (which would damage it), I need
 
 As for sizing, this is something I will yet have to [figure out](https://forums.adafruit.com/viewtopic.php?p=946668), esp. during the winter.
 
+#### Lessons learned
+
+- during winter the amount of sun is minuscule compared to summer/spring. There is often a long sequence of cloudy days, when solar charging cannot do anything. As noted in [Adafruit discussion](https://forums.adafruit.com/viewtopic.php?p=578767), one has to have enough solar panels to charge the batteries enough when the sun finally goes out. And/or use batteries with much higher capacity.
+- It is possible to connect multiple solar panels together, however that's not so easy because of the ["shaded panel" problem](https://forums.adafruit.com/viewtopic.php?p=416235). The solution is to use a *Schottky diode*.
+
 ### Physical packaging
 
 Initially, it was just the ESP32 connected to external solar charger. Then I added temperature sensor, then swapped the ESP32 for another with external antenna, added solar charger, battery gauge and suddently it's a bunch of connected circuits.

@@ -42,7 +42,7 @@ def enter_sleep(sleep_period: int, sleep_kind: SleepKind) -> None:
     """
     Enters light or deep sleep.
     """
-    logger = logging.getLogger()
+    logger = logging.getLogger('')
 
     logger.info(f"Going to {sleep_kind} sleep for {sleep_period} seconds")
 

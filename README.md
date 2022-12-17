@@ -117,7 +117,7 @@ cache:
   # Timeout. Each received metric will be presented for this time if no update is send via MQTT.
   # Set the timeout to -1 to disable the deletion of metrics from the cache. The exporter presents the ingest timestamp
   # to prometheus.
-  timeout: 60m
+  timeout: 15m
 # This is a list of valid metrics. Only metrics listed here will be exported
 metrics:
   -

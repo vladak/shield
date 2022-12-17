@@ -165,7 +165,7 @@ Under the `scrape_configs` section in `/etc/prometheus/prometheus.yml` there sho
     static_configs:
       - targets: ['localhost:9641']
     # The MQTT based sensor publish the data only now and then.
-    scrape_interval: 5m
+    scrape_interval: 1m
     # Add the location as a tag.
     metric_relabel_configs:
      - source_labels: [topic]

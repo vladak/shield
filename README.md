@@ -15,6 +15,9 @@ The cable running to the screen comes from the solar panel.
 All in all, that's quite a lot of trouble and materials to get a simple sensor measurement from the outside.
 However, I used that as a way to learn more about solar charging, [CircuitPython](https://circuitpython.org/), microcontrollers, electronics etc. and I mostly enjoyed the process of building it.
 
+Eventually, I started using the same code for multiple Feathers/QtPys spread around the house.
+Hence the support for multiple sensors.
+
 ## Hardware
 
 Here is a bill of materials:

@@ -104,6 +104,8 @@ def main():
     except NameError:
         logger.info("No library for battery gauge (max17048)")
 
+    logger.debug(f"MAC address: {wifi.radio.mac_address}")
+
     # Connect to Wi-Fi
     logger.info("Connecting to wifi")
     wifi.radio.connect(secrets["ssid"], secrets["password"], timeout=10)

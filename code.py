@@ -116,13 +116,16 @@ def main():
     broker_addr = secrets["broker"]
     broker_port = secrets["broker_port"]
     mqtt_client = mqtt_client_setup(pool, broker_addr, broker_port, log_level)
-    if secrets["log_topic"]:
-        # Log both to the console as well as via MQTT messages.
+    try:
+        log_topic = secrets["log_topic"]
+        # Log both to the console and via MQTT messages.
         # Up to now the logger was using the default (built-in) handler,
         # now it is necessary to add the Stream handler explicitly as
         # with a non-default handler set only the non-default handlers will be used.
         logger.addHandler(logging.StreamHandler())
-        logger.addHandler(MQTTHandler(mqtt_client, secrets["log_topic"]))
+        logger.addHandler(MQTTHandler(mqtt_client, log_topic))
+    except KeyError:
+        pass
 
     logger.info(f"Attempting to connect to MQTT broker {broker_addr}:{broker_port}")
     mqtt_client.connect()

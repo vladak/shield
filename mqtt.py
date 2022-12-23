@@ -41,10 +41,13 @@ def publish(mqtt_client, userdata, topic, pid):
     logger.info(f"Published to {topic} with PID {pid}")
 
 
-def mqtt_client_setup(pool, broker, port):
+def mqtt_client_setup(pool, broker, port, log_level):
     """
     Set up a MiniMQTT Client
     """
+
+    logger = logging.getLogger(MQTT_LOGGER_NAME)
+    logger.setLevel(log_level)
 
     mqtt_client = MQTT.MQTT(
         broker=broker,

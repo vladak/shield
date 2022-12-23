@@ -115,7 +115,7 @@ def main():
 
     broker_addr = secrets["broker"]
     broker_port = secrets["broker_port"]
-    mqtt_client = mqtt_client_setup(pool, broker_addr, broker_port)
+    mqtt_client = mqtt_client_setup(pool, broker_addr, broker_port, log_level)
     if secrets["log_topic"]:
         # Log both to the console as well as via MQTT messages.
         # Up to now the logger was using the default (built-in) handler,

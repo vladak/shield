@@ -180,7 +180,7 @@ def fill_data_dict(data, battery_monitor, humidity, temperature):
 try:
     main()
 # pylint: disable=broad-except
-except Exception as e:
+except BaseException as e:
     # This assumes that such exceptions are quite rare.
     # Otherwise this would drain the battery quickly.
     watchdog.deinit()

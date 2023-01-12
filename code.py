@@ -27,7 +27,12 @@ import socketpool
 
 # pylint: disable=import-error
 import supervisor
-import wifi
+
+try:
+    import wifi
+except MemoryError as e:
+    # Let this fall through to main() so that appropriate reset can be performed.
+    IMPORT_EXCEPTION = e
 
 # from digitalio import DigitalInOut
 # pylint: disable=no-name-in-module
@@ -52,6 +57,9 @@ except ImportError:
 # This is used to compute the watchdog timeout.
 ESTIMATED_RUN_TIME = 20
 
+# For storing import exceptions so that they can be raised from main().
+IMPORT_EXCEPTION = None
+
 
 def blink():
     """
@@ -75,6 +83,9 @@ def main():
     logger.setLevel(log_level)
 
     logger.info("Running")
+
+    if IMPORT_EXCEPTION:
+        raise IMPORT_EXCEPTION
 
     # If the 'SW38' button on the ESP32 V2 was pressed, exit the program so that
     # web based workflow can be used.
@@ -177,12 +188,35 @@ def fill_data_dict(data, battery_monitor, humidity, temperature):
     logger.debug(f"data: {data}")
 
 
+def hard_reset(exception):
+    """
+    Sometimes soft reset is not enough. Perform hard reset.
+    """
+    watchdog.deinit()
+    print(f"Got exception: {exception}")
+    reset_time = 15
+    print(f"Performing hard reset in {reset_time} seconds")
+    time.sleep(reset_time)
+    microcontroller.reset()  # pylint: disable=no-member
+
+
 try:
     main()
-# pylint: disable=broad-except
-except BaseException as e:
+except ConnectionError as e:
+    # When this happens, it usually means that the microcontroller's wifi/networking is botched.
+    # The only way to recover is to perform hard reset.
+    hard_reset(e)
+except MemoryError as e:
+    # This is usually the case of delayed exception from the 'import wifi' statement,
+    # possibly caused by a bug (resource leak) in CircuitPython that manifests
+    # after a sequence of ConnectionError exceptions thrown from withing the wifi module.
+    # Should not happen given the above 'except ConnectionError',
+    # however adding that here just in case.
+    hard_reset(e)
+except Exception as e:  # pylint: disable=broad-except
     # This assumes that such exceptions are quite rare.
-    # Otherwise, this would drain the battery quickly by restarting over and over in a quick succession.
+    # Otherwise, this would drain the battery quickly by restarting
+    # over and over in a quick succession.
     watchdog.deinit()
     print("Code stopped by unhandled exception:")
     print(traceback.format_exception(None, e, e.__traceback__))
@@ -190,10 +224,5 @@ except BaseException as e:
     print(f"Performing a supervisor reload in {RELOAD_TIME} seconds")
     time.sleep(RELOAD_TIME)
     supervisor.reload()
-except WatchDogTimeout:
-    print("Code stopped by WatchDog timeout!")
-    # NB, sometimes soft reset is not enough! need to do hard reset here
-    RESET_TIME = 15
-    print(f"Performing hard reset in {RESET_TIME} seconds")
-    time.sleep(RESET_TIME)
-    microcontroller.reset()  # pylint: disable=no-member
+except WatchDogTimeout as e:
+    hard_reset(e)

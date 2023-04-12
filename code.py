@@ -151,11 +151,11 @@ def main():
         logger.info(f"Publishing to {mqtt_topic}")
         mqtt_client.publish(mqtt_topic, json.dumps(data))
 
-    watchdog.feed()
-
     # Blink the LED only in debug mode (to save the battery).
     if log_level == logging.DEBUG:  # pylint: disable=no-member
         blink()
+
+    watchdog.feed()
 
     # Sleep a bit so one can break to the REPL when using console via web workflow.
     enter_sleep(10, SleepKind(SleepKind.LIGHT))  # ugh, ESTIMATED_RUN_TIME

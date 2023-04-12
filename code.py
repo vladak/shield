@@ -99,8 +99,6 @@ def main():
     watchdog.timeout = ESTIMATED_RUN_TIME
     watchdog.mode = WatchDogMode.RAISE
 
-    sleep_duration = secrets["sleep_duration"]
-
     # Create sensor objects, using the board's default I2C bus.
     try:
         i2c = board.I2C()
@@ -165,6 +163,18 @@ def main():
 
     watchdog.deinit()
 
+    sleep_duration = get_sleep_duration(battery_monitor, logger)
+
+    enter_sleep(sleep_duration, SleepKind(SleepKind.DEEP))
+
+
+def get_sleep_duration(battery_monitor, logger):
+    """
+    Get sleep duration, either default or shortened.
+    """
+
+    sleep_duration = secrets["sleep_duration"]
+
     # If the battery (if there is one) is charged above the threshold,
     # reduce the sleep period. This should help getting the data out more frequently.
     sleep_duration_short = secrets.get("sleep_duration_short")
@@ -178,7 +188,7 @@ def main():
             )
             sleep_duration = sleep_duration_short
 
-    enter_sleep(sleep_duration, SleepKind(SleepKind.DEEP))
+    return sleep_duration
 
 
 def fill_data_dict(data, battery_monitor, humidity, temperature):

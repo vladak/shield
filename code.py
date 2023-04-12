@@ -241,8 +241,11 @@ def get_sleep_duration(battery_monitor, logger):
         current_capacity = battery_monitor.cell_percent
         if current_capacity > battery_capacity_threshold:
             logger.info(
-                f"battery capacity more than {battery_capacity_threshold}, "
-                f"using shorter sleep of {sleep_duration_short} seconds"
+                # f-string would be nicer however CircuitPython does not like 2 f-strings.
+                # pylint: disable=consider-using-f-string
+                "battery capacity more than {}, using shorter sleep of {} seconds".format(
+                    battery_capacity_threshold, sleep_duration_short
+                )
             )
             sleep_duration = sleep_duration_short
 

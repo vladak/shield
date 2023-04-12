@@ -72,6 +72,7 @@ def blink():
     time.sleep(0.5)
 
 
+# pylint: disable=too-many-locals,too-many-statements
 def main():
     """
     Collect temperature/humidity and battery level
@@ -163,6 +164,19 @@ def main():
     mqtt_client.disconnect()
 
     watchdog.deinit()
+
+    # If the battery (if there is one) is charged above the threshold,
+    # reduce the sleep period. This should help getting the data out more frequently.
+    sleep_duration_short = secrets.get("sleep_duration_short")
+    battery_capacity_threshold = secrets.get("battery_capacity_threshold")
+    if sleep_duration_short and battery_monitor and battery_capacity_threshold:
+        current_capacity = battery_monitor.cell_percent
+        if current_capacity > battery_capacity_threshold:
+            logger.info(
+                f"battery capacity more than {battery_capacity_threshold}, "
+                f"using shorter sleep of {sleep_duration_short} seconds"
+            )
+            sleep_duration = sleep_duration_short
 
     enter_sleep(sleep_duration, SleepKind(SleepKind.DEEP))
 

@@ -61,6 +61,17 @@ ESTIMATED_RUN_TIME = 20
 # For storing import exceptions so that they can be raised from main().
 IMPORT_EXCEPTION = None
 
+BATTERY_CAPACITY_THRESHOLD = "battery_capacity_threshold"
+SLEEP_DURATION_SHORT = "sleep_duration_short"
+SLEEP_DURATION = "sleep_duration"
+BROKER_PORT = "broker_port"
+LOG_TOPIC = "log_topic"
+MQTT_TOPIC = "mqtt_topic"
+BROKER = "broker"
+PASSWORD = "password"
+SSID = "ssid"
+LOG_LEVEL = "log_level"
+
 
 def blink():
     """
@@ -110,17 +121,17 @@ def check_mandatory_tunables():
     Check that mandatory tunables are present and of correct type.
     Will exit the program on error.
     """
-    check_string("log_level")
-    check_string("ssid")
-    check_string("password")
-    check_string("broker")
-    check_string("mqtt_topic")
-    check_string("log_topic", mandatory=False)
+    check_string(LOG_LEVEL)
+    check_string(SSID)
+    check_string(PASSWORD)
+    check_string(BROKER)
+    check_string(MQTT_TOPIC)
+    check_string(LOG_TOPIC, mandatory=False)
 
-    check_int("broker_port")
-    check_int("sleep_duration")
-    check_int("sleep_duration_short", mandatory=False)
-    check_int("battery_capacity_threshold", mandatory=False)
+    check_int(BROKER_PORT)
+    check_int(SLEEP_DURATION)
+    check_int(SLEEP_DURATION_SHORT, mandatory=False)
+    check_int(BATTERY_CAPACITY_THRESHOLD, mandatory=False)
 
 
 # pylint: disable=too-many-locals,too-many-statements
@@ -132,7 +143,7 @@ def main():
 
     check_mandatory_tunables()
 
-    log_level = get_log_level(secrets["log_level"])
+    log_level = get_log_level(secrets[LOG_LEVEL])
     logger = logging.getLogger("")
     logger.setLevel(log_level)
 
@@ -171,18 +182,18 @@ def main():
 
     # Connect to Wi-Fi
     logger.info("Connecting to wifi")
-    wifi.radio.connect(secrets["ssid"], secrets["password"], timeout=10)
+    wifi.radio.connect(secrets[SSID], secrets[PASSWORD], timeout=10)
     logger.info(f"Connected to {secrets['ssid']}")
     logger.debug(f"IP: {wifi.radio.ipv4_address}")
 
     # Create a socket pool
     pool = socketpool.SocketPool(wifi.radio)  # pylint: disable=no-member
 
-    broker_addr = secrets["broker"]
-    broker_port = secrets["broker_port"]
+    broker_addr = secrets[BROKER]
+    broker_port = secrets[BROKER_PORT]
     mqtt_client = mqtt_client_setup(pool, broker_addr, broker_port, log_level)
     try:
-        log_topic = secrets["log_topic"]
+        log_topic = secrets[LOG_TOPIC]
         # Log both to the console and via MQTT messages.
         # Up to now the logger was using the default (built-in) handler,
         # now it is necessary to add the Stream handler explicitly as
@@ -199,7 +210,7 @@ def main():
     fill_data_dict(data, battery_monitor, humidity, temperature)
 
     if len(data) > 0:
-        mqtt_topic = secrets["mqtt_topic"]
+        mqtt_topic = secrets[MQTT_TOPIC]
         logger.info(f"Publishing to {mqtt_topic}")
         mqtt_client.publish(mqtt_topic, json.dumps(data))
 
@@ -226,12 +237,12 @@ def get_sleep_duration(battery_monitor, logger):
     Get sleep duration, either default or shortened.
     """
 
-    sleep_duration = secrets["sleep_duration"]
+    sleep_duration = secrets[SLEEP_DURATION]
 
     # If the battery (if there is one) is charged above the threshold,
     # reduce the sleep period. This should help getting the data out more frequently.
-    sleep_duration_short = secrets.get("sleep_duration_short")
-    battery_capacity_threshold = secrets.get("battery_capacity_threshold")
+    sleep_duration_short = secrets.get(SLEEP_DURATION_SHORT)
+    battery_capacity_threshold = secrets.get(BATTERY_CAPACITY_THRESHOLD)
     if (
         sleep_duration_short
         and battery_monitor

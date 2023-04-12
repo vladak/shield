@@ -7,6 +7,7 @@ This is meant for battery powered devices such as QtPy or ESP32 based devices
 from Adafruit.
 """
 import json
+import sys
 import time
 import traceback
 
@@ -72,12 +73,64 @@ def blink():
     time.sleep(0.5)
 
 
+def bail(message):
+    """
+    Print message and exit with code 1.
+    """
+    print(message)
+    sys.exit(1)
+
+
+def check_string(name, mandatory=True):
+    """
+    Check is string with given name is present in secrets.
+    """
+    value = secrets.get(name)
+    if value is None and mandatory:
+        bail(f"{name} is missing")
+
+    if value and not isinstance(value, str):
+        bail(f"not a string value for {name}: {value}")
+
+
+def check_int(name, mandatory=True):
+    """
+    Check is integer with given name is present in secrets.
+    """
+    value = secrets.get(name)
+    if value is None and mandatory:
+        bail(f"{name} is missing")
+
+    if value and not isinstance(value, int):
+        bail(f"not a integer value for {name}: {value}")
+
+
+def check_mandatory_tunables():
+    """
+    Check that mandatory tunables are present and of correct type.
+    Will exit the program on error.
+    """
+    check_string("log_level")
+    check_string("ssid")
+    check_string("password")
+    check_string("broker")
+    check_string("mqtt_topic")
+    check_string("log_topic", mandatory=False)
+
+    check_int("broker_port")
+    check_int("sleep_duration")
+    check_int("sleep_duration_short", mandatory=False)
+    check_int("battery_capacity_threshold", mandatory=False)
+
+
 # pylint: disable=too-many-locals,too-many-statements
 def main():
     """
     Collect temperature/humidity and battery level
     and publish to MQTT topic.
     """
+
+    check_mandatory_tunables()
 
     log_level = get_log_level(secrets["log_level"])
     logger = logging.getLogger("")

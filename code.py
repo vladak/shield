@@ -179,7 +179,12 @@ def get_sleep_duration(battery_monitor, logger):
     # reduce the sleep period. This should help getting the data out more frequently.
     sleep_duration_short = secrets.get("sleep_duration_short")
     battery_capacity_threshold = secrets.get("battery_capacity_threshold")
-    if sleep_duration_short and battery_monitor and battery_capacity_threshold:
+    if (
+        sleep_duration_short
+        and battery_monitor
+        and battery_capacity_threshold
+        and sleep_duration_short < sleep_duration
+    ):
         current_capacity = battery_monitor.cell_percent
         if current_capacity > battery_capacity_threshold:
             logger.info(

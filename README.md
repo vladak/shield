@@ -201,6 +201,22 @@ secrets = {
 
 To transfer the file to the microcontroller, the same method as in the Install section should be used.
 
+### Tunables
+
+Purpose | Name | Kind
+---|---|---
+`ssid` | WiFi SSID | Mandatory
+`password` | WiFi password | Mandatory
+`broker` | MQTT broker address | Mandatory
+`broker_port` | MQTT broker port | Mandatory
+`mqtt_topic` | MQTT topic to publish messages to | Mandatory
+`log_topic` | MQTT topic to publish log messages to | Optional
+`sleep_duration` | how long to deep sleep by default, in seconds | Mandatory
+`log_level` | log level, default `INFO` | Mandatory
+`sleep_duration_short` | how long to deep sleep (in seconds) if battery is charged above `battery_capacity_threshold`. Should be shorter than the default `sleep_duration`. | Optional
+`battery_capacity_threshold` | battery capacity high threshold, in percent | Optional
+
+
 ## Guide links
 
 Adafruit has largely such a good documentation that the links are worth putting here for quick reference:

@@ -1,6 +1,8 @@
 """
 Module with code for temperature/humidity sensor reading.
 """
+import time
+
 import adafruit_logging as logging
 
 try:
@@ -65,9 +67,18 @@ def get_measurements(i2c):
     co2_ppm = None
     try:
         scd4x_sensor = adafruit_scd4x.SCD4X(i2c)
-        co2_ppm = scd4x_sensor.CO2
-        if co2_ppm:
-            logger.debug(f"CO2 ppm={co2_ppm}")
+        if scd4x_sensor:
+            logger.info("Waiting for the first measurement from the SCD-40 sensor")
+            scd4x_sensor.start_periodic_measurement()
+
+            for _ in range(0, 5):
+                while not scd4x_sensor.data_ready:
+                    logger.debug("Sleeping for half second")
+                    time.sleep(0.5)
+
+            co2_ppm = scd4x_sensor.CO2
+            if co2_ppm:
+                logger.debug(f"CO2 ppm={co2_ppm}")
     except ValueError as exception:
         logger.error(f"cannot find SCD4x sensor: {exception}")
     except NameError:

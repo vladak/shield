@@ -15,13 +15,17 @@ try:
     import adafruit_sht4x
 except ImportError:
     pass
+try:
+    import adafruit_scd4x
+except ImportError:
+    pass
 
 
 def get_measurements(i2c):
     """
-    Acquire temperature and humidity measurements. Try various sensors,
+    Acquire temperature, humidity and CO2 measurements. Try various sensors,
     prefer higher precision measurements.
-    Return tuple of humidity and temperature (either can be None).
+    Return tuple of humidity, temperature and CO2 (either can be None).
     """
 
     logger = logging.getLogger("")
@@ -58,4 +62,15 @@ def get_measurements(i2c):
     except NameError:
         logger.info("No library for the ath20 sensor")
 
-    return humidity, temperature
+    co2_ppm = None
+    try:
+        scd4x_sensor = adafruit_scd4x.SCD4X(i2c)
+        co2_ppm = scd4x_sensor.CO2
+        if co2_ppm:
+            logger.debug(f"CO2 ppm={co2_ppm}")
+    except ValueError as exception:
+        logger.error(f"cannot find SCD4x sensor: {exception}")
+    except NameError:
+        logger.info("No library for the scd4x sensor")
+
+    return humidity, temperature, co2_ppm

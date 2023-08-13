@@ -170,7 +170,7 @@ def main():
         # QtPy
         i2c = busio.I2C(board.SCL1, board.SDA1)
 
-    humidity, temperature = get_measurements(i2c)
+    humidity, temperature, co2_ppm = get_measurements(i2c)
 
     battery_monitor = None
     try:
@@ -207,7 +207,7 @@ def main():
     mqtt_client.connect()
 
     data = {}
-    fill_data_dict(data, battery_monitor, humidity, temperature)
+    fill_data_dict(data, battery_monitor, humidity, temperature, co2_ppm)
 
     if len(data) > 0:
         mqtt_topic = secrets[MQTT_TOPIC]
@@ -263,7 +263,7 @@ def get_sleep_duration(battery_monitor, logger):
     return sleep_duration
 
 
-def fill_data_dict(data, battery_monitor, humidity, temperature):
+def fill_data_dict(data, battery_monitor, humidity, temperature, co2_ppm):
     """
     Put the metrics into dictionary.
     """
@@ -280,6 +280,9 @@ def fill_data_dict(data, battery_monitor, humidity, temperature):
         capacity = battery_monitor.cell_percent
         logger.info(f"Battery capacity {capacity:.2f} %%")
         data["battery_level"] = f"{capacity:.2f}"
+    if co2_ppm:
+        logger.info(f"CO2 (ppm) = {co2_ppm}")
+        data["co2_ppm"] = f"{co2_ppm}"
 
     logger.debug(f"data: {data}")
 

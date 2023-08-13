@@ -274,11 +274,11 @@ def fill_data_dict(data, battery_monitor, humidity, temperature, co2_ppm):
         logger.info(f"Temperature: {temperature:.1f} C")
         data["temperature"] = f"{temperature:.1f}"
     if humidity:
-        logger.info(f"Humidity: {humidity:.1f} %%")
+        logger.info(f"Humidity: {humidity:.1f} %")
         data["humidity"] = f"{humidity:.1f}"
     if battery_monitor:
         capacity = battery_monitor.cell_percent
-        logger.info(f"Battery capacity {capacity:.2f} %%")
+        logger.info(f"Battery capacity {capacity:.2f} %")
         data["battery_level"] = f"{capacity:.2f}"
     if co2_ppm:
         logger.info(f"CO2 (ppm) = {co2_ppm}")

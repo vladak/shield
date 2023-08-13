@@ -152,6 +152,15 @@ metrics:
     help: Battery level
     # The prometheus type for this metric. Valid values are: "gauge" and "counter"
     type: gauge
+  -
+    # The name of the metric in prometheus
+    prom_name: co2_ppm
+    # The name of the metric in a MQTT JSON message
+    mqtt_name: co2_ppm
+    # The prometheus help text for this metric
+    help: CO2 ppm
+    # The prometheus type for this metric. Valid values are: "gauge" and "counter"
+    type: gauge
 ```
 
 ### Prometheus

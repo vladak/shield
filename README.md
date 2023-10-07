@@ -2,7 +2,7 @@
 
 # Shield
 
-This repository contains code for ESP32 Adafruit Feather to measure temperature and send it to MQTT broker via WiFi.
+This repository contains code for ESP32 Adafruit Feather to measure temperature+humidity and send the metrics to a MQTT broker via WiFi.
 The Feather is located outside on a balcony, running from a battery that is charged using a small solar panel.
 
 This repository is called 'shield' as an allude to [Stevenson screen](https://en.wikipedia.org/wiki/Stevenson_screen) because

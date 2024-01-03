@@ -43,7 +43,7 @@ from watchdog import WatchDogMode, WatchDogTimeout
 from logutil import get_log_level
 from mqtt import mqtt_client_setup
 from mqtt_handler import MQTTHandler
-from sensors import get_measurements
+from sensors import Sensors
 from sleep import SleepKind, enter_sleep
 
 try:
@@ -177,6 +177,8 @@ def main():
     except NameError:
         logger.info("No library for battery gauge (max17048)")
 
+    sensors = Sensors(i2c)
+
     logger.debug(f"MAC address: {wifi.radio.mac_address}")
 
     # Connect to Wi-Fi
@@ -206,7 +208,7 @@ def main():
     mqtt_client.connect()
 
     while True:
-        humidity, temperature, co2_ppm = get_measurements(i2c)
+        humidity, temperature, co2_ppm = sensors.get_measurements()
         data = {}
         fill_data_dict(data, battery_monitor, humidity, temperature, co2_ppm)
 

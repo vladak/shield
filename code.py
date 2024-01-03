@@ -73,15 +73,14 @@ SSID = "ssid"
 LOG_LEVEL = "log_level"
 
 
-def blink():
+def blink(pixel):
     """
     Blink the Neo pixel blue.
     """
-    pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
-
     pixel.brightness = 0.3
     pixel.fill((0, 0, 255))
     time.sleep(0.5)
+    pixel.brightness = 0
 
 
 def bail(message):
@@ -163,14 +162,14 @@ def main():
     watchdog.timeout = ESTIMATED_RUN_TIME
     watchdog.mode = WatchDogMode.RAISE
 
+    pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
+
     # Create sensor objects, using the board's default I2C bus.
     try:
         i2c = board.I2C()
     except RuntimeError:
         # QtPy
         i2c = busio.I2C(board.SCL1, board.SDA1)
-
-    humidity, temperature, co2_ppm = get_measurements(i2c)
 
     battery_monitor = None
     try:
@@ -206,19 +205,41 @@ def main():
     logger.info(f"Attempting to connect to MQTT broker {broker_addr}:{broker_port}")
     mqtt_client.connect()
 
-    data = {}
-    fill_data_dict(data, battery_monitor, humidity, temperature, co2_ppm)
+    while True:
+        humidity, temperature, co2_ppm = get_measurements(i2c)
+        data = {}
+        fill_data_dict(data, battery_monitor, humidity, temperature, co2_ppm)
 
-    if len(data) > 0:
-        mqtt_topic = secrets[MQTT_TOPIC]
-        logger.info(f"Publishing to {mqtt_topic}")
-        mqtt_client.publish(mqtt_topic, json.dumps(data))
+        if len(data) > 0:
+            mqtt_topic = secrets[MQTT_TOPIC]
+            logger.info(f"Publishing to {mqtt_topic}")
+            mqtt_client.publish(mqtt_topic, json.dumps(data))
 
-    # Blink the LED only in debug mode (to save the battery).
-    if log_level == logging.DEBUG:  # pylint: disable=no-member
-        blink()
+        # Blink the LED only in debug mode when powered by battery (to save the battery).
+        if (
+            not battery_monitor
+            or log_level == logging.DEBUG  # pylint: disable=no-member
+        ):
+            blink(pixel)
 
-    watchdog.feed()
+        watchdog.feed()
+
+        # Assuming that if the battery monitor is present, the device is running on battery power.
+        if battery_monitor:
+            logger.info("Running on battery power, breaking out")
+            break
+
+        sleep_duration_short = secrets.get(SLEEP_DURATION_SHORT)
+        if sleep_duration_short:
+            mqtt_timeout = sleep_duration_short
+        else:
+            mqtt_timeout = ESTIMATED_RUN_TIME // 2
+        logger.info(f"Waiting for MQTT event with timeout {mqtt_timeout} seconds")
+        mqtt_client.loop(timeout=mqtt_timeout)
+
+    #
+    # The rest of the code in this function applies only to devices running on battery power.
+    #
 
     # Sleep a bit so one can break to the REPL when using console via web workflow.
     enter_sleep(10, SleepKind(SleepKind.LIGHT))  # ugh, ESTIMATED_RUN_TIME
@@ -235,6 +256,7 @@ def main():
 def get_sleep_duration(battery_monitor, logger):
     """
     Get sleep duration, either default or shortened.
+    Assumes the device is running on battery.
     """
 
     sleep_duration = secrets[SLEEP_DURATION]

@@ -113,12 +113,17 @@ mqtt:
   # The MQTT broker to connect to
   server: tcp://localhost:1883
   # The Topic path to subscribe to. Be aware that you have to specify the wildcard.
+  #
+  # The structure used is 'devices/<location>/<sensor_name>'
   topic_path: devices/#
   # Optional: Regular expression to extract the device ID from the topic path. The default regular expression, assumes
   # that the last "element" of the topic_path is the device id.
   # The regular expression must contain a named capture group with the name deviceid
   # For example the expression for tasamota based sensors is "tele/(?P<deviceid>.*)/.*"
-  device_id_regex: "(.*/)?(?P<deviceid>.*)"
+  #
+  # The metrics are keyed on deviceid, so it needs to be unique.
+  # This assumes that there are not multiple sensors sharing the same name in the same location.
+  device_id_regex: "devices/?(?P<deviceid>.*)"
   # The MQTT QoS level
   qos: 0
 cache:

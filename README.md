@@ -106,6 +106,9 @@ using the web uploader, [until `circup` supports the web based workflow](https:/
 
 ### Prometheus MQTT exporter
 
+The MQTT exporter is installed from the `prometheus-mqtt-exporter` package. Even though the package in Raspbian
+lags behind the [upstream](https://github.com/hikhvar/mqtt2prometheus), it does the job.
+
 The contents of `/etc/prometheus/mqtt-exporter.yaml` should look like this:
 
 ```yml
@@ -123,7 +126,7 @@ mqtt:
   #
   # The metrics are keyed on deviceid, so it needs to be unique.
   # This assumes that there are not multiple sensors sharing the same name in the same location.
-  device_id_regex: "devices/?(?P<deviceid>.*)"
+  device_id_regex: "devices/(?P<deviceid>.*)"
   # The MQTT QoS level
   qos: 0
 cache:

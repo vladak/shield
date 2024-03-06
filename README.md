@@ -96,7 +96,7 @@ Firstly, the microcontroller needs to be converted to run CircuitPython 9.x (for
 
 Once CicuitPython is installed (and Web Workflow set up by creating the `settings.toml` file in the root directory - using `screen` when the board is connected via USB data cable), the following could be used:
 - copy `*.py` files to the root directory (using the file browser on `http://172.40.0.11/fs/`)
-- create `secrets.py`
+- create `secrets.py` in the root directory
 - install necessary libraries from Adafruit CircuitPython bundle to `lib` directory
   - Since switching to ESP32 V2, web based workflow has to be used: `circup --host 172.40.0.11 --password XXX install -r requirements.txt`
 

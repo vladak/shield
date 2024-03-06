@@ -92,15 +92,13 @@ To make this all fit inside the radiation shield, I used the [nylon screw and st
 
 ## Software/firmware install
 
-Firstly, the microcontroller needs to be converted to run CircuitPython. To do that, for ESP32 V2, I chose the [command line `esptool`](https://learn.adafruit.com/circuitpython-with-esp32-quick-start/command-line-esptool) on a Linux computer (since macOS appeared to have flaky serial connection for some reason). For ESP32-S2 this procedure is simpler.
+Firstly, the microcontroller needs to be converted to run CircuitPython 9.x (for the `circup` to work with web workflow). To do that, for ESP32 V2, I chose the [command line `esptool`](https://learn.adafruit.com/circuitpython-with-esp32-quick-start/command-line-esptool) on a Linux computer (since macOS appeared to have flaky serial connection for some reason). For ESP32-S2 this procedure is simpler. These days it can be done using Web Flasher in Chrome.
 
 Once CicuitPython is installed, the following could be used:
-- copy `*.py` to the `CIRCUITPY` volume
-- copy all necessary libraries from Adafruit CircuitPython bundle to `CIRCUITPY/lib` directory 
-
-Since switching to ESP32 V2, web based workflow has to be used, which means the process of
-copying the Python files and Adafruit CircuitPython bundle libraries has to be done by hand,
-using the web uploader, [until `circup` supports the web based workflow](https://github.com/adafruit/circup/issues/156).
+- copy `*.py` files to the root directory (using the file browser on `http://172.40.0.11/fs/`)
+- create `secrets.py`
+- install necessary libraries from Adafruit CircuitPython bundle to `lib` directory
+  - Since switching to ESP32 V2, web based workflow has to be used: `circup --host 172.40.0.11 --password XXX install -r requirements.txt`
 
 ## Configuration
 

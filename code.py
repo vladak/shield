@@ -248,7 +248,7 @@ def main():
 
     mqtt_client.disconnect()
 
-    watchdog.deinit()
+    watchdog.mode = None
 
     sleep_duration = get_sleep_duration(battery_monitor, logger)
 
@@ -315,7 +315,7 @@ def hard_reset(exception):
     """
     Sometimes soft reset is not enough. Perform hard reset.
     """
-    watchdog.deinit()
+    watchdog.mode = None
     print(f"Got exception: {exception}")
     reset_time = 15
     print(f"Performing hard reset in {reset_time} seconds")
@@ -340,7 +340,7 @@ except Exception as e:  # pylint: disable=broad-except
     # This assumes that such exceptions are quite rare.
     # Otherwise, this would drain the battery quickly by restarting
     # over and over in a quick succession.
-    watchdog.deinit()
+    watchdog.mode = None
     print("Code stopped by unhandled exception:")
     print(traceback.format_exception(None, e, e.__traceback__))
     RELOAD_TIME = 10

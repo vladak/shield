@@ -1,6 +1,7 @@
 """
 Module with code for temperature/humidity sensor reading.
 """
+
 import time
 
 import adafruit_logging as logging

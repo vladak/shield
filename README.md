@@ -98,7 +98,8 @@ Once CicuitPython is installed (and Web Workflow set up by creating the `setting
 - copy `*.py` files to the root directory (using the file browser on `http://172.40.0.11/fs/`)
 - create `secrets.py` in the root directory
 - install necessary libraries from Adafruit CircuitPython bundle to `lib` directory
-  - Since switching to ESP32 V2, web based workflow has to be used: `circup --host 172.40.0.11 --password XXX install -r requirements.txt`
+  - For Feather ESP32 V2, web based workflow has to be used: `circup --host 172.40.0.11 --password XXX install -r requirements.txt`
+  - for ESP32-S2/ESP32-S3 and similar with USB mass storage access: `circup install -r requirements.txt`
 
 ## Configuration
 

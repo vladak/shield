@@ -39,18 +39,24 @@ class Sensors:
             self.tmp117 = adafruit_tmp117.TMP117(i2c)
         except NameError:
             logger.info("No library for the tmp117 sensor")
+        except ValueError as e:
+            logger.info(f"No tmp117 sensor found: {e}")
 
         self.sht40 = None
         try:
             self.sht40 = adafruit_sht4x.SHT4x(i2c)
         except NameError:
             logger.info("No library for the sht40 sensor")
+        except ValueError as e:
+            logger.info(f"No sht40 sensor found: {e}")
 
         self.aht20 = None
         try:
             self.aht20 = adafruit_ahtx0.AHTx0(i2c)
         except NameError:
             logger.info("No library for the ath20 sensor")
+        except ValueError as e:
+            logger.info(f"No ath20 sensor found: {e}")
 
         self.scd4x_sensor = None
         try:

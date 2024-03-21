@@ -150,15 +150,7 @@ def main():
 
     if IMPORT_EXCEPTION:
         raise IMPORT_EXCEPTION
-
-    # If the 'SW38' button on the ESP32 V2 was pressed, exit the program so that
-    # web based workflow can be used.
-    # button = DigitalInOut(board.BUTTON)
-    # if button.value:
-    #    logger.info("button pressed, exiting")
-    #    button.value = False
-    #    return
-
+    
     watchdog.timeout = ESTIMATED_RUN_TIME
     watchdog.mode = WatchDogMode.RAISE
 

@@ -150,7 +150,7 @@ def main():
 
     if IMPORT_EXCEPTION:
         raise IMPORT_EXCEPTION
-    
+
     watchdog.timeout = ESTIMATED_RUN_TIME
     watchdog.mode = WatchDogMode.RAISE
 

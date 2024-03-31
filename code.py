@@ -52,7 +52,7 @@ try:
     from secrets import secrets
 except ImportError:
     print(
-        "WiFi and Adafruit IO credentials are kept in secrets.py, please add them there!"
+        "WiFi credentials and configuration are kept in secrets.py, please add them there!"
     )
     raise
 

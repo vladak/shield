@@ -31,6 +31,7 @@ import supervisor
 
 try:
     import wifi
+
     IMPORT_EXCEPTION = None
 except MemoryError as e:
     # Let this fall through to main() so that appropriate reset can be performed.

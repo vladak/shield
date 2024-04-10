@@ -46,8 +46,11 @@ def enter_sleep(sleep_period: int, sleep_kind: SleepKind) -> None:
 
     logger.info(f"Going to {sleep_kind} sleep for {sleep_period} seconds")
 
+    now = time.monotonic()
+    logger.debug(f"time now: {now}")
+    logger.debug(f"alarm time: {now + sleep_period}")
     # Create an alarm that will trigger sleep_period number of seconds from now.
-    time_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + sleep_period)
+    time_alarm = alarm.time.TimeAlarm(monotonic_time=now + sleep_period)
 
     if sleep_kind.kind == SleepKind.LIGHT:
         alarm.light_sleep_until_alarms(time_alarm)

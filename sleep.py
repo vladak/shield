@@ -46,6 +46,12 @@ def enter_sleep(sleep_period: int, sleep_kind: SleepKind) -> None:
 
     logger.info(f"Going to {sleep_kind} sleep for {sleep_period} seconds")
 
+    #
+    # time.monotonic() will start losing precision rather quickly,
+    # however for the deep sleep this is not a problem because the internal
+    # clock gets reset on deep sleep. It is assumed that light sleep
+    # is always followed by deep sleep.
+    #
     now = time.monotonic()
     logger.debug(f"time now: {now}")
     logger.debug(f"alarm time: {now + sleep_period}")

@@ -129,6 +129,16 @@ def check_mandatory_tunables():
     check_int(BROKER_PORT)
     check_int(SLEEP_DURATION)
     check_int(SLEEP_DURATION_SHORT, mandatory=False)
+
+    # Check consistency of the sleep values.
+    sleep_default = secrets.get(SLEEP_DURATION)
+    sleep_short = secrets.get(SLEEP_DURATION_SHORT)
+    if sleep_short is not None and sleep_short > sleep_default:
+        bail(
+            "value of SLEEP_DURATION_SHORT bigger than value of SLEEP_DURATION: "
+            + f"{SLEEP_DURATION_SHORT} > {SLEEP_DURATION}"
+        )
+
     check_int(BATTERY_CAPACITY_THRESHOLD, mandatory=False)
 
 

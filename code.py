@@ -127,6 +127,10 @@ def check_mandatory_tunables():
     check_string(LOG_TOPIC, mandatory=False)
 
     check_int(BROKER_PORT)
+    broker_port = secrets.get(BROKER_PORT)
+    if broker_port < 0 or broker_port > 65535:
+        bail(f"invalid {BROKER_PORT} value: {broker_port}")
+
     check_int(SLEEP_DURATION)
     check_int(SLEEP_DURATION_SHORT, mandatory=False)
 
@@ -135,8 +139,8 @@ def check_mandatory_tunables():
     sleep_short = secrets.get(SLEEP_DURATION_SHORT)
     if sleep_short is not None and sleep_short > sleep_default:
         bail(
-            "value of SLEEP_DURATION_SHORT bigger than value of SLEEP_DURATION: "
-            + f"{SLEEP_DURATION_SHORT} > {SLEEP_DURATION}"
+            f"value of {SLEEP_DURATION_SHORT} bigger than value of {SLEEP_DURATION}: "
+            + f"{sleep_short} > {sleep_default}"
         )
 
     check_int(BATTERY_CAPACITY_THRESHOLD, mandatory=False)

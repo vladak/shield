@@ -7,6 +7,7 @@ import time
 # pylint: disable=import-error
 import alarm
 import microcontroller
+
 # pylint: disable=import-error
 import supervisor
 

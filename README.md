@@ -238,8 +238,9 @@ Purpose | Name | Kind
 `battery_capacity_threshold` | battery capacity high threshold, in percent | Optional
 
 
-## Guide links
+## Guide/documentation links
 
 Adafruit has largely such a good documentation that the links are worth putting here for quick reference:
 - [SHT40 guide](https://learn.adafruit.com/adafruit-sht40-temperature-humidity-sensor/python-circuitpython)
 - [MAX17048 guide](https://learn.adafruit.com/adafruit-max17048-lipoly-liion-fuel-gauge-and-battery-monitor)
+- [web workflow RESTful API](https://docs.circuitpython.org/en/latest/docs/workflows.html#file-rest-api)

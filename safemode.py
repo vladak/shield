@@ -2,11 +2,11 @@
 handle selected modes of safe mode
 """
 
+import time
+
 import alarm
 import microcontroller
 import supervisor
-import time
-
 
 safe_mode_reason = supervisor.runtime.safe_mode_reason
 

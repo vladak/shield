@@ -1,6 +1,7 @@
 """
 handle selected modes of safe mode
 """
+
 import alarm
 import microcontroller
 import supervisor

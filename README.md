@@ -245,3 +245,11 @@ Adafruit has largely such a good documentation that the links are worth putting 
 - [MAX17048 guide](https://learn.adafruit.com/adafruit-max17048-lipoly-liion-fuel-gauge-and-battery-monitor)
 - [web workflow RESTful API](https://docs.circuitpython.org/en/latest/docs/workflows.html#file-rest-api)
 - [CircuitPython RGB Status Light color coding](https://learn.adafruit.com/welcome-to-circuitpython/troubleshooting#circuitpython-rgb-status-light-2978455)
+
+## Lessons learned
+
+- get larger solar panel than what you think you will need
+- make the code as simple as possible; this will contribute to the robustness
+- make it robust
+  - catch any possible exception on the global level and react accordingly (reset/exit)
+  - use [`safemode.py`](https://learn.adafruit.com/circuitpython-safe-mode/safemode-py) to reset the board if something goes wrong

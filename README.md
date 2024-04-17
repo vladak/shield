@@ -244,3 +244,4 @@ Adafruit has largely such a good documentation that the links are worth putting 
 - [SHT40 guide](https://learn.adafruit.com/adafruit-sht40-temperature-humidity-sensor/python-circuitpython)
 - [MAX17048 guide](https://learn.adafruit.com/adafruit-max17048-lipoly-liion-fuel-gauge-and-battery-monitor)
 - [web workflow RESTful API](https://docs.circuitpython.org/en/latest/docs/workflows.html#file-rest-api)
+- [CircuitPython RGB Status Light color coding](https://learn.adafruit.com/welcome-to-circuitpython/troubleshooting#circuitpython-rgb-status-light-2978455)

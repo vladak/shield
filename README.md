@@ -92,12 +92,24 @@ To make this all fit inside the radiation shield, I used the [nylon screw and st
 
 ## Software/firmware install
 
-Firstly, the microcontroller needs to be converted to run CircuitPython 9.x (for the `circup` to work with web workflow). To do that, for ESP32 V2, I chose the [command line `esptool`](https://learn.adafruit.com/circuitpython-with-esp32-quick-start/command-line-esptool) on a Linux computer (since macOS appeared to have flaky serial connection for some reason). For ESP32-S2 this procedure is simpler. These days it can be done using Web Flasher in Chrome.
+Firstly, the microcontroller needs to be converted to run CircuitPython 9.x (for the `circup` to work with web workflow). To do that, for ESP32 V2, I chose the [command line `esptool`](https://learn.adafruit.com/circuitpython-with-esp32-quick-start/command-line-esptool) on a Linux computer (since macOS appeared to have flaky serial connection for some reason), however these days it can be done using Web Flasher in Chrome. For ESP32-S2 (QtPy) this procedure is simpler.
 
-Once CicuitPython is installed (and Web Workflow set up by creating the `settings.toml` file in the root directory - using `screen` when the board is connected via USB data cable), the following could be used:
-- copy `*.py` files to the root directory (using the file browser on `http://172.40.0.11/fs/`)
-- create `secrets.py` in the root directory
-- install necessary libraries from Adafruit CircuitPython bundle to `lib` directory
+Once CicuitPython is installed, perform the initial set up by creating the `settings.toml` file in the root directory (using `screen` when the board is connected via USB data cable).
+
+Then the following can be used:
+- copy `*.py` files to the root directory:
+  - web workflow, assumes system with `curl` installed:
+  ```
+  for f in *.py; do
+      curl -v -u :XXX -T $f -L --location-trusted http://172.40.0.11/fs/$f;
+  done
+  ```
+  - using USB mass storage (QtPy), assumes Linux:
+  ```
+  cp *.py /media/$LOGNAME/CIRCUITPY/
+  ``` 
+- create `secrets.py` in the root directory (using the same technique as in the previous step)
+- install necessary libraries from Adafruit CircuitPython bundle to the `lib` directory
   - For Feather ESP32 V2, web based workflow has to be used: `circup --host 172.40.0.11 --password XXX install -r requirements.txt`
   - for ESP32-S2/ESP32-S3 and similar with USB mass storage access: `circup install -r requirements.txt`
 

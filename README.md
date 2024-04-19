@@ -92,7 +92,7 @@ To make this all fit inside the radiation shield, I used the [nylon screw and st
 
 ## Software/firmware install
 
-Firstly, the microcontroller needs to be converted to run CircuitPython 9.x (for the `circup` to work with web workflow). To do that, for ESP32 V2, I chose the [command line `esptool`](https://learn.adafruit.com/circuitpython-with-esp32-quick-start/command-line-esptool) on a Linux computer (since macOS appeared to have flaky serial connection for some reason), however these days it can be done using Web Flasher in Chrome. For ESP32-S2 (QtPy) this procedure is simpler.
+Firstly, the microcontroller needs to be converted to run CircuitPython 9.x (for the `circup` to work with web workflow). To do that, for ESP32 V2, I chose the [command line `esptool`](https://learn.adafruit.com/circuitpython-with-esp32-quick-start/command-line-esptool) on a Linux computer (since macOS appeared to have flaky serial connection for some reason), however these days it can be done using [Web Flasher](https://adafruit.github.io/Adafruit_WebSerial_ESPTool/) in Chrome. For ESP32-S2 (QtPy) this procedure is simpler.
 
 Once CicuitPython is installed, perform the initial set up by creating the `settings.toml` file in the root directory (using `screen` when the board is connected via USB data cable).
 

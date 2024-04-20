@@ -110,8 +110,10 @@ Then the following can be used:
   ``` 
 - create `secrets.py` in the root directory (using the same technique as in the previous step)
 - install necessary libraries from Adafruit CircuitPython bundle to the `lib` directory
-  - For Feather ESP32 V2, web based workflow has to be used: `circup --host 172.40.0.11 --password XXX install -r requirements.txt`
-  - for ESP32-S2/ESP32-S3 and similar with USB mass storage access: `circup install -r requirements.txt`
+  - For Feather ESP32 V2, web based workflow has to be used:
+    `circup --host 172.40.0.11 --password XXX install -r requirements.txt`
+  - for ESP32-S2/ESP32-S3 and similar with USB mass storage access:
+    `circup install -r requirements.txt`
 
 ## Configuration
 

@@ -112,6 +112,14 @@ class Sensors:
             if co2_ppm:
                 logger.debug(f"CO2 ppm={co2_ppm}")
 
+            if not temperature:
+                temperature = self.scd4x_sensor.temperature
+                logger.debug("Acquired temperature from SCD4x")
+
+            if not humidity:
+                humidity = self.scd4x_sensor.relative_humidity
+                logger.debug("Acquired humidity from SCD4x")
+
         return humidity, temperature, co2_ppm
 
     def get_measurements_dict(self):

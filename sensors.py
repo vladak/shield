@@ -113,3 +113,25 @@ class Sensors:
                 logger.debug(f"CO2 ppm={co2_ppm}")
 
         return humidity, temperature, co2_ppm
+
+    def get_measurements_dict(self):
+        """
+        Put the metrics into dictionary and return it.
+        """
+        data = {}
+        logger = logging.getLogger("")
+
+        humidity, temperature, co2_ppm = self.get_measurements()
+
+        if temperature:
+            logger.info(f"Temperature: {temperature:.1f} C")
+            data["temperature"] = f"{temperature:.1f}"
+        if humidity:
+            logger.info(f"Humidity: {humidity:.1f} %")
+            data["humidity"] = f"{humidity:.1f}"
+        if co2_ppm:
+            logger.info(f"CO2 = {co2_ppm} ppm")
+            data["co2_ppm"] = f"{co2_ppm}"
+
+        logger.debug(f"data: {data}")
+        return data

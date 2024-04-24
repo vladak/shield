@@ -213,9 +213,12 @@ def main():
     mqtt_client.connect()
 
     while True:
-        humidity, temperature, co2_ppm = sensors.get_measurements()
-        data = {}
-        fill_data_dict(data, battery_monitor, humidity, temperature, co2_ppm)
+        data = sensors.get_measurements_dict()
+
+        if battery_monitor:
+            capacity = battery_monitor.cell_percent
+            logger.info(f"Battery capacity {capacity:.2f} %")
+            data["battery_level"] = f"{capacity:.2f}"
 
         if len(data) > 0:
             mqtt_topic = secrets[MQTT_TOPIC]
@@ -290,30 +293,6 @@ def get_sleep_duration(battery_monitor, logger):
             sleep_duration = sleep_duration_short
 
     return sleep_duration
-
-
-def fill_data_dict(data, battery_monitor, humidity, temperature, co2_ppm):
-    """
-    Put the metrics into dictionary.
-    """
-
-    logger = logging.getLogger("")
-
-    if temperature:
-        logger.info(f"Temperature: {temperature:.1f} C")
-        data["temperature"] = f"{temperature:.1f}"
-    if humidity:
-        logger.info(f"Humidity: {humidity:.1f} %")
-        data["humidity"] = f"{humidity:.1f}"
-    if battery_monitor:
-        capacity = battery_monitor.cell_percent
-        logger.info(f"Battery capacity {capacity:.2f} %")
-        data["battery_level"] = f"{capacity:.2f}"
-    if co2_ppm:
-        logger.info(f"CO2 = {co2_ppm} ppm")
-        data["co2_ppm"] = f"{co2_ppm}"
-
-    logger.debug(f"data: {data}")
 
 
 def hard_reset(exception):

@@ -218,47 +218,12 @@ def main():
     mqtt_topic = secrets[MQTT_TOPIC]
 
     while True:
-        battery_level = None
+        battery_capacity = None
         if battery_monitor:
-            capacity = battery_monitor.cell_percent
-            logger.info(f"Battery capacity {capacity:.2f} %")
-            battery_level = capacity
+            battery_capacity = battery_monitor.cell_percent
+            logger.info(f"Battery capacity {battery_capacity:.2f} %")
 
-        if mqtt_client:
-            data = sensors.get_measurements_dict()
-            if battery_level:
-                data["battery_level"] = f"{capacity:.2f}"
-
-            if len(data) > 0:
-                logger.info(f"Publishing to {mqtt_topic}: {data}")
-                mqtt_client.publish(mqtt_topic, json.dumps(data))
-        elif rfm69:
-            if battery_level is None:
-                battery_level = 0
-            humidity, temperature, co2_ppm = sensors.get_measurements()
-            if co2_ppm is None:
-                co2_ppm = 0
-
-            # Note: at most 60 bytes can be sent in single packet so pack the data.
-            fmt = ">30sIfII"
-            if struct.calcsize(fmt) > 60:
-                logger.warning(
-                    "the format for structure packing is bigger than 60 bytes"
-                )
-            logger.info(
-                "Sending data over radio: {(humidity,temperature,co2_ppm,battery_level)}"
-            )
-            data = struct.pack(
-                fmt,
-                mqtt_topic.encode("ascii"),
-                humidity,
-                temperature,
-                co2_ppm,
-                battery_level,
-            )
-            rfm69.send(data)
-        else:
-            logger.error("No way to send the data")
+        send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity)
 
         # Blink the LED only in debug mode when powered by battery (to save the battery).
         if (
@@ -298,6 +263,51 @@ def main():
     sleep_duration = get_sleep_duration(battery_monitor, logger)
 
     enter_sleep(sleep_duration, SleepKind(SleepKind.DEEP))
+
+
+def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
+    """
+    Pick a transport, acquire sensor data and send them.
+    """
+    logger = logging.getLogger(__name__)
+
+    if mqtt_client:
+        data = sensors.get_measurements_dict()
+        if battery_capacity:
+            data["battery_level"] = f"{battery_capacity:.2f}"
+
+        if len(data) > 0:
+            logger.info(f"Publishing to {mqtt_topic}: {data}")
+            mqtt_client.publish(mqtt_topic, json.dumps(data))
+    elif rfm69:
+        if battery_capacity is None:
+            battery_level = 0
+        else:
+            battery_level = battery_capacity
+        humidity, temperature, co2_ppm = sensors.get_measurements()
+        if co2_ppm is None:
+            co2_ppm = 0
+
+        # Note: at most 60 bytes can be sent in single packet so pack the data.
+        fmt = ">30sIfII"
+        if struct.calcsize(fmt) > 60:
+            logger.warning("the format for structure packing is bigger than 60 bytes")
+        logger.info(
+            "Sending data over radio: {(humidity,temperature,co2_ppm,battery_level)}"
+        )
+        data = struct.pack(
+            fmt,
+            mqtt_topic.encode("ascii"),
+            humidity,
+            temperature,
+            co2_ppm,
+            battery_level,
+        )
+        # Compared to the WiFi method, this will always send the data even if all sensors
+        # return no data.
+        rfm69.send(data)
+    else:
+        logger.error("No way to send the data")
 
 
 def setup_transport():
@@ -343,7 +353,9 @@ def setup_transport():
 
         broker_addr = secrets[BROKER]
         broker_port = secrets[BROKER_PORT]
-        mqtt_client = mqtt_client_setup(pool, broker_addr, broker_port, logger.getEffectiveLevel())
+        mqtt_client = mqtt_client_setup(
+            pool, broker_addr, broker_port, logger.getEffectiveLevel()
+        )
         try:
             log_topic = secrets[LOG_TOPIC]
             # Log both to the console and via MQTT messages.

@@ -145,6 +145,10 @@ def check_tunables():
     Will exit the program on error.
     """
     check_string(LOG_LEVEL)
+
+    # Even though different transport can be selected than WiFi, the related tunables
+    # are still mandatory, because at this point it is known which will be selected.
+    # Also, MQTT topic is used for all transports.
     check_string(SSID)
     check_string(PASSWORD)
     check_string(BROKER)

@@ -247,23 +247,26 @@ secrets = {
 }
 ```
 
+Even though different transport than WiFi can be selected, these are still mandatory. See the table below.
+
 To transfer the file to the microcontroller, the same method as in the Install section should be used.
 
 ### Tunables
 
-Purpose | Name | Kind
----|---|---
-`ssid` | WiFi SSID | Mandatory
-`password` | WiFi password | Mandatory
-`broker` | MQTT broker address | Mandatory
-`broker_port` | MQTT broker port | Mandatory
-`mqtt_topic` | MQTT topic to publish messages to | Mandatory
-`log_topic` | MQTT topic to publish log messages to | Optional
-`sleep_duration` | how long to deep sleep by default, in seconds | Mandatory
-`log_level` | log level, default `INFO` | Mandatory
-`sleep_duration_short` | how long to deep sleep (in seconds) if battery is charged above `battery_capacity_threshold`. Should be shorter than the default `sleep_duration`. | Optional
-`battery_capacity_threshold` | battery capacity high threshold, in percent | Optional
-
+Purpose | Name | Type | Kind
+---|---|---|---
+`ssid` | WiFi SSID | `str` | Mandatory
+`password` | WiFi password | `str` | Mandatory
+`broker` | MQTT broker address | `str` | Mandatory
+`broker_port` | MQTT broker port | `int` | Mandatory
+`mqtt_topic` | MQTT topic to publish messages to | `str` | Mandatory
+`log_topic` | MQTT topic to publish log messages to | `str` | Optional
+`sleep_duration` | how long to deep sleep by default, in seconds | `int` | Mandatory
+`log_level` | log level, default `INFO` | `str` | Mandatory
+`sleep_duration_short` | how long to deep sleep (in seconds) if battery is charged above `battery_capacity_threshold`. Should be shorter than the default `sleep_duration`. | `int` | Optional
+`battery_capacity_threshold` | battery capacity high threshold, in percent | `int` | Optional
+`tx_power` | TX power to use if RFM69 | `int` | Optional
+`encryption_key` | 16 bytes of encryption key if RFM69 | `bytes` | Optional
 
 ## Guide/documentation links
 

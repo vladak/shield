@@ -214,16 +214,14 @@ def main():
 
     mqtt_client, rfm69 = setup_transport()
 
-    # MQTT topic is used for both transports.
-    mqtt_topic = secrets[MQTT_TOPIC]
-
     while True:
         battery_capacity = None
         if battery_monitor:
             battery_capacity = battery_monitor.cell_percent
             logger.info(f"Battery capacity {battery_capacity:.2f} %")
 
-        send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity)
+        # Note that MQTT topic is used for both transports.
+        send_data(rfm69, mqtt_client, secrets[MQTT_TOPIC], sensors, battery_capacity)
 
         # Blink the LED only in debug mode when powered by battery (to save the battery).
         if (

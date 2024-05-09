@@ -7,6 +7,7 @@ This is meant for battery powered devices such as QtPy or ESP32 based devices
 from Adafruit.
 """
 import json
+import struct
 import sys
 import time
 import traceback
@@ -29,6 +30,12 @@ import socketpool
 # pylint: disable=import-error
 import supervisor
 
+# Try to import both RFM69 and WiFi modules so that fallback to WiFi can be done in main().
+try:
+    import adafruit_rfm69
+except ImportError:
+    pass
+
 try:
     import wifi
 
@@ -37,7 +44,8 @@ except MemoryError as e:
     # Let this fall through to main() so that appropriate reset can be performed.
     IMPORT_EXCEPTION = e
 
-# from digitalio import DigitalInOut
+import digitalio
+
 # pylint: disable=no-name-in-module
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
@@ -70,6 +78,8 @@ BROKER = "broker"
 PASSWORD = "password"
 SSID = "ssid"
 LOG_LEVEL = "log_level"
+TX_POWER = "tx_power"
+ENCRYPTION_KEY = "encryption_key"
 
 
 def blink(pixel):
@@ -114,9 +124,24 @@ def check_int(name, mandatory=True):
         bail(f"not a integer value for {name}: {value}")
 
 
-def check_mandatory_tunables():
+def check_bytes(name, length, mandatory=True):
     """
-    Check that mandatory tunables are present and of correct type.
+    Check is bytes with given name is present in secrets.
+    """
+    value = secrets.get(name)
+    if value is None and mandatory:
+        bail(f"{name} is missing")
+
+    if value and not isinstance(value, bytes):
+        bail(f"not a byte value for {name}: {value}")
+
+    if value and len(value) != length:
+        bail(f"not correct length for {name}: {len(value)} should be {length}")
+
+
+def check_tunables():
+    """
+    Check that tunables are present and of correct type.
     Will exit the program on error.
     """
     check_string(LOG_LEVEL)
@@ -145,15 +170,18 @@ def check_mandatory_tunables():
 
     check_int(BATTERY_CAPACITY_THRESHOLD, mandatory=False)
 
+    check_int(TX_POWER, mandatory=False)
+    check_bytes(ENCRYPTION_KEY, 16, mandatory=False)
 
-# pylint: disable=too-many-locals,too-many-statements
+
+# pylint: disable=too-many-locals,too-many-statements,too-many-branches
 def main():
     """
     Collect temperature/humidity and battery level
     and publish to MQTT topic.
     """
 
-    check_mandatory_tunables()
+    check_tunables()
 
     log_level = get_log_level(secrets[LOG_LEVEL])
     logger = logging.getLogger("")
@@ -184,46 +212,101 @@ def main():
 
     sensors = Sensors(i2c)
 
-    logger.debug(f"MAC address: {wifi.radio.mac_address}")
-
-    # Connect to Wi-Fi
-    logger.info("Connecting to wifi")
-    wifi.radio.connect(secrets[SSID], secrets[PASSWORD], timeout=10)
-    logger.info(f"Connected to {secrets['ssid']}")
-    logger.debug(f"IP: {wifi.radio.ipv4_address}")
-
-    # Create a socket pool
-    pool = socketpool.SocketPool(wifi.radio)  # pylint: disable=no-member
-
-    broker_addr = secrets[BROKER]
-    broker_port = secrets[BROKER_PORT]
-    mqtt_client = mqtt_client_setup(pool, broker_addr, broker_port, log_level)
+    mqtt_client = None
+    rfm69 = None
+    # Try packetized radio first. If that does not work, fall back to WiFi.
     try:
-        log_topic = secrets[LOG_TOPIC]
-        # Log both to the console and via MQTT messages.
-        # Up to now the logger was using the default (built-in) handler,
-        # now it is necessary to add the Stream handler explicitly as
-        # with a non-default handler set only the non-default handlers will be used.
-        logger.addHandler(logging.StreamHandler())
-        logger.addHandler(MQTTHandler(mqtt_client, log_topic))
-    except KeyError:
-        pass
+        spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+        # The D-pin values assume certain wiring of the Radio FeatherWing.
+        cs = digitalio.DigitalInOut(board.D14)
+        reset = digitalio.DigitalInOut(board.D32)
+        rfm69 = adafruit_rfm69.RFM69(
+            spi, cs, reset, 433
+        )  # hard-coded frequency for Europe
 
-    logger.info(f"Attempting to connect to MQTT broker {broker_addr}:{broker_port}")
-    mqtt_client.connect()
+        tx_power = secrets.get(TX_POWER)
+        if rfm69.high_power and tx_power:
+            logger.debug(f"setting TX power to {tx_power}")
+            rfm69.tx_power = tx_power
+
+        encryption_key = secrets.get(ENCRYPTION_KEY)
+        if encryption_key:
+            logger.debug("Setting encryption key")
+            rfm69.encryption_key = encryption_key
+    except Exception:  # pylint: disable=broad-exception-caught
+        logger.debug(f"MAC address: {wifi.radio.mac_address}")
+
+        # Connect to Wi-Fi
+        logger.info("Connecting to wifi")
+        wifi.radio.connect(secrets[SSID], secrets[PASSWORD], timeout=10)
+        logger.info(f"Connected to {secrets['ssid']}")
+        logger.debug(f"IP: {wifi.radio.ipv4_address}")
+
+        # Create a socket pool
+        pool = socketpool.SocketPool(wifi.radio)  # pylint: disable=no-member
+
+        broker_addr = secrets[BROKER]
+        broker_port = secrets[BROKER_PORT]
+        mqtt_client = mqtt_client_setup(pool, broker_addr, broker_port, log_level)
+        try:
+            log_topic = secrets[LOG_TOPIC]
+            # Log both to the console and via MQTT messages.
+            # Up to now the logger was using the default (built-in) handler,
+            # now it is necessary to add the Stream handler explicitly as
+            # with a non-default handler set only the non-default handlers will be used.
+            logger.addHandler(logging.StreamHandler())
+            logger.addHandler(MQTTHandler(mqtt_client, log_topic))
+        except KeyError:
+            pass
+
+        logger.info(f"Attempting to connect to MQTT broker {broker_addr}:{broker_port}")
+        mqtt_client.connect()
+
+    # MQTT topic is used for both transports.
+    mqtt_topic = secrets[MQTT_TOPIC]
 
     while True:
-        data = sensors.get_measurements_dict()
-
+        battery_level = None
         if battery_monitor:
             capacity = battery_monitor.cell_percent
             logger.info(f"Battery capacity {capacity:.2f} %")
-            data["battery_level"] = f"{capacity:.2f}"
+            battery_level = capacity
 
-        if len(data) > 0:
-            mqtt_topic = secrets[MQTT_TOPIC]
-            logger.info(f"Publishing to {mqtt_topic}")
-            mqtt_client.publish(mqtt_topic, json.dumps(data))
+        if mqtt_client:
+            data = sensors.get_measurements_dict()
+            if battery_level:
+                data["battery_level"] = f"{capacity:.2f}"
+
+            if len(data) > 0:
+                logger.info(f"Publishing to {mqtt_topic}: {data}")
+                mqtt_client.publish(mqtt_topic, json.dumps(data))
+        elif rfm69:
+            if battery_level is None:
+                battery_level = 0
+            humidity, temperature, co2_ppm = sensors.get_measurements()
+            if co2_ppm is None:
+                co2_ppm = 0
+
+            # Note: at most 60 bytes can be sent in single packet so pack the data.
+            fmt = ">30sIfII"
+            if struct.calcsize(fmt) > 60:
+                logger.warning(
+                    "the format for structure packing is bigger than 60 bytes"
+                )
+            logger.info(
+                "Sending data over radio: {(humidity,temperature,co2_ppm,battery_level)}"
+            )
+            data = struct.pack(
+                fmt,
+                mqtt_topic.encode("ascii"),
+                humidity,
+                temperature,
+                co2_ppm,
+                battery_level,
+            )
+            rfm69.send(data)
+        else:
+            logger.error("No way to send the data")
 
         # Blink the LED only in debug mode when powered by battery (to save the battery).
         if (
@@ -239,13 +322,14 @@ def main():
             logger.info("Running on battery power, breaking out")
             break
 
-        sleep_duration_short = secrets.get(SLEEP_DURATION_SHORT)
-        if sleep_duration_short:
-            mqtt_timeout = sleep_duration_short
-        else:
-            mqtt_timeout = ESTIMATED_RUN_TIME // 2
-        logger.info(f"Waiting for MQTT event with timeout {mqtt_timeout} seconds")
-        mqtt_client.loop(timeout=mqtt_timeout)
+        if mqtt_client:
+            sleep_duration_short = secrets.get(SLEEP_DURATION_SHORT)
+            if sleep_duration_short:
+                mqtt_timeout = sleep_duration_short
+            else:
+                mqtt_timeout = ESTIMATED_RUN_TIME // 2
+            logger.info(f"Waiting for MQTT event with timeout {mqtt_timeout} seconds")
+            mqtt_client.loop(timeout=mqtt_timeout)
 
     #
     # The rest of the code in this function applies only to devices running on battery power.
@@ -254,7 +338,8 @@ def main():
     # Sleep a bit so one can break to the REPL when using console via web workflow.
     enter_sleep(10, SleepKind(SleepKind.LIGHT))  # ugh, ESTIMATED_RUN_TIME
 
-    mqtt_client.disconnect()
+    if mqtt_client:
+        mqtt_client.disconnect()
 
     watchdog.mode = None
 

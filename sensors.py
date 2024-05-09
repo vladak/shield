@@ -3,6 +3,7 @@ Module with code for temperature/humidity sensor reading.
 """
 
 import time
+from typing import Optional, Union
 
 import adafruit_logging as logging
 
@@ -69,10 +70,13 @@ class Sensors:
         except NameError:
             logger.info("No library for the scd4x sensor")
 
-    def get_measurements(self):
+    def get_measurements(
+        self,
+    ) -> (Optional[Union[float, int]], Optional[Union[float, int]], Optional[int]):
         """
         Acquire temperature, humidity and CO2 measurements. Try various sensors,
         prefer higher precision measurements.
+        Some of the sensors return temperature as integer, while some as float.
         Return tuple of humidity, temperature and CO2 (either can be None).
         """
 

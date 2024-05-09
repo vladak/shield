@@ -6,3 +6,4 @@ adafruit-circuitpython-neopixel
 adafruit-circuitpython-max1704x
 adafruit-circuitpython-ahtx0
 adafruit-circuitpython-sht4x
+adafruit-circuitpython-rfm69

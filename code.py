@@ -174,7 +174,7 @@ def check_tunables():
     check_bytes(ENCRYPTION_KEY, 16, mandatory=False)
 
 
-# pylint: disable=too-many-locals,too-many-statements,too-many-branches
+# pylint: disable=too-many-locals,too-many-statements
 def main():
     """
     Collect temperature/humidity and battery level
@@ -290,7 +290,12 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
 
         humidity, temperature, co2_ppm = sensors.get_measurements()
 
-        if humidity is None and temperature is None and co2_ppm is None and battery_capacity is None:
+        if (
+            humidity is None
+            and temperature is None
+            and co2_ppm is None
+            and battery_capacity is None
+        ):
             logger.warning("No sensor data available, will not send anything")
             return
 

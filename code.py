@@ -178,7 +178,7 @@ def check_tunables():
     check_bytes(ENCRYPTION_KEY, 16, mandatory=False)
 
 
-# pylint: disable=too-many-locals,too-many-statements
+# pylint: disable=too-many-locals,too-many-statements,too-many-branches
 def main():
     """
     Collect temperature/humidity and battery level

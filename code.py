@@ -301,7 +301,7 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
             co2_ppm = 0
 
         # Note: at most 60 bytes can be sent in single packet so pack the data.
-        fmt = ">30sIfIf"
+        fmt = ">30sffIf"
         if struct.calcsize(fmt) > 60:
             logger.warning("the format for structure packing is bigger than 60 bytes")
         logger.info(

@@ -34,7 +34,7 @@ class Sensors:
 
     def __init__(self, i2c):
         """
-        Initialize the sensor objects.
+        Initialize the sensor objects. Assumes I2C.
         """
         logger = logging.getLogger("")
 

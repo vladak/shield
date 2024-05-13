@@ -23,6 +23,10 @@ try:
     import adafruit_scd4x
 except ImportError:
     pass
+try:
+    from adafruit_bme280 import basic as adafruit_bme280
+except ImportError:
+    pass
 
 
 # pylint: disable=too-few-public-methods
@@ -59,6 +63,14 @@ class Sensors:
         except ValueError as e:
             logger.info(f"No ath20 sensor found: {e}")
 
+        self.bme280 = None
+        try:
+            self.bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+        except NameError:
+            logger.info("No library for the bme280 sensor")
+        except ValueError as e:
+            logger.info(f"No bme280 sensor found: {e}")
+
         self.scd4x_sensor = None
         try:
             self.scd4x_sensor = adafruit_scd4x.SCD4X(i2c)
@@ -70,6 +82,7 @@ class Sensors:
         except NameError:
             logger.info("No library for the scd4x sensor")
 
+    # pylint: disable=too-many-branches
     def get_measurements(
         self,
     ) -> (Optional[Union[float, int]], Optional[Union[float, int]], Optional[int]):
@@ -104,6 +117,14 @@ class Sensors:
             if not humidity:
                 humidity = self.aht20.relative_humidity
                 logger.debug("Acquired humidity from aht20")
+
+        if self.bme280:
+            if not temperature:
+                temperature = self.bme280.temperature
+                logger.debug("Acquired temperature from bme280")
+            if not humidity:
+                humidity = self.bme280.relative_humidity
+                logger.debug("Acquired humidity from bme280")
 
         co2_ppm = None
         if self.scd4x_sensor:

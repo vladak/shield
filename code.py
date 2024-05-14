@@ -188,7 +188,7 @@ def main():
     check_tunables()
 
     log_level = get_log_level(secrets[LOG_LEVEL])
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger("")
     logger.setLevel(log_level)
 
     logger.info("Running")
@@ -274,7 +274,7 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
     """
     Pick a transport, acquire sensor data and send them.
     """
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger("")
 
     if mqtt_client:
         data = sensors.get_measurements_dict()
@@ -342,7 +342,7 @@ def setup_transport():
     Setup transport to send data.
     Return a tuple of RFM69 object and MQTT client object, either can be None.
     """
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger("")
 
     mqtt_client = None
     rfm69 = None

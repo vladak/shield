@@ -362,7 +362,8 @@ def setup_transport():
         if encryption_key:
             logger.debug("Setting encryption key")
             rfm69.encryption_key = encryption_key
-    except Exception:  # pylint: disable=broad-exception-caught
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logger.info(f"RFM69 failed to initialize, will attempt WiFi: {e}")
         logger.debug(f"MAC address: {wifi.radio.mac_address}")
 
         # Connect to Wi-Fi

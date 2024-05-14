@@ -4,7 +4,7 @@ Module with code for temperature/humidity sensor reading.
 
 import time
 try:
-    from typing import Optional, Union
+    from typing import Dict, Optional, Union
 except ImportError:
     pass
 
@@ -155,7 +155,7 @@ class Sensors:
 
         return humidity, temperature, co2_ppm
 
-    def get_measurements_dict(self):
+    def get_measurements_dict(self) -> Dict:
         """
         Put the metrics into dictionary and return it.
         """

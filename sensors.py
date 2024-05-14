@@ -36,7 +36,7 @@ except ImportError:
 class Sensors:
     """Sensor abstraction"""
 
-    def __init__(self, i2c):
+    def __init__(self, i2c) -> None:
         """
         Initialize the sensor objects. Assumes I2C.
         """

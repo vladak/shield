@@ -1,8 +1,20 @@
 """
-Module with code for temperature/humidity sensor reading.
+Module with code for temperature/humidity/CO2 sensor reading.
+Works only for sensors connected via I2C (STEMMA QT).
+
+The following sensors are supported:
+  - TMP117
+  - SHT40
+  - AHT20
+  - BME280
+  - SCD-40
+
+If multiple temperature/humidity sensors are present, the values are taken based
+on priority given by the list above, from highest to lowest.
 """
 
 import time
+
 try:
     from typing import Dict, Optional, Union
 except ImportError:

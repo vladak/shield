@@ -45,6 +45,7 @@ class Sensors:
         self.tmp117 = None
         try:
             self.tmp117 = adafruit_tmp117.TMP117(i2c)
+            logger.info("TMP117 sensor initialized")
         except NameError:
             logger.info("No library for the tmp117 sensor")
         except ValueError as e:
@@ -53,6 +54,7 @@ class Sensors:
         self.sht40 = None
         try:
             self.sht40 = adafruit_sht4x.SHT4x(i2c)
+            logger.info("SHT40 initialized")
         except NameError:
             logger.info("No library for the sht40 sensor")
         except ValueError as e:
@@ -61,6 +63,7 @@ class Sensors:
         self.aht20 = None
         try:
             self.aht20 = adafruit_ahtx0.AHTx0(i2c)
+            logger.info("AHT20 sensor initialized")
         except NameError:
             logger.info("No library for the ath20 sensor")
         except ValueError as e:
@@ -69,6 +72,7 @@ class Sensors:
         self.bme280 = None
         try:
             self.bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+            logger.info("Found BME280 sensor")
         except NameError:
             logger.info("No library for the bme280 sensor")
         except ValueError as e:
@@ -80,6 +84,7 @@ class Sensors:
             if self.scd4x_sensor:
                 logger.info("Waiting for the first measurement from the SCD-40 sensor")
                 self.scd4x_sensor.start_periodic_measurement()
+            logger.info("SCD-40 sensor initialized")
         except ValueError as exception:
             logger.error(f"cannot find SCD4x sensor: {exception}")
         except NameError:

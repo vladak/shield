@@ -320,7 +320,7 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
         if struct.calcsize(fmt) > 60:
             logger.warning("the format for structure packing is bigger than 60 bytes")
         logger.info(
-            "Sending data over radio: {(humidity,temperature,co2_ppm,battery_level)}"
+            f"Sending data over radio: {(humidity,temperature,co2_ppm,battery_level)}"
         )
         data = struct.pack(
             fmt,

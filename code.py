@@ -331,6 +331,7 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
             co2_ppm,
             battery_level,
         )
+        logger.debug(f"Raw data to be sent: {data}")
         rfm69.send(data)
     else:
         logger.error("No way to send the data")

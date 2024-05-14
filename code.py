@@ -346,8 +346,8 @@ def setup_transport():
     try:
         spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
         # The D-pin values assume certain wiring of the Radio FeatherWing.
-        cs = digitalio.DigitalInOut(board.D14)
-        reset = digitalio.DigitalInOut(board.D32)
+        cs = digitalio.DigitalInOut(board.D5)
+        reset = digitalio.DigitalInOut(board.D6)
         logger.info("Setting up RFM69")
         rfm69 = adafruit_rfm69.RFM69(
             spi, cs, reset, 433

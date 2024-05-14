@@ -188,7 +188,7 @@ def main():
     check_tunables()
 
     log_level = get_log_level(secrets[LOG_LEVEL])
-    logger = logging.getLogger("")
+    logger = logging.getLogger(__name__)
     logger.setLevel(log_level)
 
     logger.info("Running")

@@ -305,13 +305,15 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
             co2_ppm = 0
 
         # Note: at most 60 bytes can be sent in single packet so pack the data.
-        max_mqtt_topic_len = 30
+        # The following encoding scheme was designed to fit that constraint.
+        mqtt_prefix = "MQTT:"
+        max_mqtt_topic_len = 36
         if len(mqtt_topic) > max_mqtt_topic_len:
             # Assuming ASCII encoding.
             logger.warning(
                 f"Maximum MQTT topic length is {max_mqtt_topic_len}, topic string will be cut"
             )
-        fmt = f">{max_mqtt_topic_len}sffIf"
+        fmt = f">{len(mqtt_prefix)}s{max_mqtt_topic_len}sffIf"
         if struct.calcsize(fmt) > 60:
             logger.warning("the format for structure packing is bigger than 60 bytes")
         logger.info(
@@ -319,6 +321,7 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
         )
         data = struct.pack(
             fmt,
+            mqtt_prefix.encode("ascii"),
             mqtt_topic.encode("ascii"),
             humidity,
             temperature,

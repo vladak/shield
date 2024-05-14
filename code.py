@@ -241,14 +241,17 @@ def main():
             logger.info("Running on battery power, breaking out")
             break
 
+        sleep_duration_short = secrets.get(SLEEP_DURATION_SHORT)
+        if sleep_duration_short:
+            timeout = sleep_duration_short
+        else:
+            timeout = ESTIMATED_RUN_TIME // 2
         if mqtt_client:
-            sleep_duration_short = secrets.get(SLEEP_DURATION_SHORT)
-            if sleep_duration_short:
-                mqtt_timeout = sleep_duration_short
-            else:
-                mqtt_timeout = ESTIMATED_RUN_TIME // 2
-            logger.info(f"Waiting for MQTT event with timeout {mqtt_timeout} seconds")
-            mqtt_client.loop(timeout=mqtt_timeout)
+            logger.info(f"Waiting for MQTT event with timeout {timeout} seconds")
+            mqtt_client.loop(timeout=timeout)
+        else:
+            logger.info(f"Sleeping for {timeout} seconds")
+            time.sleep(timeout)
 
     #
     # The rest of the code in this function applies only to devices running on battery power.

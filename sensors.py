@@ -3,7 +3,10 @@ Module with code for temperature/humidity sensor reading.
 """
 
 import time
-from typing import Optional, Union
+try:
+    from typing import Optional, Union
+except ImportError:
+    pass
 
 import adafruit_logging as logging
 

@@ -72,7 +72,7 @@ class Sensors:
         self.bme280 = None
         try:
             self.bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
-            logger.info("Found BME280 sensor")
+            logger.info("BME280 sensor initialized")
         except NameError:
             logger.info("No library for the bme280 sensor")
         except ValueError as e:

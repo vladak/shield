@@ -77,7 +77,7 @@ As for sizing, this is something I will yet have to [figure out](https://forums.
 
 ### Other uses
 
-Over time I added some ESP32-S2 based sensors powered via USB from a wall outlet. Also, I added support for more sensors.
+Over the time I added some ESP32-S2 based sensors powered via USB from a wall outlet. Also, I added support for more sensors.
 This lead to the code being more generic.
 
 ### Physical packaging

@@ -247,7 +247,7 @@ secrets = {
     "broker_port": 1883,
     "mqtt_topic": "devices/terasa/shield",
     "log_topic": "logs/terasa/shield",
-    "sleep_duration": 300,
+    "deep_sleep_duration": 300,
     "log_level": "INFO",
 }
 ```
@@ -258,20 +258,21 @@ To transfer the file to the microcontroller, the same method as in the Install s
 
 ### Tunables
 
-Purpose | Name | Type | Kind
----|---|---|---
-`ssid` | WiFi SSID | `str` | Mandatory
-`password` | WiFi password | `str` | Mandatory
-`broker` | MQTT broker address | `str` | Mandatory
-`broker_port` | MQTT broker port | `int` | Mandatory
-`mqtt_topic` | MQTT topic to publish messages to | `str` | Mandatory
-`log_topic` | MQTT topic to publish log messages to | `str` | Optional
-`sleep_duration` | how long to deep sleep by default, in seconds | `int` | Mandatory
-`log_level` | log level, default `INFO` | `str` | Mandatory
+Purpose | Name                                                                                                                                              | Type | Kind
+---|---------------------------------------------------------------------------------------------------------------------------------------------------|---|---
+`ssid` | WiFi SSID                                                                                                                                         | `str` | Mandatory
+`password` | WiFi password                                                                                                                                     | `str` | Mandatory
+`broker` | MQTT broker address                                                                                                                               | `str` | Mandatory
+`broker_port` | MQTT broker port                                                                                                                                  | `int` | Mandatory
+`mqtt_topic` | MQTT topic to publish messages to                                                                                                                 | `str` | Mandatory
+`log_topic` | MQTT topic to publish log messages to                                                                                                             | `str` | Optional
+`deep_sleep_duration` | how long to deep sleep, in seconds                                                                                                                | `int` | Mandatory
+`light_sleep_duration` | how long to light sleep, in seconds, default 10                                                                                                   | `int` | Optional
+`log_level` | log level, default `INFO`                                                                                                                         | `str` | Mandatory
 `sleep_duration_short` | how long to deep sleep (in seconds) if battery is charged above `battery_capacity_threshold`. Should be shorter than the default `sleep_duration`. | `int` | Optional
-`battery_capacity_threshold` | battery capacity high threshold, in percent | `int` | Optional
-`tx_power` | TX power to use if RFM69 | `int` | Optional
-`encryption_key` | 16 bytes of encryption key if RFM69 | `bytes` | Optional
+`battery_capacity_threshold` | battery capacity high threshold, in percent                                                                                                       | `int` | Optional
+`tx_power` | TX power to use if RFM69                                                                                                                          | `int` | Optional
+`encryption_key` | 16 bytes of encryption key if RFM69                                                                                                               | `bytes` | Optional
 
 ## Guide/documentation links
 

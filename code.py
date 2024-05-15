@@ -70,7 +70,8 @@ ESTIMATED_RUN_TIME = 20
 
 BATTERY_CAPACITY_THRESHOLD = "battery_capacity_threshold"
 SLEEP_DURATION_SHORT = "sleep_duration_short"
-SLEEP_DURATION = "sleep_duration"
+DEEP_SLEEP_DURATION = "deep_sleep_duration"
+LIGHT_SLEEP_DURATION = "light_sleep_duration"
 BROKER_PORT = "broker_port"
 LOG_TOPIC = "log_topic"
 MQTT_TOPIC = "mqtt_topic"
@@ -160,17 +161,19 @@ def check_tunables():
     if broker_port < 0 or broker_port > 65535:
         bail(f"invalid {BROKER_PORT} value: {broker_port}")
 
-    check_int(SLEEP_DURATION)
+    check_int(DEEP_SLEEP_DURATION)
     check_int(SLEEP_DURATION_SHORT, mandatory=False)
 
     # Check consistency of the sleep values.
-    sleep_default = secrets.get(SLEEP_DURATION)
+    sleep_default = secrets.get(DEEP_SLEEP_DURATION)
     sleep_short = secrets.get(SLEEP_DURATION_SHORT)
     if sleep_short is not None and sleep_short > sleep_default:
         bail(
-            f"value of {SLEEP_DURATION_SHORT} bigger than value of {SLEEP_DURATION}: "
+            f"value of {SLEEP_DURATION_SHORT} bigger than value of {DEEP_SLEEP_DURATION}: "
             + f"{sleep_short} > {sleep_default}"
         )
+
+    check_int(LIGHT_SLEEP_DURATION, mandatory=False)
 
     check_int(BATTERY_CAPACITY_THRESHOLD, mandatory=False)
 
@@ -258,16 +261,21 @@ def main():
     #
 
     # Sleep a bit so one can break to the REPL when using console via web workflow.
-    enter_sleep(10, SleepKind(SleepKind.LIGHT))  # ugh, ESTIMATED_RUN_TIME
+    light_sleep_duration = secrets.get(LIGHT_SLEEP_DURATION)
+    if light_sleep_duration is None:
+        light_sleep_duration = 10
+    enter_sleep(
+        light_sleep_duration, SleepKind(SleepKind.LIGHT)
+    )  # ugh, ESTIMATED_RUN_TIME
 
     if mqtt_client:
         mqtt_client.disconnect()
 
     watchdog.mode = None
 
-    sleep_duration = get_sleep_duration(battery_monitor, logger)
+    deep_sleep_duration = get_deep_sleep_duration(battery_monitor, logger)
 
-    enter_sleep(sleep_duration, SleepKind(SleepKind.DEEP))
+    enter_sleep(deep_sleep_duration, SleepKind(SleepKind.DEEP))
 
 
 def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
@@ -401,13 +409,13 @@ def setup_transport():
     return mqtt_client, rfm69
 
 
-def get_sleep_duration(battery_monitor, logger):
+def get_deep_sleep_duration(battery_monitor, logger):
     """
     Get sleep duration, either default or shortened.
     Assumes the device is running on battery.
     """
 
-    sleep_duration = secrets[SLEEP_DURATION]
+    sleep_duration = secrets[DEEP_SLEEP_DURATION]
 
     # If the battery (if there is one) is charged above the threshold,
     # reduce the sleep period. This should help getting the data out more frequently.

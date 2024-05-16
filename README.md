@@ -36,7 +36,7 @@ thermistor | [Ultra Thin 10K Thermistor - B3950 NTC](https://www.adafruit.com/pr
 power jumper cables | [JST-PH 2-pin Jumper Cable - 100mm long](https://www.adafruit.com/product/4714)
 temperature sensor | [Adafruit TMP117 ±0.1°C High Accuracy I2C Temperature Sensor - STEMMA QT](https://www.adafruit.com/product/4821)
 humidity sensor | [Adafruit Sensirion SHT40 Temperature & Humidity Sensor - STEMMA QT / Qwiic](https://www.adafruit.com/product/4885)
-radio | [Radio FeatherWing](https://www.adafruit.com/product/3230) 
+radio | [Radio FeatherWing 433 MHz](https://www.adafruit.com/product/3230) 
 
 Most of the stuff comes from [Adafruit](https://www.adafruit.com/).
 

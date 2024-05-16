@@ -7,6 +7,7 @@ This is meant for battery powered devices such as QtPy or ESP32 based devices
 from Adafruit.
 """
 import json
+import struct
 import sys
 import time
 import traceback
@@ -29,6 +30,12 @@ import socketpool
 # pylint: disable=import-error
 import supervisor
 
+# Try to import both RFM69 and WiFi modules so that fallback to WiFi can be done in main().
+try:
+    import adafruit_rfm69
+except ImportError:
+    pass
+
 try:
     import wifi
 
@@ -37,7 +44,8 @@ except MemoryError as e:
     # Let this fall through to main() so that appropriate reset can be performed.
     IMPORT_EXCEPTION = e
 
-# from digitalio import DigitalInOut
+import digitalio
+
 # pylint: disable=no-name-in-module
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
@@ -62,7 +70,8 @@ ESTIMATED_RUN_TIME = 20
 
 BATTERY_CAPACITY_THRESHOLD = "battery_capacity_threshold"
 SLEEP_DURATION_SHORT = "sleep_duration_short"
-SLEEP_DURATION = "sleep_duration"
+DEEP_SLEEP_DURATION = "deep_sleep_duration"
+LIGHT_SLEEP_DURATION = "light_sleep_duration"
 BROKER_PORT = "broker_port"
 LOG_TOPIC = "log_topic"
 MQTT_TOPIC = "mqtt_topic"
@@ -70,6 +79,8 @@ BROKER = "broker"
 PASSWORD = "password"
 SSID = "ssid"
 LOG_LEVEL = "log_level"
+TX_POWER = "tx_power"
+ENCRYPTION_KEY = "encryption_key"
 
 
 def blink(pixel):
@@ -114,12 +125,31 @@ def check_int(name, mandatory=True):
         bail(f"not a integer value for {name}: {value}")
 
 
-def check_mandatory_tunables():
+def check_bytes(name, length, mandatory=True):
     """
-    Check that mandatory tunables are present and of correct type.
+    Check is bytes with given name is present in secrets.
+    """
+    value = secrets.get(name)
+    if value is None and mandatory:
+        bail(f"{name} is missing")
+
+    if value and not isinstance(value, bytes):
+        bail(f"not a byte value for {name}: {value}")
+
+    if value and len(value) != length:
+        bail(f"not correct length for {name}: {len(value)} should be {length}")
+
+
+def check_tunables():
+    """
+    Check that tunables are present and of correct type.
     Will exit the program on error.
     """
     check_string(LOG_LEVEL)
+
+    # Even though different transport can be selected than WiFi, the related tunables
+    # are still mandatory, because at this point it is known which will be selected.
+    # Also, MQTT topic is used for all transports.
     check_string(SSID)
     check_string(PASSWORD)
     check_string(BROKER)
@@ -131,29 +161,34 @@ def check_mandatory_tunables():
     if broker_port < 0 or broker_port > 65535:
         bail(f"invalid {BROKER_PORT} value: {broker_port}")
 
-    check_int(SLEEP_DURATION)
+    check_int(DEEP_SLEEP_DURATION)
     check_int(SLEEP_DURATION_SHORT, mandatory=False)
 
     # Check consistency of the sleep values.
-    sleep_default = secrets.get(SLEEP_DURATION)
+    sleep_default = secrets.get(DEEP_SLEEP_DURATION)
     sleep_short = secrets.get(SLEEP_DURATION_SHORT)
     if sleep_short is not None and sleep_short > sleep_default:
         bail(
-            f"value of {SLEEP_DURATION_SHORT} bigger than value of {SLEEP_DURATION}: "
+            f"value of {SLEEP_DURATION_SHORT} bigger than value of {DEEP_SLEEP_DURATION}: "
             + f"{sleep_short} > {sleep_default}"
         )
 
+    check_int(LIGHT_SLEEP_DURATION, mandatory=False)
+
     check_int(BATTERY_CAPACITY_THRESHOLD, mandatory=False)
 
+    check_int(TX_POWER, mandatory=False)
+    check_bytes(ENCRYPTION_KEY, 16, mandatory=False)
 
-# pylint: disable=too-many-locals,too-many-statements
+
+# pylint: disable=too-many-locals,too-many-statements,too-many-branches
 def main():
     """
     Collect temperature/humidity and battery level
     and publish to MQTT topic.
     """
 
-    check_mandatory_tunables()
+    check_tunables()
 
     log_level = get_log_level(secrets[LOG_LEVEL])
     logger = logging.getLogger("")
@@ -179,51 +214,21 @@ def main():
     battery_monitor = None
     try:
         battery_monitor = adafruit_max1704x.MAX17048(i2c)
-    except NameError:
+    except (NameError, ValueError):
         logger.info("No library for battery gauge (max17048)")
 
     sensors = Sensors(i2c)
 
-    logger.debug(f"MAC address: {wifi.radio.mac_address}")
-
-    # Connect to Wi-Fi
-    logger.info("Connecting to wifi")
-    wifi.radio.connect(secrets[SSID], secrets[PASSWORD], timeout=10)
-    logger.info(f"Connected to {secrets['ssid']}")
-    logger.debug(f"IP: {wifi.radio.ipv4_address}")
-
-    # Create a socket pool
-    pool = socketpool.SocketPool(wifi.radio)  # pylint: disable=no-member
-
-    broker_addr = secrets[BROKER]
-    broker_port = secrets[BROKER_PORT]
-    mqtt_client = mqtt_client_setup(pool, broker_addr, broker_port, log_level)
-    try:
-        log_topic = secrets[LOG_TOPIC]
-        # Log both to the console and via MQTT messages.
-        # Up to now the logger was using the default (built-in) handler,
-        # now it is necessary to add the Stream handler explicitly as
-        # with a non-default handler set only the non-default handlers will be used.
-        logger.addHandler(logging.StreamHandler())
-        logger.addHandler(MQTTHandler(mqtt_client, log_topic))
-    except KeyError:
-        pass
-
-    logger.info(f"Attempting to connect to MQTT broker {broker_addr}:{broker_port}")
-    mqtt_client.connect()
+    mqtt_client, rfm69 = setup_transport()
 
     while True:
-        data = sensors.get_measurements_dict()
-
+        battery_capacity = None
         if battery_monitor:
-            capacity = battery_monitor.cell_percent
-            logger.info(f"Battery capacity {capacity:.2f} %")
-            data["battery_level"] = f"{capacity:.2f}"
+            battery_capacity = battery_monitor.cell_percent
+            logger.info(f"Battery capacity {battery_capacity:.2f} %")
 
-        if len(data) > 0:
-            mqtt_topic = secrets[MQTT_TOPIC]
-            logger.info(f"Publishing to {mqtt_topic}")
-            mqtt_client.publish(mqtt_topic, json.dumps(data))
+        # Note that MQTT topic is used for both transports.
+        send_data(rfm69, mqtt_client, secrets[MQTT_TOPIC], sensors, battery_capacity)
 
         # Blink the LED only in debug mode when powered by battery (to save the battery).
         if (
@@ -241,35 +246,176 @@ def main():
 
         sleep_duration_short = secrets.get(SLEEP_DURATION_SHORT)
         if sleep_duration_short:
-            mqtt_timeout = sleep_duration_short
+            timeout = sleep_duration_short
         else:
-            mqtt_timeout = ESTIMATED_RUN_TIME // 2
-        logger.info(f"Waiting for MQTT event with timeout {mqtt_timeout} seconds")
-        mqtt_client.loop(timeout=mqtt_timeout)
+            timeout = ESTIMATED_RUN_TIME // 2
+        if mqtt_client:
+            logger.info(f"Waiting for MQTT event with timeout {timeout} seconds")
+            mqtt_client.loop(timeout=timeout)
+        else:
+            logger.info(f"Sleeping for {timeout} seconds")
+            time.sleep(timeout)
 
     #
     # The rest of the code in this function applies only to devices running on battery power.
     #
 
     # Sleep a bit so one can break to the REPL when using console via web workflow.
-    enter_sleep(10, SleepKind(SleepKind.LIGHT))  # ugh, ESTIMATED_RUN_TIME
+    light_sleep_duration = secrets.get(LIGHT_SLEEP_DURATION)
+    if light_sleep_duration is None:
+        light_sleep_duration = 10
+    enter_sleep(
+        light_sleep_duration, SleepKind(SleepKind.LIGHT)
+    )  # ugh, ESTIMATED_RUN_TIME
 
-    mqtt_client.disconnect()
+    if mqtt_client:
+        mqtt_client.disconnect()
 
     watchdog.mode = None
 
-    sleep_duration = get_sleep_duration(battery_monitor, logger)
+    deep_sleep_duration = get_deep_sleep_duration(battery_monitor, logger)
 
-    enter_sleep(sleep_duration, SleepKind(SleepKind.DEEP))
+    enter_sleep(deep_sleep_duration, SleepKind(SleepKind.DEEP))
 
 
-def get_sleep_duration(battery_monitor, logger):
+def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
+    """
+    Pick a transport, acquire sensor data and send them.
+    """
+    logger = logging.getLogger("")
+
+    if mqtt_client:
+        data = sensors.get_measurements_dict()
+        if battery_capacity:
+            data["battery_level"] = f"{battery_capacity:.2f}"
+
+        if len(data) == 0:
+            logger.warning("No sensor data available, will not publish")
+            return
+
+        logger.info(f"Publishing to {mqtt_topic}: {data}")
+        mqtt_client.publish(mqtt_topic, json.dumps(data))
+    elif rfm69:
+        if battery_capacity is None:
+            battery_level = 0
+        else:
+            battery_level = battery_capacity
+
+        humidity, temperature, co2_ppm = sensors.get_measurements()
+
+        if (
+            humidity is None
+            and temperature is None
+            and co2_ppm is None
+            and battery_capacity is None
+        ):
+            logger.warning("No sensor data available, will not send anything")
+            return
+
+        if co2_ppm is None:
+            co2_ppm = 0
+
+        # Note: at most 60 bytes can be sent in single packet so pack the data.
+        # The following encoding scheme was designed to fit that constraint.
+        mqtt_prefix = "MQTT:"
+        max_mqtt_topic_len = 36
+        if len(mqtt_topic) > max_mqtt_topic_len:
+            # Assuming ASCII encoding.
+            logger.warning(
+                f"Maximum MQTT topic length is {max_mqtt_topic_len}, topic string will be cut"
+            )
+        fmt = f">{len(mqtt_prefix)}s{max_mqtt_topic_len}sffIf"
+        if struct.calcsize(fmt) > 60:
+            logger.warning("the format for structure packing is bigger than 60 bytes")
+        logger.info(
+            f"Sending data over radio: {(humidity,temperature,co2_ppm,battery_level)}"
+        )
+        data = struct.pack(
+            fmt,
+            mqtt_prefix.encode("ascii"),
+            mqtt_topic.encode("ascii"),
+            humidity,
+            temperature,
+            co2_ppm,
+            battery_level,
+        )
+        logger.debug(f"Raw data to be sent: {data}")
+        rfm69.send(data)
+    else:
+        logger.error("No way to send the data")
+
+
+def setup_transport():
+    """
+    Setup transport to send data.
+    Return a tuple of RFM69 object and MQTT client object, either can be None.
+    """
+    logger = logging.getLogger("")
+
+    mqtt_client = None
+    rfm69 = None
+    # Try packetized radio first. If that does not work, fall back to WiFi.
+    try:
+        spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+        # The D-pin values assume certain wiring of the Radio FeatherWing.
+        cs = digitalio.DigitalInOut(board.D5)
+        reset = digitalio.DigitalInOut(board.D6)
+        logger.info("Setting up RFM69")
+        rfm69 = adafruit_rfm69.RFM69(
+            spi, cs, reset, 433
+        )  # hard-coded frequency for Europe
+
+        tx_power = secrets.get(TX_POWER)
+        if rfm69.high_power and tx_power is not None:
+            logger.debug(f"setting TX power to {tx_power}")
+            rfm69.tx_power = tx_power
+
+        encryption_key = secrets.get(ENCRYPTION_KEY)
+        if encryption_key:
+            logger.debug("Setting encryption key")
+            rfm69.encryption_key = encryption_key
+    except Exception as rfm69_exc:  # pylint: disable=broad-exception-caught
+        logger.info(f"RFM69 failed to initialize, will attempt WiFi: {rfm69_exc}")
+        logger.debug(f"MAC address: {wifi.radio.mac_address}")
+
+        # Connect to Wi-Fi
+        logger.info("Connecting to wifi")
+        wifi.radio.connect(secrets[SSID], secrets[PASSWORD], timeout=10)
+        logger.info(f"Connected to {secrets['ssid']}")
+        logger.debug(f"IP: {wifi.radio.ipv4_address}")
+
+        # Create a socket pool
+        pool = socketpool.SocketPool(wifi.radio)  # pylint: disable=no-member
+
+        broker_addr = secrets[BROKER]
+        broker_port = secrets[BROKER_PORT]
+        mqtt_client = mqtt_client_setup(
+            pool, broker_addr, broker_port, logger.getEffectiveLevel()
+        )
+        try:
+            log_topic = secrets[LOG_TOPIC]
+            # Log both to the console and via MQTT messages.
+            # Up to now the logger was using the default (built-in) handler,
+            # now it is necessary to add the Stream handler explicitly as
+            # with a non-default handler set only the non-default handlers will be used.
+            logger.addHandler(logging.StreamHandler())
+            logger.addHandler(MQTTHandler(mqtt_client, log_topic))
+        except KeyError:
+            pass
+
+        logger.info(f"Attempting to connect to MQTT broker {broker_addr}:{broker_port}")
+        mqtt_client.connect()
+
+    return mqtt_client, rfm69
+
+
+def get_deep_sleep_duration(battery_monitor, logger):
     """
     Get sleep duration, either default or shortened.
     Assumes the device is running on battery.
     """
 
-    sleep_duration = secrets[SLEEP_DURATION]
+    sleep_duration = secrets[DEEP_SLEEP_DURATION]
 
     # If the battery (if there is one) is charged above the threshold,
     # reduce the sleep period. This should help getting the data out more frequently.

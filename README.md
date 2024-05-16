@@ -36,6 +36,7 @@ thermistor | [Ultra Thin 10K Thermistor - B3950 NTC](https://www.adafruit.com/pr
 power jumper cables | [JST-PH 2-pin Jumper Cable - 100mm long](https://www.adafruit.com/product/4714)
 temperature sensor | [Adafruit TMP117 ±0.1°C High Accuracy I2C Temperature Sensor - STEMMA QT](https://www.adafruit.com/product/4821)
 humidity sensor | [Adafruit Sensirion SHT40 Temperature & Humidity Sensor - STEMMA QT / Qwiic](https://www.adafruit.com/product/4885)
+radio | [Radio FeatherWing](https://www.adafruit.com/product/3230) 
 
 Most of the stuff comes from [Adafruit](https://www.adafruit.com/).
 
@@ -57,6 +58,9 @@ connected via STEMMA QT and this provides accurate temperature measurements.
 After I put the code together to read the sensor data and send it to MQTT broker via WiFi, I bumped into [troubles with MQTT communication being stuck](https://forums.adafruit.com/viewtopic.php?t=193414). The MQTT library was merely a victim of some underlying firmware/network problem. I [solved the MQTT part](https://github.com/adafruit/Adafruit_CircuitPython_MiniMQTT/pull/117) which helped to avoid the stuck program, however did not help with getting the data to the local MQTT broker. The program running on the ESP32 was set to read the sensor data, publish them to MQTT broker and enter deep sleep for 5 minutes to conserve battery power. For a number of these 5 minute intervals, it did not manage to send the data successfully.
 
 I suspected this is caused by some networking problem. Even though the ESP32 was located some 3 meters away from the WiFi access point and the MQTT broker was connected via Ethernet switched network to the AP, the communication was still not stable. So, a ESP32 that would be capable of running CircuitPython, had STEMMA QT and external antenna connector was needed. Luckily, I found [ESP32 Feather V2 with w.FL antenna connector](https://www.adafruit.com/product/5438). After I went through the hoops of installing CircuitPython on it (this ESP32 does not have built-in USB capabilities, so requires different workflow in order to upload files to its flash), and running initial tests, it is evident that the networking communication is way better - it no longer takes a significant latency to connect to WiFi (involves ARP, DHCP etc.).
+Eventually though, even the Feather V2 started to get flaky and I returned to the Feather ESP32-S2 and replaced the WiFi with transmission using Radio Featherwing.
+Had to use 2 distinct resellers across Europe to snatch the last pieces of the FeatherWing.
+On the other hand it requires a dedicated radio gateway to pass the measurements further.
 
 ### Solar charging
 
@@ -74,10 +78,11 @@ As for sizing, this is something I will yet have to [figure out](https://forums.
 
 - during winter the amount of sun is minuscule compared to summer/spring. There is often a long sequence of cloudy days, when solar charging cannot do anything. As noted in [Adafruit discussion](https://forums.adafruit.com/viewtopic.php?p=578767), one has to have enough solar panels to charge the batteries enough when the sun finally goes out. And/or use batteries with much higher capacity.
 - It is possible to connect multiple solar panels together, however that's not so easy because of the ["shaded panel" problem](https://forums.adafruit.com/viewtopic.php?p=416235). The solution is to use a *Schottky diode*.
+- WiFi can be really flaky and is probably overkill (WiFi+DHCP+TCP+MQTT) for sending simple measurements. Simple radio transmission is much more simple and more energy efficient.
 
 ### Other uses
 
-Over time I added some ESP32-S2 based sensors powered via USB from a wall outlet. Also, I added support for more sensors.
+Over the time I added some ESP32-S2 based sensors powered via USB from a wall outlet. Also, I added support for more sensors.
 This lead to the code being more generic.
 
 ### Physical packaging
@@ -103,7 +108,7 @@ f.write('CIRCUITPY_WIFI_PASSWORD = "wifipassword"\n')
 f.write('CIRCUITPY_WEB_API_PASSWORD = "XXX"\n')
 f.close()
 ```
-and restart the microcontroller.
+and restart the microcontroller. **This should not be done for the microcontroller using the radio transmission** to keep things simple and avoid any WiFi induced problems.
 
 Then the following can be used:
 - copy `*.py` files to the root directory:
@@ -113,7 +118,7 @@ Then the following can be used:
       curl -v -u :XXX -T $f -L --location-trusted http://172.40.0.11/fs/$f;
   done
   ```
-  - using USB mass storage (QtPy), assumes Linux:
+  - using USB mass storage (QtPy, Feather ESP32-S2), assumes Linux:
   ```
   cp *.py /media/$LOGNAME/CIRCUITPY/
   ``` 
@@ -242,28 +247,32 @@ secrets = {
     "broker_port": 1883,
     "mqtt_topic": "devices/terasa/shield",
     "log_topic": "logs/terasa/shield",
-    "sleep_duration": 300,
+    "deep_sleep_duration": 300,
     "log_level": "INFO",
 }
 ```
+
+Even though different transport than WiFi can be selected, these are still mandatory. See the table below.
 
 To transfer the file to the microcontroller, the same method as in the Install section should be used.
 
 ### Tunables
 
-Purpose | Name | Kind
----|---|---
-`ssid` | WiFi SSID | Mandatory
-`password` | WiFi password | Mandatory
-`broker` | MQTT broker address | Mandatory
-`broker_port` | MQTT broker port | Mandatory
-`mqtt_topic` | MQTT topic to publish messages to | Mandatory
-`log_topic` | MQTT topic to publish log messages to | Optional
-`sleep_duration` | how long to deep sleep by default, in seconds | Mandatory
-`log_level` | log level, default `INFO` | Mandatory
-`sleep_duration_short` | how long to deep sleep (in seconds) if battery is charged above `battery_capacity_threshold`. Should be shorter than the default `sleep_duration`. | Optional
-`battery_capacity_threshold` | battery capacity high threshold, in percent | Optional
-
+Purpose | Name                                                                                                                                              | Type | Kind
+---|---------------------------------------------------------------------------------------------------------------------------------------------------|---|---
+`ssid` | WiFi SSID                                                                                                                                         | `str` | Mandatory
+`password` | WiFi password                                                                                                                                     | `str` | Mandatory
+`broker` | MQTT broker address                                                                                                                               | `str` | Mandatory
+`broker_port` | MQTT broker port                                                                                                                                  | `int` | Mandatory
+`mqtt_topic` | MQTT topic to publish messages to                                                                                                                 | `str` | Mandatory
+`log_topic` | MQTT topic to publish log messages to                                                                                                             | `str` | Optional
+`deep_sleep_duration` | how long to deep sleep, in seconds                                                                                                                | `int` | Mandatory
+`light_sleep_duration` | how long to light sleep, in seconds, default 10                                                                                                   | `int` | Optional
+`log_level` | log level, default `INFO`                                                                                                                         | `str` | Mandatory
+`sleep_duration_short` | how long to deep sleep (in seconds) if battery is charged above `battery_capacity_threshold`. Should be shorter than the default `sleep_duration`. | `int` | Optional
+`battery_capacity_threshold` | battery capacity high threshold, in percent                                                                                                       | `int` | Optional
+`tx_power` | TX power to use if RFM69                                                                                                                          | `int` | Optional
+`encryption_key` | 16 bytes of encryption key if RFM69                                                                                                               | `bytes` | Optional
 
 ## Guide/documentation links
 
@@ -272,6 +281,7 @@ Adafruit has largely such a good documentation that the links are worth putting 
 - [MAX17048 guide](https://learn.adafruit.com/adafruit-max17048-lipoly-liion-fuel-gauge-and-battery-monitor)
 - [web workflow RESTful API](https://docs.circuitpython.org/en/latest/docs/workflows.html#file-rest-api)
 - [CircuitPython RGB Status Light color coding](https://learn.adafruit.com/welcome-to-circuitpython/troubleshooting#circuitpython-rgb-status-light-2978455)
+- [CircuitPython for RFM69](https://learn.adafruit.com/radio-featherwing/circuitpython-for-rfm69)
 
 ## Lessons learned
 

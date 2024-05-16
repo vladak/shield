@@ -1,8 +1,24 @@
 """
-Module with code for temperature/humidity sensor reading.
+Module with code for temperature/humidity/CO2 sensor reading.
+Works only for sensors connected via I2C (STEMMA QT).
+
+The following sensors are supported:
+  - TMP117
+  - SHT40
+  - AHT20
+  - BME280
+  - SCD-40
+
+If multiple temperature/humidity sensors are present, the values are taken based
+on priority given by the list above, from highest to lowest.
 """
 
 import time
+
+try:
+    from typing import Dict, Optional, Union
+except ImportError:
+    pass
 
 import adafruit_logging as logging
 
@@ -32,7 +48,7 @@ except ImportError:
 class Sensors:
     """Sensor abstraction"""
 
-    def __init__(self, i2c):
+    def __init__(self, i2c) -> None:
         """
         Initialize the sensor objects. Assumes I2C.
         """
@@ -41,6 +57,7 @@ class Sensors:
         self.tmp117 = None
         try:
             self.tmp117 = adafruit_tmp117.TMP117(i2c)
+            logger.info("TMP117 sensor initialized")
         except NameError:
             logger.info("No library for the tmp117 sensor")
         except ValueError as e:
@@ -49,6 +66,7 @@ class Sensors:
         self.sht40 = None
         try:
             self.sht40 = adafruit_sht4x.SHT4x(i2c)
+            logger.info("SHT40 initialized")
         except NameError:
             logger.info("No library for the sht40 sensor")
         except ValueError as e:
@@ -57,6 +75,7 @@ class Sensors:
         self.aht20 = None
         try:
             self.aht20 = adafruit_ahtx0.AHTx0(i2c)
+            logger.info("AHT20 sensor initialized")
         except NameError:
             logger.info("No library for the ath20 sensor")
         except ValueError as e:
@@ -65,6 +84,7 @@ class Sensors:
         self.bme280 = None
         try:
             self.bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+            logger.info("BME280 sensor initialized")
         except NameError:
             logger.info("No library for the bme280 sensor")
         except ValueError as e:
@@ -76,16 +96,20 @@ class Sensors:
             if self.scd4x_sensor:
                 logger.info("Waiting for the first measurement from the SCD-40 sensor")
                 self.scd4x_sensor.start_periodic_measurement()
+            logger.info("SCD-40 sensor initialized")
         except ValueError as exception:
             logger.error(f"cannot find SCD4x sensor: {exception}")
         except NameError:
             logger.info("No library for the scd4x sensor")
 
     # pylint: disable=too-many-branches
-    def get_measurements(self):
+    def get_measurements(
+        self,
+    ) -> (Optional[Union[float, int]], Optional[Union[float, int]], Optional[int]):
         """
         Acquire temperature, humidity and CO2 measurements. Try various sensors,
         prefer higher precision measurements.
+        Some of the sensors return temperature as integer, while some as float.
         Return tuple of humidity, temperature and CO2 (either can be None).
         """
 
@@ -143,7 +167,7 @@ class Sensors:
 
         return humidity, temperature, co2_ppm
 
-    def get_measurements_dict(self):
+    def get_measurements_dict(self) -> Dict:
         """
         Put the metrics into dictionary and return it.
         """

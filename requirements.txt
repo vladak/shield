@@ -7,3 +7,4 @@ adafruit-circuitpython-max1704x
 adafruit-circuitpython-ahtx0
 adafruit-circuitpython-sht4x
 adafruit-circuitpython-bme280
+adafruit-circuitpython-rfm69

@@ -240,7 +240,8 @@ Under the `scrape_configs` section in `/etc/prometheus/prometheus.yml` there sho
 
 ## Configuration
 
-There needs to be a `secrets.py` file that contains Wi-Fi credentials and information about the MQTT broker.
+There needs to be a `secrets.py` file. For Wifi based transport it contains Wi-Fi credentials and information about the MQTT broker.
+
 It can look like this:
 ```python
 # This file is where you keep secret settings, passwords, and tokens!
@@ -258,7 +259,7 @@ secrets = {
 }
 ```
 
-Even though different transport than WiFi can be selected, these are still mandatory. See the table below.
+Even though radio transport can be used, the WiFi tunables are still mandatory. See the table below.
 
 To transfer the file to the microcontroller, the same method as in the Install section should be used.
 

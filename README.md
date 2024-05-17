@@ -135,7 +135,11 @@ Then the following can be used:
     circup install -r requirements.txt
     ```
 
-## Configuration
+## Pre-requisites
+
+### radio to MQTT gateway
+
+Use the [radio2mqtt](https://github.com/vladak/radio2mqtt).
 
 ### Prometheus MQTT exporter
 
@@ -234,7 +238,7 @@ Under the `scrape_configs` section in `/etc/prometheus/prometheus.yml` there sho
 
 ```
 
-## Usage
+## Configuration
 
 There needs to be a `secrets.py` file that contains Wi-Fi credentials and information about the MQTT broker.
 It can look like this:

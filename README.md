@@ -76,6 +76,8 @@ To avoid charging the LiPo battery when freezing (which would damage it), I need
 
 As for sizing, this is something I will yet have to [figure out](https://forums.adafruit.com/viewtopic.php?p=946668), esp. during the winter.
 
+After converting the transport to RFM69 based radio, the battery decerease over night is circa 5% with light sleep duration of 1 second and deep sleep duration of 30 seconds which means it could last nearly a month without charging.
+
 #### Lessons learned
 
 - during winter the amount of sun is minuscule compared to summer/spring. There is often a long sequence of cloudy days, when solar charging cannot do anything. As noted in [Adafruit discussion](https://forums.adafruit.com/viewtopic.php?p=578767), one has to have enough solar panels to charge the batteries enough when the sun finally goes out. And/or use batteries with much higher capacity.

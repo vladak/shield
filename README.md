@@ -24,8 +24,7 @@ Here is a bill of materials:
 
 Purpose | Name
 ---|---
-microcontroller | [ESP32 Feather V2 with w.FL antenna connector](https://www.adafruit.com/product/5438)
-antenna | [WiFi Antenna with w.FL / MHF3 / IPEX3 Connector](https://www.adafruit.com/product/5445)
+microcontroller | [ESP32 Feather ESP32-S2](https://www.adafruit.com/product/5303)
 battery | [2000 mAh from Pimoroni](https://shop.pimoroni.com/products/lipo-battery-pack?variant=20429082247)
 solar charger | [Adafruit Universal USB / DC / Solar Lithium Ion/Polymer charger - bq24074](https://www.adafruit.com/product/4755)
 jack adapter for solar charger | [3.5mm / 1.1mm to 5.5mm / 2.1mm DC Jack Adapter](https://www.adafruit.com/product/4287)
@@ -44,7 +43,7 @@ Most of the stuff comes from [Adafruit](https://www.adafruit.com/).
 
 ### Temperature sensor
 
-Initially, [Adafruit ESP32-S2 Feather with BME280 Sensor](https://www.adafruit.com/product/5303) was used. 
+Initially, [Adafruit ESP32-S2 Feather with BME280 Sensor](https://www.adafruit.com/product/5303) was used.
 This looked to be a fine all-in-one package, however initial experiments with temperature
 readings using the built-in BME280 sensor showed that the skew of the metric due to the board being warmed up by 
 the WiFi/SoC chip is too high - for ambient temperature of twenty/thirty-ish degrees of Celsius, the sensor
@@ -52,6 +51,9 @@ readings were forty-ish degrees of Celsius even though the code ran every couple
 
 Thus, I bought the [Adafruit TMP117 ±0.1°C High Accuracy I2C Temperature Sensor](https://www.adafruit.com/product/4821),
 connected via STEMMA QT and this provides accurate temperature measurements.
+
+Then the Feather was changed to [ESP32 Feather V2 with w.FL antenna connector](https://www.adafruit.com/product/5438)
+and then back to ESP32-S2 along with converting the transport to RFM69 based radio.
 
 ### ESP32
 

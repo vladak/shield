@@ -116,9 +116,7 @@ Then the following can be used:
 - copy `*.py` files to the root directory:
   - web workflow, assumes system with `curl` installed:
   ```
-  for f in *.py; do
-      curl -v -u :XXX -T $f -L --location-trusted http://172.40.0.11/fs/$f;
-  done
+  for f in *.py; do curl -v -u :XXX -T $f -L --location-trusted http://172.40.0.x/fs/$f; done
   ```
   - using USB mass storage (QtPy, Feather ESP32-S2), assumes Linux:
   ```
@@ -128,7 +126,7 @@ Then the following can be used:
 - install necessary libraries from Adafruit CircuitPython bundle to the `lib` directory
   - For Feather ESP32 V2, web based workflow has to be used:
     ```
-    circup --host 172.40.0.11 --password XXX install -r requirements.txt
+    circup --host 172.40.0.x --password XXX install -r requirements.txt
     ```
   - for ESP32-S2/ESP32-S3 and similar with USB mass storage access:
     ```

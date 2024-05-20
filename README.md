@@ -95,7 +95,7 @@ Initially, it was just the ESP32 connected to external solar charger. Then I add
 
 <img src="img/top_view.jpg" alt="drawing" width="400"/>
 
-To make this all fit inside the radiation shield, I used the [nylon screw and stand-off set](https://www.adafruit.com/product/3299) to fasten the sensors together, then I used (readoable !) zip tie to attach the charger and ESP32 to the battery and then I tucked that all inside the shield.
+To make this all fit inside the radiation shield, I used the [nylon screw and stand-off set](https://www.adafruit.com/product/3299) to fasten the sensors together and then I tucked that all inside the shield.
 
 <img src="img/side_view_assembled.jpg" alt="drawing" width="400"/>
 

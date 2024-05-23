@@ -99,6 +99,12 @@ To make this all fit inside the radiation shield, I used the [nylon screw and st
 
 <img src="img/side_view_assembled.jpg" alt="drawing" width="400"/>
 
+With the addition of the Radio FeatherWing (and conversion to Feather ESP32-S2):
+
+<img src="img/rfm69.jpg" alt="drawing" width="400"/>
+
+Also I removed the zip tie as it made it harder to get the bundle in and out of the shield.
+
 ## Software/firmware install
 
 Firstly, the microcontroller needs to be converted to run CircuitPython 9.x (for the `circup` to work with web workflow). To do that, for ESP32 V2, I chose the [command line `esptool`](https://learn.adafruit.com/circuitpython-with-esp32-quick-start/command-line-esptool) on a Linux computer (since macOS appeared to have flaky serial connection for some reason), however these days it can be done using [Web Flasher](https://adafruit.github.io/Adafruit_WebSerial_ESPTool/) in Chrome. For ESP32-S2 (QtPy) this procedure is simpler.

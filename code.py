@@ -372,7 +372,7 @@ def setup_transport():
 
         encryption_key = secrets.get(ENCRYPTION_KEY)
         if encryption_key:
-            logger.debug("Setting encryption key")
+            logger.info("Setting encryption key")
             rfm69.encryption_key = encryption_key
     except Exception as rfm69_exc:  # pylint: disable=broad-exception-caught
         logger.info(f"RFM69 failed to initialize, will attempt WiFi: {rfm69_exc}")

@@ -303,3 +303,5 @@ Adafruit has largely such a good documentation that the links are worth putting 
 - make it robust
   - catch any possible exception on the global level and react accordingly (reset/exit)
   - use [`safemode.py`](https://learn.adafruit.com/circuitpython-safe-mode/safemode-py) to reset the board if something goes wrong
+- the shape and orientation of the antenna on the sender and receiver matters
+  - [ideally they should have the same shape and be parallel]((https://forums.adafruit.com/viewtopic.php?t=210956)) although in this case, straight antenna bent to fit the shield works quite well with spring antenna on the MQTT gateway

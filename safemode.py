@@ -16,7 +16,7 @@ import supervisor
 # safemode.py & boot.py file write
 def precode_file_write(file, data):
     """
-    append data to file with newline. Meant to be run before code.py gets to run.
+    Append data to file with newline. Meant to be run before code.py gets to run.
     """
     storage.remount("/", False)  # writeable by CircuitPython
     with open(file, "a+", encoding="ascii") as fp:

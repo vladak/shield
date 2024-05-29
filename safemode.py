@@ -7,11 +7,26 @@ import time
 # pylint: disable=import-error
 import alarm
 import microcontroller
+import storage
 
 # pylint: disable=import-error
 import supervisor
 
+
+# safemode.py & boot.py file write
+def precode_file_write(file, data):
+    """
+    append data to file with newline. Meant to be run before code.py gets to run.
+    """
+    storage.remount("/", False)  # writeable by CircuitPython
+    with open(file, "a+", encoding="ascii") as fp:
+        fp.write(f"{data}\n")
+        fp.flush()
+    storage.remount("/", True)  # writeable by USB host
+
+
 reason = supervisor.runtime.safe_mode_reason
+precode_file_write("/safemode.log", f"{supervisor.ticks_ms()}: {str(reason)}")
 
 if reason == supervisor.SafeModeReason.HARD_FAULT:
     # pylint: disable=no-member

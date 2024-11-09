@@ -26,23 +26,35 @@ def prepare_secrets(request):
     request.addfinalizer(remove_secrets)
 
 
+class FakeBailException(Exception):
+    """
+    designated exception for overriding confchecks.bail()
+    """
+
+
+@pytest.fixture
+def fake_bail():
+    """
+    override confchecks.bail() with a function that raises FakeBailException
+    """
+    # pylint: disable=import-outside-toplevel
+    import confchecks
+
+    # pylint: disable=redefined-outer-name
+    def fake_bail(message):
+        raise FakeBailException(message)
+
+    confchecks.bail = fake_bail
+
+
 @pytest.mark.secrets_data({"foo": 60})
 # pylint: disable=unused-argument, redefined-outer-name
-def test_check_int_missing(prepare_secrets):
+def test_check_int_missing(prepare_secrets, fake_bail):
     """
     Test the case of missing name to check.
     """
     # pylint: disable=import-outside-toplevel
     import confchecks
 
-    class FakeBailException(Exception):
-        """
-        designated exception for overriding confchecks.bail()
-        """
-
-    def fake_bail(message):
-        raise FakeBailException(message)
-
-    confchecks.bail = fake_bail
     with pytest.raises(FakeBailException):
         confchecks.check_int("nonexistent")

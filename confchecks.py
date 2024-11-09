@@ -44,7 +44,7 @@ def check_int(name, mandatory=True, min_val=None, max_val=None):
     if value and not isinstance(value, int):
         bail(f"not a integer value for {name}: {value}")
 
-    if value < min_val or value > max_val:
+    if min_val and max_val and (value < min_val or value > max_val):
         bail(f"{name} value not within {min_val},{max_val}: {value}")
 
 

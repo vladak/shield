@@ -27,6 +27,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+          python3 -m pip install pytest
       - name: Run black in check mode
         run: |
           pip install black
@@ -39,3 +40,6 @@ jobs:
         run: |
           pip install pylint
           pylint --disable=duplicate-code **.py
+      - name: run pytest
+        run: |
+          pytest -vvv

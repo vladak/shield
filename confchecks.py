@@ -4,14 +4,6 @@ Various functions for checking configuration.
 
 import sys
 
-try:
-    from secrets import secrets
-except ImportError:
-    print(
-        "WiFi credentials and configuration are kept in secrets.py, please add them there!"
-    )
-    raise
-
 
 def bail(message):
     """
@@ -21,7 +13,7 @@ def bail(message):
     sys.exit(1)
 
 
-def check_string(name, mandatory=True):
+def check_string(secrets, name, mandatory=True):
     """
     Check is string with given name is present in secrets.
     """
@@ -33,7 +25,7 @@ def check_string(name, mandatory=True):
         bail(f"not a string value for {name}: {value}")
 
 
-def check_int(name, mandatory=True, min_val=None, max_val=None):
+def check_int(secrets, name, mandatory=True, min_val=None, max_val=None):
     """
     Check is integer with given name is present in secrets.
     """
@@ -53,7 +45,7 @@ def check_int(name, mandatory=True, min_val=None, max_val=None):
         bail(f"{name} value {value} higher than maximum {max_val}")
 
 
-def check_list(name, subtype, mandatory=True):
+def check_list(secrets, name, subtype, mandatory=True):
     """
     Check whether list with given name is present in secrets.
     """
@@ -69,7 +61,7 @@ def check_list(name, subtype, mandatory=True):
             bail(f"not a {subtype}: {item}")
 
 
-def check_bytes(name, length, mandatory=True):
+def check_bytes(secrets, name, length, mandatory=True):
     """
     Check is bytes with given name is present in secrets.
     """

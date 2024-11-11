@@ -98,21 +98,21 @@ def check_tunables():
     Check that tunables are present and of correct type.
     Will exit the program on error.
     """
-    check_string(LOG_LEVEL)
+    check_string(secrets, LOG_LEVEL)
 
     # Even though different transport can be selected than WiFi, the related tunables
     # are still mandatory, because at this point it is known which will be selected.
     # Also, MQTT topic is used for all transports.
-    check_string(SSID)
-    check_string(PASSWORD)
-    check_string(BROKER)
-    check_string(MQTT_TOPIC)
-    check_string(LOG_TOPIC, mandatory=False)
+    check_string(secrets, SSID)
+    check_string(secrets, PASSWORD)
+    check_string(secrets, BROKER)
+    check_string(secrets, MQTT_TOPIC)
+    check_string(secrets, LOG_TOPIC, mandatory=False)
 
-    check_int(BROKER_PORT, min_val=0, max_val=65535)
+    check_int(secrets, BROKER_PORT, min_val=0, max_val=65535)
 
-    check_int(DEEP_SLEEP_DURATION)
-    check_int(SLEEP_DURATION_SHORT, mandatory=False)
+    check_int(secrets, DEEP_SLEEP_DURATION)
+    check_int(secrets, SLEEP_DURATION_SHORT, mandatory=False)
 
     # Check consistency of the sleep values.
     sleep_default = secrets.get(DEEP_SLEEP_DURATION)
@@ -123,12 +123,12 @@ def check_tunables():
             + f"{sleep_short} > {sleep_default}"
         )
 
-    check_int(LIGHT_SLEEP_DURATION, mandatory=False)
+    check_int(secrets, LIGHT_SLEEP_DURATION, mandatory=False)
 
-    check_int(BATTERY_CAPACITY_THRESHOLD, mandatory=False)
+    check_int(secrets, BATTERY_CAPACITY_THRESHOLD, mandatory=False)
 
-    check_int(TX_POWER, mandatory=False)
-    check_bytes(ENCRYPTION_KEY, 16, mandatory=False)
+    check_int(secrets, TX_POWER, mandatory=False)
+    check_bytes(secrets, ENCRYPTION_KEY, 16, mandatory=False)
 
 
 # pylint: disable=too-many-locals,too-many-statements,too-many-branches

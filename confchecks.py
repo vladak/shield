@@ -41,11 +41,16 @@ def check_int(name, mandatory=True, min_val=None, max_val=None):
     if value is None and mandatory:
         bail(f"{name} is missing")
 
-    if value and not isinstance(value, int):
+    if value is not None and not isinstance(value, int):
         bail(f"not a integer value for {name}: {value}")
 
-    if min_val and max_val and (value < min_val or value > max_val):
-        bail(f"{name} value not within {min_val},{max_val}: {value}")
+    print(f"value: {value}")
+
+    if min_val is not None and value < min_val:
+        bail(f"{name} value {value} smaller than minimum {min_val}")
+
+    if max_val is not None and value > max_val:
+        bail(f"{name} value {value} higher than maximum {max_val}")
 
 
 def check_list(name, subtype, mandatory=True):

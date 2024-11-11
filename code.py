@@ -8,6 +8,7 @@ from Adafruit.
 """
 import json
 import struct
+import sys
 import time
 import traceback
 
@@ -17,6 +18,7 @@ try:
     import adafruit_max1704x
 except ImportError:
     pass
+
 
 import board
 import busio
@@ -49,7 +51,7 @@ import digitalio
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
 
-from confchecks import bail, check_bytes, check_int, check_string
+from confchecks import check_bytes, check_int, check_string, ConfCheckException
 from logutil import get_log_level
 from mqtt import mqtt_client_setup
 from mqtt_handler import MQTTHandler
@@ -131,6 +133,14 @@ def check_tunables():
     check_bytes(secrets, ENCRYPTION_KEY, 16, mandatory=False)
 
 
+def bail(message):
+    """
+    Print message and exit with code 1.
+    """
+    print(message)
+    sys.exit(1)
+
+
 # pylint: disable=too-many-locals,too-many-statements,too-many-branches
 def main():
     """
@@ -138,7 +148,10 @@ def main():
     and publish to MQTT topic.
     """
 
-    check_tunables()
+    try:
+        check_tunables()
+    except ConfCheckException as exception:
+        bail(exception)
 
     log_level = get_log_level(secrets[LOG_LEVEL])
     logger = logging.getLogger("")

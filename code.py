@@ -51,7 +51,7 @@ import digitalio
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
 
-from confchecks import check_bytes, check_int, check_string, ConfCheckException
+from confchecks import ConfCheckException, check_bytes, check_int, check_string
 from logutil import get_log_level
 from mqtt import mqtt_client_setup
 from mqtt_handler import MQTTHandler

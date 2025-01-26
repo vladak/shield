@@ -282,7 +282,7 @@ Purpose | Name                                                                  
 `log_level` | log level, default `INFO`                                                                                                                         | `str` | Mandatory
 `deep_sleep_duration` | how long to deep sleep, in seconds. Used only when running on battery.                                                                  | `int` | Mandatory
 `light_sleep_duration` | how long to light sleep, in seconds, default 10. Used only when running on battery.                                                    | `int` | Optional
-`sleep_duration_short` | how long to deep sleep (in seconds) if battery is charged above `battery_capacity_threshold`. Should be shorter than the default `deep_sleep_duration`. This is also used when **not** running on battery power as a MQTT loop timeout. | `int` | Optional
+`sleep_duration_short` | how long to deep sleep (in seconds) if battery is charged above `battery_capacity_threshold`. Should be smaller than the default `deep_sleep_duration`. This is also used when **not** running on battery power as a MQTT loop timeout. | `int` | Optional
 `battery_capacity_threshold` | battery capacity high threshold, in percent                                                                                                       | `int` | Optional
 `tx_power` | TX power to use if RFM69                                                                                                                          | `int` | Optional
 `encryption_key` | 16 bytes of encryption key if RFM69                                                                                                               | `bytes` | Optional

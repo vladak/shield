@@ -267,6 +267,8 @@ secrets = {
 
 Even though radio transport can be used, the WiFi tunables are still mandatory. See the table below.
 
+If the radio transport is active, instead of WiFi, none of the MQTT related tunables will be used.
+
 To transfer the file to the microcontroller, the same method as in the Install section should be used.
 
 ### Tunables

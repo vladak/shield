@@ -21,7 +21,7 @@ def pack_data(mqtt_topic, battery_level, co2_ppm, humidity, temperature, lux):
     if len(mqtt_topic) > max_mqtt_topic_len:
         # Assuming ASCII encoding.
         raise ValueError(f"Maximum MQTT topic length is {max_mqtt_topic_len}")
-    fmt = f">{len(mqtt_prefix)}s{max_mqtt_topic_len}sffIfI"
+    fmt = f">{len(mqtt_prefix)}s{max_mqtt_topic_len}sffIff"
     logger.info(
         f"Sending data over radio: {(humidity, temperature, co2_ppm, battery_level, lux)}"
     )

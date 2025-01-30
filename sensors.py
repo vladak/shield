@@ -8,6 +8,7 @@ The following sensors are supported:
   - AHT20
   - BME280
   - SCD-40
+  - VEML-7700
 
 If multiple temperature/humidity sensors are present, the values are taken based
 on priority given by the list above, from highest to lowest.
@@ -42,12 +43,17 @@ try:
     from adafruit_bme280 import basic as adafruit_bme280
 except ImportError:
     pass
+try:
+    import adafruit_veml7700
+except ImportError:
+    pass
 
 
 # pylint: disable=too-few-public-methods
 class Sensors:
     """Sensor abstraction"""
 
+    # pylint: disable=too-many-statements
     def __init__(self, i2c) -> None:
         """
         Initialize the sensor objects. Assumes I2C.
@@ -102,15 +108,26 @@ class Sensors:
         except NameError:
             logger.info("No library for the scd4x sensor")
 
+        self.veml_sensor = None
+        try:
+            self.veml_sensor = adafruit_veml7700.VEML7700(i2c)
+        except NameError:
+            logger.info("No library for the VEML7700 sensor")
+
     # pylint: disable=too-many-branches
     def get_measurements(
         self,
-    ) -> (Optional[Union[float, int]], Optional[Union[float, int]], Optional[int]):
+    ) -> (
+        Optional[Union[float, int]],
+        Optional[Union[float, int]],
+        Optional[int],
+        Optional[int],
+    ):
         """
-        Acquire temperature, humidity and CO2 measurements. Try various sensors,
-        prefer higher precision measurements.
+        Acquire temperature, humidity, CO2 and lux measurements.
+        Try various sensors, prefer higher precision measurements.
         Some of the sensors return temperature as integer, while some as float.
-        Return tuple of humidity, temperature and CO2 (either can be None).
+        Return tuple of humidity, temperature, CO2, lux (either can be None).
         """
 
         logger = logging.getLogger("")
@@ -165,7 +182,11 @@ class Sensors:
                 humidity = self.scd4x_sensor.relative_humidity
                 logger.debug("Acquired humidity from SCD4x")
 
-        return humidity, temperature, co2_ppm
+        lux = None
+        if self.veml_sensor:
+            lux = self.veml_sensor.lux
+
+        return humidity, temperature, co2_ppm, lux
 
     def get_measurements_dict(self) -> Dict:
         """
@@ -174,7 +195,7 @@ class Sensors:
         data = {}
         logger = logging.getLogger("")
 
-        humidity, temperature, co2_ppm = self.get_measurements()
+        humidity, temperature, co2_ppm, lux = self.get_measurements()
 
         if temperature:
             logger.info(f"Temperature: {temperature:.1f} C")
@@ -185,6 +206,9 @@ class Sensors:
         if co2_ppm:
             logger.info(f"CO2 = {co2_ppm} ppm")
             data["co2_ppm"] = f"{co2_ppm}"
+        if lux:
+            logger.info(f"light = {lux} lux")
+            data["lux"] = f"{lux}"
 
         logger.debug(f"data: {data}")
         return data

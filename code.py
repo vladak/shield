@@ -7,7 +7,6 @@ This is meant for battery powered devices such as QtPy or ESP32 based devices
 from Adafruit.
 """
 import json
-import struct
 import sys
 import time
 import traceback
@@ -52,6 +51,7 @@ from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
 
 from confchecks import ConfCheckException, check_bytes, check_int, check_string
+from data import pack_data
 from logutil import get_log_level
 from mqtt import mqtt_client_setup
 from mqtt_handler import MQTTHandler
@@ -264,7 +264,7 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
         else:
             battery_level = battery_capacity
 
-        humidity, temperature, co2_ppm = sensors.get_measurements()
+        humidity, temperature, co2_ppm, lux = sensors.get_measurements()
 
         if (
             humidity is None
@@ -278,44 +278,14 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
         if co2_ppm is None:
             co2_ppm = 0
 
-        data = prepare_data(battery_level, co2_ppm, humidity, mqtt_topic, temperature)
+        if lux is None:
+            lux = 0
+
+        data = pack_data(mqtt_topic, battery_level, co2_ppm, humidity, temperature, lux)
         logger.debug(f"Raw data to be sent: {data}")
         rfm69.send(data)
     else:
         logger.error("No way to send the data")
-
-
-def prepare_data(battery_level, co2_ppm, humidity, mqtt_topic, temperature):
-    """
-    Pack the structure with data.
-    """
-    logger = logging.getLogger("")
-
-    # Note: at most 60 bytes can be sent in single packet so pack the data.
-    # The following encoding scheme was designed to fit that constraint.
-    mqtt_prefix = "MQTT:"
-    max_mqtt_topic_len = 36
-    if len(mqtt_topic) > max_mqtt_topic_len:
-        # Assuming ASCII encoding.
-        logger.warning(
-            f"Maximum MQTT topic length is {max_mqtt_topic_len}, topic string will be cut"
-        )
-    fmt = f">{len(mqtt_prefix)}s{max_mqtt_topic_len}sffIf"
-    if struct.calcsize(fmt) > 60:
-        logger.warning("the format for structure packing is bigger than 60 bytes")
-    logger.info(
-        f"Sending data over radio: {(humidity, temperature, co2_ppm, battery_level)}"
-    )
-    data = struct.pack(
-        fmt,
-        mqtt_prefix.encode("ascii"),
-        mqtt_topic.encode("ascii"),
-        humidity,
-        temperature,
-        co2_ppm,
-        battery_level,
-    )
-    return data
 
 
 def setup_transport():

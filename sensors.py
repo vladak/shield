@@ -185,6 +185,7 @@ class Sensors:
         lux = None
         if self.veml_sensor:
             lux = self.veml_sensor.lux
+            logger.debug("Acquired illuminance from VEML7700")
 
         return humidity, temperature, co2_ppm, lux
 

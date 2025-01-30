@@ -32,8 +32,6 @@ def check_int(secrets, name, mandatory=True, min_val=None, max_val=None):
     if value is not None and not isinstance(value, int):
         raise ConfCheckException(f"not a integer value for {name}: {value}")
 
-    print(f"value: {value}")
-
     if min_val is not None and value < min_val:
         raise ConfCheckException(f"{name} value {value} smaller than minimum {min_val}")
 

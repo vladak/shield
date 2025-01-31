@@ -217,6 +217,15 @@ metrics:
     help: CO2 ppm
     # The prometheus type for this metric. Valid values are: "gauge" and "counter"
     type: gauge
+  -
+    # The name of the metric in prometheus
+    prom_name: lux
+    # The name of the metric in a MQTT JSON message
+    mqtt_name: lux
+    # The prometheus help text for this metric
+    help: illuminance in Lux
+    # The prometheus type for this metric. Valid values are: "gauge" and "counter"
+    type: gauge
 ```
 
 ### Prometheus

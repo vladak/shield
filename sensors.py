@@ -53,8 +53,8 @@ except ImportError:
 class Sensors:
     """Sensor abstraction"""
 
-    # pylint: disable=too-many-statements
-    def __init__(self, i2c) -> None:
+    # pylint: disable=too-many-statements,too-many-branches
+    def __init__(self, i2c, light_gain=None) -> None:
         """
         Initialize the sensor objects. Assumes I2C.
         """
@@ -111,6 +111,14 @@ class Sensors:
         self.veml_sensor = None
         try:
             self.veml_sensor = adafruit_veml7700.VEML7700(i2c)
+            if light_gain is not None:
+                if light_gain == 1:
+                    light_gain = adafruit_veml7700.ALS_GAIN_1
+                elif light_gain == 2:
+                    light_gain = adafruit_veml7700.ALS_GAIN_2
+                else:
+                    raise ValueError(f"invalid light gain value: {light_gain}")
+                self.veml_sensor.light_gain = light_gain
         except NameError:
             logger.info("No library for the VEML7700 sensor")
 

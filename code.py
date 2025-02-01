@@ -83,6 +83,7 @@ SSID = "ssid"
 LOG_LEVEL = "log_level"
 TX_POWER = "tx_power"
 ENCRYPTION_KEY = "encryption_key"
+LIGHT_GAIN = "light_gain"
 
 
 def blink(pixel):
@@ -132,6 +133,11 @@ def check_tunables():
     check_int(secrets, TX_POWER, mandatory=False)
     check_bytes(secrets, ENCRYPTION_KEY, 16, mandatory=False)
 
+    check_int(secrets, LIGHT_GAIN, mandatory=False)
+    light_gain = secrets.get(LIGHT_GAIN)
+    if light_gain is not None and light_gain not in [1, 2]:
+        bail(f"value of {LIGHT_GAIN} must be either 1 or 2")
+
 
 def bail(message):
     """
@@ -180,7 +186,7 @@ def main():
     except (NameError, ValueError):
         logger.info("No library for battery gauge (max17048)")
 
-    sensors = Sensors(i2c)
+    sensors = Sensors(i2c, light_gain=secrets.get(LIGHT_GAIN))
 
     mqtt_client, rfm69 = setup_transport()
 

@@ -113,9 +113,9 @@ class Sensors:
             self.veml_sensor = adafruit_veml7700.VEML7700(i2c)
             if light_gain is not None:
                 if light_gain == 1:
-                    light_gain = adafruit_veml7700.ALS_GAIN_1
+                    light_gain = adafruit_veml7700.VEML7700.ALS_GAIN_1
                 elif light_gain == 2:
-                    light_gain = adafruit_veml7700.ALS_GAIN_2
+                    light_gain = adafruit_veml7700.VEML7700.ALS_GAIN_2
                 else:
                     raise ValueError(f"invalid light gain value: {light_gain}")
                 self.veml_sensor.light_gain = light_gain

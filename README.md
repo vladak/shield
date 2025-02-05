@@ -319,4 +319,4 @@ Adafruit has largely such a good documentation that the links are worth putting 
 - the shape and orientation of the antenna on the sender and receiver matters
   - [ideally they should have the same shape and be parallel]((https://forums.adafruit.com/viewtopic.php?t=210956)) although in this case, straight antenna bent to fit the shield works quite well with spring antenna on the MQTT gateway
 - some of the batteries (and JST-PH) cables have reversed polarity: https://www.youtube.com/watch?v=ILArrTIMFyM
-  - when the JST-PH connector is faced with the notch up with the socket facing outwards, the red (power) cables should be on the left and ground (black) on the right
+  - when the JST-PH connector is faced with the notch up with the socket facing outwards, the red (power) cable should be on the left and ground (black) on the right

@@ -233,9 +233,10 @@ def main():
     light_sleep_duration = secrets.get(LIGHT_SLEEP_DURATION)
     if light_sleep_duration is None:
         light_sleep_duration = 10
-    enter_sleep(
-        light_sleep_duration, SleepKind(SleepKind.LIGHT)
-    )  # ugh, ESTIMATED_RUN_TIME
+    if light_sleep_duration > 0:
+        enter_sleep(
+            light_sleep_duration, SleepKind(SleepKind.LIGHT)
+        )  # ugh, ESTIMATED_RUN_TIME
 
     if mqtt_client:
         mqtt_client.disconnect()

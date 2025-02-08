@@ -244,7 +244,6 @@ def main():
     watchdog.mode = None
 
     deep_sleep_duration = get_deep_sleep_duration(battery_monitor, logger)
-
     enter_sleep(deep_sleep_duration, SleepKind(SleepKind.DEEP))
 
 

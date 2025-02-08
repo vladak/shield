@@ -180,6 +180,10 @@ def main():
         # QtPy
         i2c = busio.I2C(board.SCL1, board.SDA1)
 
+    #
+    # The presence of battery monitor changes the flow (see below),
+    # hence it is not part of Sensors.
+    #
     battery_monitor = None
     try:
         battery_monitor = adafruit_max1704x.MAX17048(i2c)
@@ -241,6 +245,7 @@ def main():
     if mqtt_client:
         mqtt_client.disconnect()
 
+    # Disarm the watchdog.
     watchdog.mode = None
 
     deep_sleep_duration = get_deep_sleep_duration(battery_monitor, logger)

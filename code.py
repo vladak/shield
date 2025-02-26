@@ -30,20 +30,6 @@ import socketpool
 # pylint: disable=import-error
 import supervisor
 
-# Try to import both RFM69 and WiFi modules so that fallback to WiFi can be done in main().
-try:
-    import adafruit_rfm69
-except ImportError:
-    pass
-
-try:
-    import wifi
-
-    IMPORT_EXCEPTION = None
-except MemoryError as e:
-    # Let this fall through to main() so that appropriate reset can be performed.
-    IMPORT_EXCEPTION = e
-
 import digitalio
 
 # pylint: disable=no-name-in-module
@@ -164,9 +150,6 @@ def main():
     logger.setLevel(log_level)
 
     logger.info("Running")
-
-    if IMPORT_EXCEPTION:
-        raise IMPORT_EXCEPTION
 
     watchdog.timeout = ESTIMATED_RUN_TIME
     watchdog.mode = WatchDogMode.RAISE
@@ -319,6 +302,9 @@ def setup_transport():
             reset = digitalio.DigitalInOut(board.D32)
             cs = digitalio.DigitalInOut(board.D14)
 
+        # pylint: disable=import-outside-toplevel
+        import adafruit_rfm69
+
         logger.info("Setting up RFM69")
         rfm69 = adafruit_rfm69.RFM69(
             spi, cs, reset, 433
@@ -335,6 +321,10 @@ def setup_transport():
             rfm69.encryption_key = encryption_key
     except Exception as rfm69_exc:  # pylint: disable=broad-exception-caught
         logger.info(f"RFM69 failed to initialize, will attempt WiFi: {rfm69_exc}")
+
+        # pylint: disable=import-outside-toplevel
+        import wifi
+
         logger.debug(f"MAC address: {wifi.radio.mac_address}")
 
         # Connect to Wi-Fi

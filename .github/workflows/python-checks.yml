@@ -6,8 +6,6 @@ on:
       - "**.py"
       - .github/workflows/python-checks.yml
       - .isort.cfg
-  schedule:
-  - cron: "0 0 * * 0"
 
 jobs:
   checks:

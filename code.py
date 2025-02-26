@@ -21,6 +21,7 @@ except ImportError:
 
 import board
 import busio
+import digitalio
 import microcontroller
 import neopixel
 
@@ -29,8 +30,6 @@ import socketpool
 
 # pylint: disable=import-error
 import supervisor
-
-import digitalio
 
 # pylint: disable=no-name-in-module
 from microcontroller import watchdog

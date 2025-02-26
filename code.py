@@ -171,7 +171,10 @@ def main():
     watchdog.timeout = ESTIMATED_RUN_TIME
     watchdog.mode = WatchDogMode.RAISE
 
-    pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
+    # Use the LED only in debug mode when powered by battery (to save the battery).
+    pixel = None
+    if not battery_monitor or log_level == logging.DEBUG:  # pylint: disable=no-member
+        pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
 
     # Create sensor objects, using the board's default I2C bus.
     try:
@@ -203,11 +206,7 @@ def main():
         # Note that MQTT topic is used for both transports.
         send_data(rfm69, mqtt_client, secrets[MQTT_TOPIC], sensors, battery_capacity)
 
-        # Blink the LED only in debug mode when powered by battery (to save the battery).
-        if (
-            not battery_monitor
-            or log_level == logging.DEBUG  # pylint: disable=no-member
-        ):
+        if pixel:
             blink(pixel)
 
         watchdog.feed()
@@ -319,7 +318,7 @@ def setup_transport():
             # ESP32V2
             reset = digitalio.DigitalInOut(board.D32)
             cs = digitalio.DigitalInOut(board.D14)
-        
+
         logger.info("Setting up RFM69")
         rfm69 = adafruit_rfm69.RFM69(
             spi, cs, reset, 433

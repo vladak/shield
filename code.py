@@ -171,11 +171,6 @@ def main():
     watchdog.timeout = ESTIMATED_RUN_TIME
     watchdog.mode = WatchDogMode.RAISE
 
-    # Use the LED only in debug mode when powered by battery (to save the battery).
-    pixel = None
-    if not battery_monitor or log_level == logging.DEBUG:  # pylint: disable=no-member
-        pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
-
     # Create sensor objects, using the board's default I2C bus.
     try:
         i2c = board.I2C()
@@ -192,6 +187,11 @@ def main():
         battery_monitor = adafruit_max1704x.MAX17048(i2c)
     except (NameError, ValueError):
         logger.info("No library for battery gauge (max17048)")
+
+    # Use the LED only in debug mode when powered by battery (to save the battery).
+    pixel = None
+    if not battery_monitor or log_level == logging.DEBUG:  # pylint: disable=no-member
+        pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
 
     sensors = Sensors(i2c, light_gain=secrets.get(LIGHT_GAIN))
 

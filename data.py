@@ -7,7 +7,7 @@ import struct
 import adafruit_logging as logging
 
 
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def pack_data(mqtt_topic, battery_level, co2_ppm, humidity, temperature, lux):
     """
     Pack the structure with data.

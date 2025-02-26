@@ -150,8 +150,8 @@ def bail(message):
 # pylint: disable=too-many-locals,too-many-statements,too-many-branches
 def main():
     """
-    Collect temperature/humidity and battery level
-    and publish to MQTT topic.
+    Collect temperature/humidity/lux and battery level
+    and publish to MQTT topic or send over RFM69 radio.
     """
 
     try:

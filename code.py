@@ -39,8 +39,6 @@ from watchdog import WatchDogMode, WatchDogTimeout
 from confchecks import ConfCheckException, check_bytes, check_int, check_string
 from data import pack_data
 from logutil import get_log_level
-from mqtt import mqtt_client_setup
-from mqtt_handler import MQTTHandler
 from sensors import Sensors
 from sleep import SleepKind, enter_sleep
 
@@ -335,6 +333,10 @@ def setup_transport():
 
         # Create a socket pool
         pool = socketpool.SocketPool(wifi.radio)  # pylint: disable=no-member
+
+        # pylint: disable=import-outside-toplevel
+        from mqtt import mqtt_client_setup
+        from mqtt_handler import MQTTHandler
 
         broker_addr = secrets[BROKER]
         broker_port = secrets[BROKER_PORT]

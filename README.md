@@ -140,6 +140,7 @@ Then the following can be used:
     ```
     circup install -r requirements.txt
     ```
+- if running on battery power (with RFM69), do not forget to delete `settings.toml` to avoid draining the battery because of WiFi
 
 ## Pre-requisites
 

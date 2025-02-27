@@ -26,9 +26,6 @@ import microcontroller
 import neopixel
 
 # pylint: disable=import-error
-import socketpool
-
-# pylint: disable=import-error
 import supervisor
 
 # pylint: disable=no-name-in-module
@@ -329,6 +326,9 @@ def setup_transport():
         wifi.radio.connect(secrets[SSID], secrets[PASSWORD], timeout=10)
         logger.info(f"Connected to {secrets['ssid']}")
         logger.debug(f"IP: {wifi.radio.ipv4_address}")
+
+        # pylint: disable=import-error
+        import socketpool
 
         # Create a socket pool
         pool = socketpool.SocketPool(wifi.radio)  # pylint: disable=no-member

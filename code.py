@@ -23,7 +23,6 @@ import board
 import busio
 import digitalio
 import microcontroller
-import neopixel
 
 # pylint: disable=import-error
 import supervisor
@@ -168,6 +167,9 @@ def main():
     # Use the LED only in debug mode when powered by battery (to save the battery).
     pixel = None
     if not battery_monitor or log_level == logging.DEBUG:  # pylint: disable=no-member
+        # pylint: disable=import-outside-toplevel
+        import neopixel
+
         pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
 
     sensors = Sensors(i2c, light_gain=secrets.get(LIGHT_GAIN))
@@ -327,7 +329,7 @@ def setup_transport():
         logger.info(f"Connected to {secrets['ssid']}")
         logger.debug(f"IP: {wifi.radio.ipv4_address}")
 
-        # pylint: disable=import-error
+        # pylint: disable=import-error,import-outside-toplevel
         import socketpool
 
         # Create a socket pool

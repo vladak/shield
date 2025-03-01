@@ -16,7 +16,7 @@ jobs:
       - name: Make mpy-cross executable
         run: chmod +x mpy-cross
       - name: Run mpy-cross
-        run: ./mpy-cross code.py
+        run: ./mpy-cross *.py
       - name: List files
         run: ls
       - name: Upload artifact

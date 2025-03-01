@@ -12,7 +12,7 @@ jobs:
       - name: Set up repository
         uses: actions/checkout@v4
       - name: Download mpy-cross
-        run: curl -q -o 'mpy-cross' 'https://adafruit-circuit-python.s3.amazonaws.com/bin/mpy-cross/linux-amd64/mpy-cross-linux-amd64-9.2.0.static'
+        run: curl -q -o 'mpy-cross' 'https://adafruit-circuit-python.s3.amazonaws.com/bin/mpy-cross/linux-amd64/mpy-cross-linux-amd64-9.0.0.static'
       - name: Make mpy-cross executable
         run: chmod +x mpy-cross
       - name: Run mpy-cross

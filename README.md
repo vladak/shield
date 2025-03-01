@@ -123,7 +123,7 @@ and restart the microcontroller. **This should not be done for the microcontroll
 Then the following can be used:
 - copy `*.py` files to the root directory:
   - web workflow, assumes system with `curl` installed:
-    - if running on battery power, use `.mpy` files as this reduces run time. download the build artifacts (see the Summary link for the 'mpy-cross' workflow), unzip them and upload like this (CP needs `code.py`):
+    - if running on battery power, use `.mpy` files as this reduces run time. download the build artifacts (see the Summary link for the ['mpy-cross' workflow](https://github.com/vladak/shield/actions/workflows/mpy.yml)), unzip them and upload like this (CP needs `code.py`):
   ```
   for f in code.py *.mpy; do curl -v -u :XXX -T $f -L --location-trusted http://172.40.0.x/fs/$f; done
   ```

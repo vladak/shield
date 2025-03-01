@@ -34,7 +34,7 @@ from logutil import get_log_level
 # pylint: disable=wildcard-import, unused-wildcard-import
 from names import *
 from sensors import Sensors
-from sleep import SleepKind, enter_sleep
+from sleep import SleepKind, enter_sleep, get_deep_sleep_duration
 from transport import setup_transport
 
 try:
@@ -160,40 +160,8 @@ def main():
     # Disarm the watchdog.
     watchdog.mode = None
 
-    deep_sleep_duration = get_deep_sleep_duration(battery_monitor, logger)
+    deep_sleep_duration = get_deep_sleep_duration(secrets, battery_monitor, logger)
     enter_sleep(deep_sleep_duration, SleepKind(SleepKind.DEEP))
-
-
-def get_deep_sleep_duration(battery_monitor, logger):
-    """
-    Get sleep duration, either default or shortened.
-    Assumes the device is running on battery.
-    """
-
-    sleep_duration = secrets[DEEP_SLEEP_DURATION]
-
-    # If the battery (if there is one) is charged above the threshold,
-    # reduce the sleep period. This should help getting the data out more frequently.
-    sleep_duration_short = secrets.get(SLEEP_DURATION_SHORT)
-    battery_capacity_threshold = secrets.get(BATTERY_CAPACITY_THRESHOLD)
-    if (
-        sleep_duration_short
-        and battery_monitor
-        and battery_capacity_threshold
-        and sleep_duration_short < sleep_duration
-    ):
-        current_capacity = battery_monitor.cell_percent
-        if current_capacity > battery_capacity_threshold:
-            logger.info(
-                # f-string would be nicer however CircuitPython does not like 2 f-strings.
-                # pylint: disable=consider-using-f-string
-                "battery capacity more than {}, using shorter sleep of {} seconds".format(
-                    battery_capacity_threshold, sleep_duration_short
-                )
-            )
-            sleep_duration = sleep_duration_short
-
-    return sleep_duration
 
 
 def hard_reset(exception):

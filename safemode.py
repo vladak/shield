@@ -19,9 +19,9 @@ def precode_file_write(file, data):
     Append data to file with newline. Meant to be run before code.py gets to run.
     """
     storage.remount("/", False)  # writeable by CircuitPython
-    with open(file, "a+", encoding="ascii") as fp:
-        fp.write(f"{data}\n")
-        fp.flush()
+    with open(file, "a+", encoding="ascii") as file_obj:
+        file_obj.write(f"{data}\n")
+        file_obj.flush()
     storage.remount("/", True)  # writeable by USB host
 
 

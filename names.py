@@ -1,0 +1,18 @@
+"""
+configuration names
+"""
+
+BATTERY_CAPACITY_THRESHOLD = "battery_capacity_threshold"
+SLEEP_DURATION_SHORT = "sleep_duration_short"
+DEEP_SLEEP_DURATION = "deep_sleep_duration"
+LIGHT_SLEEP_DURATION = "light_sleep_duration"
+BROKER_PORT = "broker_port"
+LOG_TOPIC = "log_topic"
+MQTT_TOPIC = "mqtt_topic"
+BROKER = "broker"
+PASSWORD = "password"
+SSID = "ssid"
+LOG_LEVEL = "log_level"
+TX_POWER = "tx_power"
+ENCRYPTION_KEY = "encryption_key"
+LIGHT_GAIN = "light_gain"

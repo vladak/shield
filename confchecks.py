@@ -2,6 +2,11 @@
 Various functions for checking configuration.
 """
 
+import sys
+
+# pylint: disable=unused-wildcard-import, wildcard-import
+from names import *
+
 
 class ConfCheckException(Exception):
     """
@@ -70,3 +75,54 @@ def check_bytes(secrets, name, length, mandatory=True):
         raise ConfCheckException(
             f"not correct length for {name}: {len(value)} should be {length}"
         )
+
+
+def bail(message):
+    """
+    Print message and exit with code 1.
+    """
+    print(message)
+    sys.exit(1)
+
+
+def check_tunables(secrets):
+    """
+    Check that tunables are present and of correct type.
+    Will exit the program on error.
+    """
+    check_string(secrets, LOG_LEVEL)
+
+    # Even though different transport can be selected than WiFi, the related tunables
+    # are still mandatory, because at this point it is known which will be selected.
+    # Also, MQTT topic is used for all transports.
+    check_string(secrets, SSID)
+    check_string(secrets, PASSWORD)
+    check_string(secrets, BROKER)
+    check_string(secrets, MQTT_TOPIC)
+    check_string(secrets, LOG_TOPIC, mandatory=False)
+
+    check_int(secrets, BROKER_PORT, min_val=0, max_val=65535)
+
+    check_int(secrets, DEEP_SLEEP_DURATION)
+    check_int(secrets, SLEEP_DURATION_SHORT, mandatory=False)
+
+    # Check consistency of the sleep values.
+    sleep_default = secrets.get(DEEP_SLEEP_DURATION)
+    sleep_short = secrets.get(SLEEP_DURATION_SHORT)
+    if sleep_short is not None and sleep_short > sleep_default:
+        bail(
+            f"value of {SLEEP_DURATION_SHORT} bigger than value of {DEEP_SLEEP_DURATION}: "
+            + f"{sleep_short} > {sleep_default}"
+        )
+
+    check_int(secrets, LIGHT_SLEEP_DURATION, mandatory=False)
+
+    check_int(secrets, BATTERY_CAPACITY_THRESHOLD, mandatory=False)
+
+    check_int(secrets, TX_POWER, mandatory=False)
+    check_bytes(secrets, ENCRYPTION_KEY, 16, mandatory=False)
+
+    check_int(secrets, LIGHT_GAIN, mandatory=False)
+    light_gain = secrets.get(LIGHT_GAIN)
+    if light_gain is not None and light_gain not in [1, 2]:
+        bail(f"value of {LIGHT_GAIN} must be either 1 or 2")

@@ -6,7 +6,6 @@ Acquire values from various sensors, publish it to MQTT topic, enter deep sleep.
 This is meant for battery powered devices such as QtPy or ESP32 based devices
 from Adafruit.
 """
-import sys
 import time
 import traceback
 
@@ -20,7 +19,6 @@ except ImportError:
 
 import board
 import busio
-import digitalio
 import microcontroller
 
 # pylint: disable=import-error
@@ -30,11 +28,15 @@ import supervisor
 from microcontroller import watchdog
 from watchdog import WatchDogMode, WatchDogTimeout
 
-from confchecks import ConfCheckException, check_bytes, check_int, check_string
+from confchecks import ConfCheckException, bail, check_tunables
 from data import send_data
 from logutil import get_log_level
+
+# pylint: disable=wildcard-import, unused-wildcard-import
+from names import *
 from sensors import Sensors
 from sleep import SleepKind, enter_sleep
+from transport import setup_transport
 
 try:
     from secrets import secrets
@@ -48,21 +50,6 @@ except ImportError:
 # This is used to compute the watchdog timeout.
 ESTIMATED_RUN_TIME = 20
 
-BATTERY_CAPACITY_THRESHOLD = "battery_capacity_threshold"
-SLEEP_DURATION_SHORT = "sleep_duration_short"
-DEEP_SLEEP_DURATION = "deep_sleep_duration"
-LIGHT_SLEEP_DURATION = "light_sleep_duration"
-BROKER_PORT = "broker_port"
-LOG_TOPIC = "log_topic"
-MQTT_TOPIC = "mqtt_topic"
-BROKER = "broker"
-PASSWORD = "password"
-SSID = "ssid"
-LOG_LEVEL = "log_level"
-TX_POWER = "tx_power"
-ENCRYPTION_KEY = "encryption_key"
-LIGHT_GAIN = "light_gain"
-
 
 def blink(pixel):
     """
@@ -74,57 +61,6 @@ def blink(pixel):
     pixel.brightness = 0
 
 
-def check_tunables():
-    """
-    Check that tunables are present and of correct type.
-    Will exit the program on error.
-    """
-    check_string(secrets, LOG_LEVEL)
-
-    # Even though different transport can be selected than WiFi, the related tunables
-    # are still mandatory, because at this point it is known which will be selected.
-    # Also, MQTT topic is used for all transports.
-    check_string(secrets, SSID)
-    check_string(secrets, PASSWORD)
-    check_string(secrets, BROKER)
-    check_string(secrets, MQTT_TOPIC)
-    check_string(secrets, LOG_TOPIC, mandatory=False)
-
-    check_int(secrets, BROKER_PORT, min_val=0, max_val=65535)
-
-    check_int(secrets, DEEP_SLEEP_DURATION)
-    check_int(secrets, SLEEP_DURATION_SHORT, mandatory=False)
-
-    # Check consistency of the sleep values.
-    sleep_default = secrets.get(DEEP_SLEEP_DURATION)
-    sleep_short = secrets.get(SLEEP_DURATION_SHORT)
-    if sleep_short is not None and sleep_short > sleep_default:
-        bail(
-            f"value of {SLEEP_DURATION_SHORT} bigger than value of {DEEP_SLEEP_DURATION}: "
-            + f"{sleep_short} > {sleep_default}"
-        )
-
-    check_int(secrets, LIGHT_SLEEP_DURATION, mandatory=False)
-
-    check_int(secrets, BATTERY_CAPACITY_THRESHOLD, mandatory=False)
-
-    check_int(secrets, TX_POWER, mandatory=False)
-    check_bytes(secrets, ENCRYPTION_KEY, 16, mandatory=False)
-
-    check_int(secrets, LIGHT_GAIN, mandatory=False)
-    light_gain = secrets.get(LIGHT_GAIN)
-    if light_gain is not None and light_gain not in [1, 2]:
-        bail(f"value of {LIGHT_GAIN} must be either 1 or 2")
-
-
-def bail(message):
-    """
-    Print message and exit with code 1.
-    """
-    print(message)
-    sys.exit(1)
-
-
 # pylint: disable=too-many-locals,too-many-statements,too-many-branches
 def main():
     """
@@ -133,7 +69,7 @@ def main():
     """
 
     try:
-        check_tunables()
+        check_tunables(secrets)
     except ConfCheckException as exception:
         bail(exception)
 
@@ -173,7 +109,7 @@ def main():
 
     sensors = Sensors(i2c, light_gain=secrets.get(LIGHT_GAIN))
 
-    mqtt_client, rfm69 = setup_transport()
+    mqtt_client, rfm69 = setup_transport(secrets)
 
     while True:
         battery_capacity = None
@@ -227,90 +163,6 @@ def main():
 
     deep_sleep_duration = get_deep_sleep_duration(battery_monitor, logger)
     enter_sleep(deep_sleep_duration, SleepKind(SleepKind.DEEP))
-
-
-def setup_transport():
-    """
-    Setup transport to send data.
-    Return a tuple of RFM69 object and MQTT client object, either can be None.
-    """
-    logger = logging.getLogger("")
-
-    mqtt_client = None
-    rfm69 = None
-    # Try packetized radio first. If that does not work, fall back to WiFi.
-    try:
-        spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-        # The D-pin values assume certain wiring of the Radio FeatherWing.
-        try:
-            reset = digitalio.DigitalInOut(board.D6)
-            cs = digitalio.DigitalInOut(board.D5)
-        except AttributeError:
-            # ESP32V2
-            reset = digitalio.DigitalInOut(board.D32)
-            cs = digitalio.DigitalInOut(board.D14)
-
-        # pylint: disable=import-outside-toplevel
-        import adafruit_rfm69
-
-        logger.info("Setting up RFM69")
-        rfm69 = adafruit_rfm69.RFM69(
-            spi, cs, reset, 433
-        )  # hard-coded frequency for Europe
-
-        tx_power = secrets.get(TX_POWER)
-        if rfm69.high_power and tx_power is not None:
-            logger.debug(f"setting TX power to {tx_power}")
-            rfm69.tx_power = tx_power
-
-        encryption_key = secrets.get(ENCRYPTION_KEY)
-        if encryption_key:
-            logger.info("Setting encryption key")
-            rfm69.encryption_key = encryption_key
-    except Exception as rfm69_exc:  # pylint: disable=broad-exception-caught
-        logger.info(f"RFM69 failed to initialize, will attempt WiFi: {rfm69_exc}")
-
-        # pylint: disable=import-outside-toplevel
-        import wifi
-
-        logger.debug(f"MAC address: {wifi.radio.mac_address}")
-
-        # Connect to Wi-Fi
-        logger.info("Connecting to wifi")
-        wifi.radio.connect(secrets[SSID], secrets[PASSWORD], timeout=10)
-        logger.info(f"Connected to {secrets['ssid']}")
-        logger.debug(f"IP: {wifi.radio.ipv4_address}")
-
-        # pylint: disable=import-error,import-outside-toplevel
-        import socketpool
-
-        # Create a socket pool
-        pool = socketpool.SocketPool(wifi.radio)  # pylint: disable=no-member
-
-        # pylint: disable=import-outside-toplevel
-        from mqtt import mqtt_client_setup
-        from mqtt_handler import MQTTHandler
-
-        broker_addr = secrets[BROKER]
-        broker_port = secrets[BROKER_PORT]
-        mqtt_client = mqtt_client_setup(
-            pool, broker_addr, broker_port, logger.getEffectiveLevel()
-        )
-        try:
-            log_topic = secrets[LOG_TOPIC]
-            # Log both to the console and via MQTT messages.
-            # Up to now the logger was using the default (built-in) handler,
-            # now it is necessary to add the Stream handler explicitly as
-            # with a non-default handler set only the non-default handlers will be used.
-            logger.addHandler(logging.StreamHandler())
-            logger.addHandler(MQTTHandler(mqtt_client, log_topic))
-        except KeyError:
-            pass
-
-        logger.info(f"Attempting to connect to MQTT broker {broker_addr}:{broker_port}")
-        mqtt_client.connect()
-
-    return mqtt_client, rfm69
 
 
 def get_deep_sleep_duration(battery_monitor, logger):

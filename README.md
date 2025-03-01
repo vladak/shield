@@ -121,20 +121,22 @@ f.close()
 and restart the microcontroller. **This should not be done for the microcontroller using the radio transmission** to keep things simple and avoid any WiFi induced problems.
 
 Then the following can be used:
-- copy `*.py` files to the root directory:
+- copy `*.py`/`*.mpy` files to the root directory:
+  - if running on battery power, use `.mpy` files as this reduces run time. download the build artifacts (see the Summary link for the ['mpy-cross' workflow](https://github.com/vladak/shield/actions/workflows/mpy.yml)), unzip them and upload like this (CP needs `code.py`)
   - web workflow, assumes system with `curl` installed:
-    - if running on battery power, use `.mpy` files as this reduces run time. download the build artifacts (see the Summary link for the ['mpy-cross' workflow](https://github.com/vladak/shield/actions/workflows/mpy.yml)), unzip them and upload like this (CP needs `code.py`):
   ```
+  # battery powerved
   for f in code.py *.mpy; do curl -v -u :XXX -T $f -L --location-trusted http://172.40.0.x/fs/$f; done
-  ```
-    - otherwise
-  ```
+  # otherwise
   for f in *.py; do curl -v -u :XXX -T $f -L --location-trusted http://172.40.0.x/fs/$f; done
   ```
   - using USB mass storage (QtPy, Feather ESP32-S2), assumes Linux:
   ```
+  # battery powerved
+  cp code.py *.mpy /media/$LOGNAME/CIRCUITPY/
+  # otherwise
   cp *.py /media/$LOGNAME/CIRCUITPY/
-  ``` 
+  ```
 - create `secrets.py` in the root directory (using the same technique as in the previous step)
 - install necessary libraries from Adafruit CircuitPython bundle to the `lib` directory
   - For Feather ESP32 V2, web based workflow has to be used:

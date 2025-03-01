@@ -66,8 +66,8 @@ class Sensors:
             logger.info("TMP117 sensor initialized")
         except NameError:
             logger.info("No library for the tmp117 sensor")
-        except ValueError as e:
-            logger.info(f"No tmp117 sensor found: {e}")
+        except ValueError as value_exc:
+            logger.info(f"No tmp117 sensor found: {value_exc}")
 
         self.sht40 = None
         try:
@@ -75,8 +75,8 @@ class Sensors:
             logger.info("SHT40 initialized")
         except NameError:
             logger.info("No library for the sht40 sensor")
-        except ValueError as e:
-            logger.info(f"No sht40 sensor found: {e}")
+        except ValueError as value_exc:
+            logger.info(f"No sht40 sensor found: {value_exc}")
 
         self.aht20 = None
         try:
@@ -84,8 +84,8 @@ class Sensors:
             logger.info("AHT20 sensor initialized")
         except NameError:
             logger.info("No library for the ath20 sensor")
-        except ValueError as e:
-            logger.info(f"No ath20 sensor found: {e}")
+        except ValueError as value_exc:
+            logger.info(f"No ath20 sensor found: {value_exc}")
 
         self.bme280 = None
         try:
@@ -93,8 +93,8 @@ class Sensors:
             logger.info("BME280 sensor initialized")
         except NameError:
             logger.info("No library for the bme280 sensor")
-        except ValueError as e:
-            logger.info(f"No bme280 sensor found: {e}")
+        except ValueError as value_exc:
+            logger.info(f"No bme280 sensor found: {value_exc}")
 
         self.scd4x_sensor = None
         try:

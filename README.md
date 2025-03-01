@@ -331,3 +331,5 @@ Adafruit has largely such a good documentation that the links are worth putting 
 - ESP32V2 with RFM69 reconnects to WiFi (initiated the microcontroller firmware, not from `code.py`) after deep sleep wakeup, draining battery needlessly
   - the `settings.toml` has to be removed to avoid the reconnect, however this means for code/libraries change the file will have to be restored by hand
 - moving imports to sections of code which actually need them saves time/memory/battery
+- using `.mpy` files instead of `.py` files reduces run time and hence saves the battery
+  - CP still needs `code.py`, however the rest of the modules can be in the `.mpy` compiled form

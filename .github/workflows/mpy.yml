@@ -1,0 +1,26 @@
+name: Build with mpy-cross
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Set up repository
+        uses: actions/checkout@v4
+      - name: Download mpy-cross
+        run: curl -q -o 'mpy-cross' 'https://adafruit-circuit-python.s3.amazonaws.com/bin/mpy-cross/linux-amd64/mpy-cross-linux-amd64-9.2.0.static'
+      - name: Make mpy-cross executable
+        run: chmod +x mpy-cross
+      - name: Run mpy-cross
+        run: ./mpy-cross code.py
+      - name: List files
+        run: ls
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mpy-files
+          path: '*.mpy'

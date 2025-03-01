@@ -1,10 +1,9 @@
 # SPDX-FileCopyrightText: 2021 Kattni Rembor for Adafruit Industries
 # SPDX-License-Identifier: Unlicense
 """
-Acquire values from various sensors, publish it to MQTT topic, enter deep sleep.
+Acquire values from various sensors, publish to MQTT topic or send via RFM69, enter deep sleep.
 
-This is meant for battery powered devices such as QtPy or ESP32 based devices
-from Adafruit.
+This is meant for battery powered devices such as QtPy or ESP32 based devices from Adafruit.
 """
 import time
 import traceback

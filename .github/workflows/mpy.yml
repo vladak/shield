@@ -3,7 +3,7 @@ name: Build with mpy-cross
 on:
   push:
     branches:
-      - 'main'
+      - 'master'
 
 jobs:
   build:

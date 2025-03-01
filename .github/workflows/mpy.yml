@@ -2,8 +2,9 @@ name: Build with mpy-cross
 
 on:
   push:
-    branches:
-      - 'master'
+    paths:
+      - "**.py"
+      - .github/workflows/mpy.yml
 
 jobs:
   build:

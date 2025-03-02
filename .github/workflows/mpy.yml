@@ -28,5 +28,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mpy-files-${{ matrix.cp-version }}
+          name: mpy-files-shield-${{ matrix.cp-version }}
           path: '*.mpy'

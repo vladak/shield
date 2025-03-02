@@ -126,14 +126,14 @@ Then the following can be used:
   - web workflow, assumes system with `curl` installed:
   ```
   # battery powerved
-  for f in code.py *.mpy; do curl -v -u :XXX -T $f -L --location-trusted http://172.40.0.x/fs/$f; done
+  for f in code.py safemode.py *.mpy; do curl -v -u :XXX -T $f -L --location-trusted http://172.40.0.x/fs/$f; done
   # otherwise
   for f in *.py; do curl -v -u :XXX -T $f -L --location-trusted http://172.40.0.x/fs/$f; done
   ```
   - using USB mass storage (QtPy, Feather ESP32-S2), assumes Linux:
   ```
   # battery powerved
-  cp code.py *.mpy /media/$LOGNAME/CIRCUITPY/
+  cp code.py safemode.py *.mpy /media/$LOGNAME/CIRCUITPY/
   # otherwise
   cp *.py /media/$LOGNAME/CIRCUITPY/
   ```

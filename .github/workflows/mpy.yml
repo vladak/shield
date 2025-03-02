@@ -8,12 +8,16 @@ on:
 
 jobs:
   build:
+    strategy:
+      fail-fast: false
+      matrix:
+        cp-version: ["9.2.4", "9.2.0", "9.0.0"]
     runs-on: ubuntu-24.04
     steps:
       - name: Set up repository
         uses: actions/checkout@v4
-      - name: Download mpy-cross
-        run: curl -q -o 'mpy-cross' 'https://adafruit-circuit-python.s3.amazonaws.com/bin/mpy-cross/linux-amd64/mpy-cross-linux-amd64-9.0.0.static'
+      - name: Download mpy-cross for CP ${{ matrix.cp-version }}
+        run: curl -q -o 'mpy-cross' https://adafruit-circuit-python.s3.amazonaws.com/bin/mpy-cross/linux-amd64/mpy-cross-linux-amd64-${{ matrix.cp-version }}.static
       - name: Make mpy-cross executable
         run: chmod +x mpy-cross
       - name: Run mpy-cross
@@ -24,5 +28,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mpy-files
+          name: mpy-files-${{ matrix.cp-version }}
           path: '*.mpy'

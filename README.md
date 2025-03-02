@@ -331,7 +331,7 @@ Adafruit has largely such a good documentation that the links are worth putting 
 - some of the batteries (and JST-PH) cables have reversed polarity: https://www.youtube.com/watch?v=ILArrTIMFyM
   - when the JST-PH connector is faced with the notch up with the socket facing outwards, the red (power) cable should be on the left and ground (black) on the right
 - ESP32V2 with RFM69 reconnects to WiFi (initiated the microcontroller firmware, not from `code.py`) after deep sleep wakeup, draining battery needlessly
-  - the `settings.toml` has to be removed to avoid the reconnect, however this means for code/libraries change the file will have to be restored by hand
+  - the `settings.toml` has to be removed to avoid the reconnect, however this means for code/libraries change the file will have to be restored by hand temporarily
 - moving imports to sections of code which actually need them saves time/memory/battery
 - using `.mpy` files instead of `.py` files reduces run time and hence saves the battery
   - CP still needs `code.py`, however the rest of the modules can be in the `.mpy` compiled form

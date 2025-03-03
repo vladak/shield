@@ -336,3 +336,4 @@ Adafruit has largely such a good documentation that the links are worth putting 
 - using `.mpy` files instead of `.py` files reduces run time and hence saves the battery
   - CP still needs `code.py`, however the rest of the modules can be in the `.mpy` compiled form
 - if given sensor has a pad with trace to diable the LED, cut the trace to save battery life
+  - older versions of some of the sensors lack the trace, while newer versions have them (AHT20, TMP117)

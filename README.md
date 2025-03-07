@@ -334,6 +334,6 @@ Adafruit has largely such a good documentation that the links are worth putting 
   - the `settings.toml` has to be removed to avoid the reconnect, however this means for code/libraries change the file will have to be restored by hand temporarily
 - moving imports to sections of code which actually need them saves time/memory/battery
 - using `.mpy` files instead of `.py` files reduces run time and hence saves the battery
-  - CP still needs `code.py`, however the rest of the modules can be in the `.mpy` compiled form
+  - CP still needs `code.py` and `safemode.py`, however the rest of the modules can be in the `.mpy` compiled form
 - if given sensor has a pad with trace to disable the LED, cut the trace to save battery life
   - older versions of some of the sensors lack the trace, while newer versions have them (AHT20, TMP117)

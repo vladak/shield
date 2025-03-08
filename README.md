@@ -337,3 +337,6 @@ Adafruit has largely such a good documentation that the links are worth putting 
   - CP still needs `code.py` and `safemode.py`, however the rest of the modules can be in the `.mpy` compiled form
 - if given sensor has a pad with trace to disable the LED, cut the trace to save battery life
   - older versions of some of the sensors lack the trace, while newer versions have them (AHT20, TMP117)
+- do not solder while connected to power/battery
+  - destroyed the solar battery charger that way (also maybe because of too high temperature)
+ 

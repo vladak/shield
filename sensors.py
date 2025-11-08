@@ -119,6 +119,8 @@ class Sensors:
                 else:
                     raise ValueError(f"invalid light gain value: {light_gain}")
                 self.veml_sensor.light_gain = light_gain
+        except ValueError as exception:
+            logger.error(f"cannot find VEML7700 sensor: {exception}")
         except NameError:
             logger.info("No library for the VEML7700 sensor")
 

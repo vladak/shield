@@ -72,7 +72,7 @@ def main():
     except ConfCheckException as exception:
         bail(exception)
 
-    log_level = get_log_level(secrets[LOG_LEVEL])
+    log_level = get_log_level(secrets.get(LOG_LEVEL))
     logger = logging.getLogger("")
     logger.setLevel(log_level)
 

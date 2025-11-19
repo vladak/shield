@@ -57,13 +57,7 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
         logger.info(f"Publishing to {mqtt_topic}: {data}")
         mqtt_client.publish(mqtt_topic, json.dumps(data))
     elif rfm69:
-        if battery_capacity is None:
-            battery_level = 0
-        else:
-            battery_level = battery_capacity
-
         humidity, temperature, co2_ppm, lux = sensors.get_measurements()
-
         if (
             humidity is None
             and temperature is None
@@ -73,6 +67,11 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
         ):
             logger.warning("No sensor data available, will not send anything")
             return
+
+        if battery_capacity is None:
+            battery_level = 0
+        else:
+            battery_level = battery_capacity
 
         if co2_ppm is None:
             co2_ppm = 0

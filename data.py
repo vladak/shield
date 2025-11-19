@@ -73,7 +73,7 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
 
         if humidity is None:
             humidity = 0
-        
+
         if battery_capacity is None:
             battery_level = 0
         else:

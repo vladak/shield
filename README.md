@@ -79,6 +79,10 @@ As for [sizing](https://forums.adafruit.com/viewtopic.php?p=946668), the 2W pane
 After converting the transport to RFM69 based radio, the battery decerease over night is circa 5% with light sleep duration of 1 second and deep sleep duration of 30 seconds which means it could last nearly a month without charging.
 Also, if the battery is charged above given threshold, the period will be kept shorter than below the threshold (see the tunables section below).
 
+This is how it looked like in the 14 days of November 2025 with heavier overcast:
+
+<img src="img/grafana-battery_lux.png" alt="graph of battery capacity and lux"/>
+
 #### Lessons learned
 
 - during winter the amount of sun is minuscule compared to summer/spring. There is often a long sequence of cloudy days, when solar charging cannot do anything. As noted in [Adafruit discussion](https://forums.adafruit.com/viewtopic.php?p=578767), one has to have enough solar panels to charge the batteries enough when the sun finally goes out. And/or use batteries with much higher capacity.

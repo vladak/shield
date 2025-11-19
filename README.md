@@ -193,7 +193,7 @@ Purpose | Name                                                                  
 `broker_port` | MQTT broker port                                                                                                                                  | `int` | Mandatory
 `mqtt_topic` | MQTT topic to publish messages to                                                                                                                 | `str` | Mandatory
 `log_topic` | MQTT topic to publish log messages to                                                                                                             | `str` | Optional
-`log_level` | log level, default `INFO`                                                                                                                         | `str` | Mandatory
+`log_level` | log level, default `INFO`                                                                                                                         | `str` | Optional
 `deep_sleep_duration` | how long to deep sleep, in seconds. Used only when running on battery.                                                                  | `int` | Mandatory
 `light_sleep_duration` | how long to light sleep, in seconds, default 10. Used only when running on battery.                                                    | `int` | Optional
 `sleep_duration_short` | how long to deep sleep (in seconds) if battery is charged above `battery_capacity_threshold`. Should be smaller than the default `deep_sleep_duration`. This is also used when **not** running on battery power as a MQTT loop timeout. | `int` | Optional

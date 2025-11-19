@@ -82,7 +82,7 @@ Also, if the battery is charged above given threshold, the period will be kept s
 #### Lessons learned
 
 - during winter the amount of sun is minuscule compared to summer/spring. There is often a long sequence of cloudy days, when solar charging cannot do anything. As noted in [Adafruit discussion](https://forums.adafruit.com/viewtopic.php?p=578767), one has to have enough solar panels to charge the batteries enough when the sun finally goes out. And/or use batteries with much higher capacity.
-- It is possible to connect multiple solar panels together, however that's not so easy because of the ["shaded panel" problem](https://forums.adafruit.com/viewtopic.php?p=416235). The solution is to use a *Schottky diode*.
+- It is possible to connect multiple solar panels together, however that's not so easy because of the ["shaded panel" problem](https://forums.adafruit.com/viewtopic.php?p=416235). The solution is to use a [*Schottky diode*](https://en.wikipedia.org/wiki/Schottky_diode).
 - WiFi can be really flaky and is probably overkill (WiFi+DHCP+TCP+MQTT) for sending simple measurements. Simple radio transmission is much more simple and more energy efficient.
 
 ### Other uses

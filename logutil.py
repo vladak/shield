@@ -50,4 +50,4 @@ def get_log_level(level):
     if isinstance(value, int):
         return value
 
-    raise ValueError("Invalid log level: %s" % level)
+    raise ValueError(f"Invalid log level: {level}")

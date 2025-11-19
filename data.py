@@ -68,6 +68,12 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
             logger.warning("No sensor data available, will not send anything")
             return
 
+        if temperature is None:
+            temperature = 0
+
+        if humidity is None:
+            humidity = 0
+        
         if battery_capacity is None:
             battery_level = 0
         else:

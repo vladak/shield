@@ -46,11 +46,8 @@ def get_log_level(level):
         pass
 
     # Look up the name in the logging module.
-    try:
-        value = getattr(logging, level.upper())
-        if isinstance(value, int):
-            return value
+    value = getattr(logging, level.upper())
+    if isinstance(value, int):
+        return value
 
-        return None
-    except AttributeError:
-        return None
+    raise ValueError("Invalid log level: %s" % level)

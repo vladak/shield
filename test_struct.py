@@ -17,7 +17,8 @@ def test_pack():
 
 def test_mqtt_topic_length_max():
     """
-    call the pack_data() to ensure it does not throw an exception
+    Call the pack_data() to ensure it throws the ValueError exception on
+    too long MQTT topic.
     """
     with pytest.raises(ValueError):
         pack_data("devices/foo/bar/foo/bar/foo/bar/foo", 80, 1200, 33, 21, 4000)

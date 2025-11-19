@@ -33,7 +33,7 @@ def get_log_level(level):
     """
     if level is None:
         return logging.INFO
-    
+
     if isinstance(level, int):
         return level
 

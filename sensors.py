@@ -1,5 +1,5 @@
 """
-Module with code for temperature/humidity/CO2 sensor reading.
+Module with code for temperature/humidity/CO2/light sensor reading.
 Works only for sensors connected via I2C (STEMMA QT).
 
 The following sensors are supported:

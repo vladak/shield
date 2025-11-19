@@ -32,6 +32,8 @@ def get_log_level(level):
     :return: integer representation of the log level, default log level or None
     """
     if level is None:
+        # The global log levels are set only after the import.
+        # pylint: disable=no-member
         return logging.INFO
 
     if isinstance(level, int):

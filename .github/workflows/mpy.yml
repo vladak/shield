@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Set up repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Download mpy-cross for CP ${{ matrix.cp-version }}
         run: curl -q -o 'mpy-cross' https://adafruit-circuit-python.s3.amazonaws.com/bin/mpy-cross/linux-amd64/mpy-cross-linux-amd64-${{ matrix.cp-version }}.static
       - name: Make mpy-cross executable

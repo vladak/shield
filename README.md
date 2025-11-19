@@ -87,7 +87,7 @@ Also, if the battery is charged above given threshold, the period will be kept s
 
 ### Other uses
 
-Over the time I added some ESP32-S2 based sensors powered via USB from a wall outlet. Also, I added support for more sensors.
+Over the time I added some ESP32 based sensors powered via USB from a wall outlet running the same code. Also, I added support for more sensors.
 This lead to the code being more generic.
 
 ### Physical packaging

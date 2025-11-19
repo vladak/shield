@@ -74,7 +74,7 @@ At that point, I noted a hint of desperation and frustration in my mind - was no
 
 To avoid charging the LiPo battery when freezing (which would damage it), I needed to solder a thermistor to the charger and fasten it to the battery so that the charger can measure the temperature of the battery. It has a built-in logic that prevents charging if the temperature of the battery is too low or too high. When soldering the thermistor, I chose the black wire to be ground, to match the [STEMMA QT convention](https://learn.adafruit.com/introducing-adafruit-stemma-qt/technical-specs).
 
-As for sizing, this is something I will yet have to [figure out](https://forums.adafruit.com/viewtopic.php?p=946668), esp. during the winter.
+As for [sizing](https://forums.adafruit.com/viewtopic.php?p=946668), the 2W panel with 2000 mAh battery turned to be more than enough even during the fall/winter months. Had to replace the battery after couple of years.
 
 After converting the transport to RFM69 based radio, the battery decerease over night is circa 5% with light sleep duration of 1 second and deep sleep duration of 30 seconds which means it could last nearly a month without charging.
 Also, if the battery is charged above given threshold, the period will be kept shorter than below the threshold (see the tunables section below).

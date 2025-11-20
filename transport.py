@@ -43,7 +43,7 @@ def setup_transport(secrets: dict):
 
         tx_power = secrets.get(TX_POWER)
         if rfm69.high_power and tx_power is not None:
-            logger.debug(f"setting TX power to {tx_power}")
+            logger.debug(f"Setting TX power to {tx_power}")
             rfm69.tx_power = tx_power
 
         encryption_key = secrets.get(ENCRYPTION_KEY)

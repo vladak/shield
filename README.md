@@ -203,7 +203,7 @@ Purpose | Name                                                                  
 `light_sleep_duration` | how long to light sleep, in seconds, default 10. Used only when running on battery.                                                                                                                                                     | `int` | Optional
 `sleep_duration_short` | how long to deep sleep (in seconds) if battery is charged above `battery_capacity_threshold`. Should be smaller than the default `deep_sleep_duration`. This is also used when **not** running on battery power as a MQTT loop timeout. | `int` | Optional
 `battery_capacity_threshold` | battery capacity high threshold, in percent                                                                                                                                                                                             | `int` | Optional
-`tx_power` | TX power to use if RFM69 (from 14 to 20 dBi)                                                                                                                                                                                                        | `int` | Optional
+`tx_power` | TX power to use if RFM69 (from -2 to 20 dBm for high power devices)                                                                                                                                                                                                        | `int` | Optional
 `encryption_key` | 16 bytes of encryption key if RFM69                                                                                                                                                                                                     | `bytes` | Optional
 `light_gain` | used to set light gain for VEML7700 light sensor. Can be either 1 or 2                                                                                                                                                                  | `int` | Optional
 
@@ -217,7 +217,8 @@ Adafruit has largely such a good documentation that the links are worth putting 
 - [web workflow RESTful API](https://docs.circuitpython.org/en/latest/docs/workflows.html#file-rest-api)
 - [CircuitPython RGB Status Light color coding](https://learn.adafruit.com/welcome-to-circuitpython/troubleshooting#circuitpython-rgb-status-light-2978455)
 - [CircuitPython for RFM69](https://learn.adafruit.com/radio-featherwing/circuitpython-for-rfm69)
-- VEML7700: [light levels](https://learn.adafruit.com/adafruit-veml7700/adjusting-for-different-light-levels) and [their adjustment](https://docs.circuitpython.org/projects/veml7700/en/latest/api.html#adafruit_veml7700.VEML7700.light_gain)
+- [VEML7700 light levels](https://learn.adafruit.com/adafruit-veml7700/adjusting-for-different-light-levels) and [their adjustment](https://docs.circuitpython.org/projects/veml7700/en/latest/api.html#adafruit_veml7700.VEML7700.light_gain)
+- [RFM69 library API](https://docs.circuitpython.org/projects/rfm69/en/latest/api.html)
 
 ## Lessons learned
 

@@ -97,16 +97,17 @@ def check_tunables(secrets: dict) -> None:
     """
     check_string(secrets, LOG_LEVEL)
 
-    # Even though different transport can be selected than WiFi, the related tunables
+    # Even though different transport can be selected than Wi-Fi, the related tunables
     # are still mandatory, because at this point it is known which will be selected.
-    # Also, MQTT topic is used for all transports.
-    check_string(secrets, SSID)
-    check_string(secrets, PASSWORD)
-    check_string(secrets, BROKER)
+    check_string(secrets, SSID, mandatory=False)
+    check_string(secrets, PASSWORD, mandatory=False)
+
+    check_string(secrets, BROKER, mandatory=False)
+    # MQTT topic is used for all transports so is mandatory.
     check_string(secrets, MQTT_TOPIC)
     check_string(secrets, LOG_TOPIC, mandatory=False)
 
-    check_int(secrets, BROKER_PORT, min_val=0, max_val=65535)
+    check_int(secrets, BROKER_PORT, min_val=0, max_val=65535, mandatory=False)
 
     check_int(secrets, DEEP_SLEEP_DURATION)
     check_int(secrets, SLEEP_DURATION_SHORT, mandatory=False)

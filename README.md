@@ -189,22 +189,24 @@ To transfer the file to the microcontroller, the same method as in the Install s
 
 ### Tunables
 
-Purpose | Name                                                                                                                                              | Type | Kind
----|---------------------------------------------------------------------------------------------------------------------------------------------------|---|---
-`ssid` | WiFi SSID                                                                                                                                         | `str` | Mandatory
-`password` | WiFi password                                                                                                                                     | `str` | Mandatory
-`broker` | MQTT broker address                                                                                                                               | `str` | Mandatory
-`broker_port` | MQTT broker port                                                                                                                                  | `int` | Mandatory
-`mqtt_topic` | MQTT topic to publish messages to                                                                                                                 | `str` | Mandatory
-`log_topic` | MQTT topic to publish log messages to                                                                                                             | `str` | Optional
-`log_level` | log level, default `INFO`                                                                                                                         | `str` | Optional
-`deep_sleep_duration` | how long to deep sleep, in seconds. Used only when running on battery.                                                                  | `int` | Mandatory
-`light_sleep_duration` | how long to light sleep, in seconds, default 10. Used only when running on battery.                                                    | `int` | Optional
+Purpose | Name                                                                                                                                                                                                                                    | Type | Kind
+---|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|---
+`ssid` | WiFi SSID                                                                                                                                                                                                                               | `str` | Optional
+`password` | WiFi password                                                                                                                                                                                                                           | `str` | Optional
+`broker` | MQTT broker address                                                                                                                                                                                                                     | `str` | Optional
+`broker_port` | MQTT broker port (default value 1883)                                                                                                                                                                                                   | `int` | Optional
+`mqtt_topic` | MQTT topic to publish messages to                                                                                                                                                                                                       | `str` | Mandatory
+`log_topic` | MQTT topic to publish log messages to                                                                                                                                                                                                   | `str` | Optional
+`log_level` | log level, default `INFO`                                                                                                                                                                                                               | `str` | Optional
+`deep_sleep_duration` | how long to deep sleep, in seconds. Used only when running on battery.                                                                                                                                                                  | `int` | Mandatory
+`light_sleep_duration` | how long to light sleep, in seconds, default 10. Used only when running on battery.                                                                                                                                                     | `int` | Optional
 `sleep_duration_short` | how long to deep sleep (in seconds) if battery is charged above `battery_capacity_threshold`. Should be smaller than the default `deep_sleep_duration`. This is also used when **not** running on battery power as a MQTT loop timeout. | `int` | Optional
-`battery_capacity_threshold` | battery capacity high threshold, in percent                                                                                                       | `int` | Optional
-`tx_power` | TX power to use if RFM69                                                                                                                          | `int` | Optional
-`encryption_key` | 16 bytes of encryption key if RFM69                                                                                                               | `bytes` | Optional
-`light_gain` | used to set light gain for VEML7700 light sensor. Can be either 1 or 2                                                                           | `int` | Optional
+`battery_capacity_threshold` | battery capacity high threshold, in percent                                                                                                                                                                                             | `int` | Optional
+`tx_power` | TX power to use if RFM69                                                                                                                                                                                                                | `int` | Optional
+`encryption_key` | 16 bytes of encryption key if RFM69                                                                                                                                                                                                     | `bytes` | Optional
+`light_gain` | used to set light gain for VEML7700 light sensor. Can be either 1 or 2                                                                                                                                                                  | `int` | Optional
+
+If one of the `ssid`, `password`, `broker` tunables is not set, the Wi-Fi fallback will not be performed.  
 
 ## Guide/documentation links
 

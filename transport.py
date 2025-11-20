@@ -11,7 +11,28 @@ import digitalio
 from names import *
 
 
-# pylint: disable=too-many-locals
+def wifi_tunables_ready(secrets: dict) -> bool:
+    """
+    check whether tunables for using Wi-Fi transport are available
+    """
+    logger = logging.getLogger("")
+
+    if secrets.get(SSID) is None:
+        logger.info(f"{SSID} not set in secrets, no Wi-Fi fallback")
+        return False
+
+    if secrets.get(PASSWORD) is None:
+        logger.info(f"{PASSWORD} not set in secrets, no Wi-Fi fallback")
+        return False
+
+    if secrets.get(BROKER) is None:
+        logger.info(f"{BROKER} not set in secrets, no WiFi fallback")
+        return False
+
+    return True
+
+
+# pylint: disable=too-many-locals,too-many-statements
 def setup_transport(secrets: dict):
     """
     Setup transport to send data.
@@ -51,7 +72,12 @@ def setup_transport(secrets: dict):
             logger.info("Setting encryption key")
             rfm69.encryption_key = encryption_key
     except Exception as rfm69_exc:  # pylint: disable=broad-exception-caught
-        logger.info(f"RFM69 failed to initialize, will attempt WiFi: {rfm69_exc}")
+        logger.info(f"RFM69 failed to initialize: {rfm69_exc}")
+
+        if not wifi_tunables_ready(secrets):
+            return None, None
+
+        logger.info("will attempt to connect to Wi-Fi")
 
         # pylint: disable=import-outside-toplevel
         import wifi
@@ -75,7 +101,12 @@ def setup_transport(secrets: dict):
         from mqtt_handler import MQTTHandler
 
         broker_addr = secrets[BROKER]
-        broker_port = secrets[BROKER_PORT]
+        broker_port = secrets.get(BROKER_PORT)
+        if broker_port is None:
+            broker_port = 1883
+            logger.info(
+                f"Broker port not set in secrets, using default value of {broker_port}"
+            )
         mqtt_client = mqtt_client_setup(
             pool, broker_addr, broker_port, logger.getEffectiveLevel()
         )

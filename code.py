@@ -74,7 +74,7 @@ def main():
     try:
         check_tunables(secrets)
     except ConfCheckException as exception:
-        bail(exception)
+        bail(str(exception))
 
     log_level = get_log_level(secrets.get(LOG_LEVEL))
     logger = logging.getLogger("")

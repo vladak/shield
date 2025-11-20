@@ -2,7 +2,8 @@
 
 # Shield
 
-This repository contains CircuitPython code for ESP32 microcontrollers to measure temperature+humidity (and optionally other metrics such as CO2 or light) and send the metrics to a MQTT broker via WiFi.
+This repository contains CircuitPython code for ESP32 microcontrollers to measure temperature+humidity (and optionally other metrics such as CO2 or light) and send the metrics
+(either directly to a MQTT broker via WiFi or via packet radio to a MQTT gateway).
 The microcontroller this was originally designed for is located outside on a balcony, running from a battery that is charged using a small solar panel.
 
 This repository is called 'shield' as an allude to [Stevenson screen](https://en.wikipedia.org/wiki/Stevenson_screen) because

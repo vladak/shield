@@ -17,7 +17,7 @@ on priority given by the list above, from highest to lowest.
 import time
 
 try:
-    from typing import Dict, Optional, Tuple, Union
+    from typing import Dict, Tuple
 except ImportError:
     pass
 

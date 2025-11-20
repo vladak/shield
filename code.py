@@ -38,7 +38,7 @@ from sleep import SleepKind, enter_sleep, get_deep_sleep_duration
 from transport import setup_transport
 
 try:
-    from secrets import secrets
+    from secrets import secrets  # type: ignore [attr-defined]
 except ImportError:
     print(
         "WiFi credentials and configuration are kept in secrets.py, please add them there!"

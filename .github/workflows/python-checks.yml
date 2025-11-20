@@ -38,6 +38,10 @@ jobs:
         run: |
           pip install pylint
           pylint --disable=duplicate-code **.py
+      - name: Run mypy type checker
+        run: |
+          pip install mypy
+          mypy --ignore-missing-imports **.py
       - name: run pytest
         run: |
           pytest -vvv

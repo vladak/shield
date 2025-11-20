@@ -197,7 +197,11 @@ class Sensors:
             lux = self.veml_sensor.lux
             logger.debug("Acquired illuminance from VEML7700")
 
-        return humidity, temperature, co2_ppm, lux
+        #
+        # It seems mypy cannot check the types due to missing type information
+        # in the Adafruit libraries, hence the ignore directive.
+        #
+        return humidity, temperature, co2_ppm, lux  # type: ignore [return-value]
 
     def get_measurements_dict(self) -> Dict:
         """

@@ -50,7 +50,11 @@ except ImportError:
 ESTIMATED_RUN_TIME = 20
 
 
-def blink(pixel):
+#
+# Cannot add type hint for the argument because the neopixel import
+# is done in a code block to avoid unnecessary execution.
+#
+def blink(pixel) -> None:
     """
     Blink the Neo pixel blue.
     """

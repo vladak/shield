@@ -7,7 +7,10 @@ import time
 import adafruit_logging as logging
 
 # pylint: disable=import-error
-import alarm
+try:
+    import alarm
+except ImportError:
+    pass  # for testing
 
 # pylint: disable=unused-wildcard-import, wildcard-import
 from names import *
@@ -68,10 +71,11 @@ def enter_sleep(sleep_period: int, sleep_kind: SleepKind) -> None:
         alarm.exit_and_deep_sleep_until_alarms(time_alarm)
 
 
-def get_deep_sleep_duration(secrets, battery_monitor, logger):
+def get_deep_sleep_duration(secrets: dict, battery_monitor, logger) -> int:
     """
     Get sleep duration, either default or shortened.
     Assumes the device is running on battery.
+    Return sleep duration in seconds.
     """
 
     sleep_duration = secrets[DEEP_SLEEP_DURATION]

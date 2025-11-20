@@ -33,7 +33,7 @@ def disconnect(mqtt_client, userdata, rc):
     logger.info("Disconnected from MQTT Broker!")
 
 
-def publish(mqtt_client, userdata, topic, pid):
+def publish(mqtt_client, userdata, topic: str, pid):
     """
     This method is called when the mqtt_client publishes data to a feed.
     """
@@ -42,7 +42,9 @@ def publish(mqtt_client, userdata, topic, pid):
     logger.info(f"Published to {topic} with PID {pid}")
 
 
-def mqtt_client_setup(pool, broker, port, log_level, socket_timeout=1):
+def mqtt_client_setup(
+    pool, broker: str, port: int, log_level: int, socket_timeout=1
+) -> MQTT.MQTT:
     """
     Set up a MiniMQTT Client
     """

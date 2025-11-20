@@ -14,7 +14,7 @@ class ConfCheckException(Exception):
     """
 
 
-def check_string(secrets, name, mandatory=True):
+def check_string(secrets: dict, name: str, mandatory=True) -> None:
     """
     Check is string with given name is present in secrets.
     """
@@ -26,7 +26,9 @@ def check_string(secrets, name, mandatory=True):
         raise ConfCheckException(f"not a string value for {name}: {value}")
 
 
-def check_int(secrets, name, mandatory=True, min_val=None, max_val=None):
+def check_int(
+    secrets: dict, name: str, mandatory=True, min_val=None, max_val=None
+) -> None:
     """
     Check is integer with given name is present in secrets.
     """
@@ -44,13 +46,16 @@ def check_int(secrets, name, mandatory=True, min_val=None, max_val=None):
         raise ConfCheckException(f"{name} value {value} higher than maximum {max_val}")
 
 
-def check_list(secrets, name, subtype, mandatory=True):
+def check_list(secrets: dict, name: str, subtype, mandatory=True) -> None:
     """
     Check whether list with given name is present in secrets.
     """
     value = secrets.get(name)
     if value is None and mandatory:
         raise ConfCheckException(f"{name} is missing")
+
+    if value is None:
+        raise ValueError(f"{name} should not be None")
 
     if value and not isinstance(value, list):
         raise ConfCheckException(f"not a integer value for {name}: {value}")
@@ -60,7 +65,7 @@ def check_list(secrets, name, subtype, mandatory=True):
             raise ConfCheckException(f"not a {subtype}: {item}")
 
 
-def check_bytes(secrets, name, length, mandatory=True):
+def check_bytes(secrets: dict, name: str, length: int, mandatory=True) -> None:
     """
     Check is bytes with given name is present in secrets.
     """
@@ -77,7 +82,7 @@ def check_bytes(secrets, name, length, mandatory=True):
         )
 
 
-def bail(message):
+def bail(message: str) -> None:
     """
     Print message and exit with code 1.
     """
@@ -85,7 +90,7 @@ def bail(message):
     sys.exit(1)
 
 
-def check_tunables(secrets):
+def check_tunables(secrets: dict) -> None:
     """
     Check that tunables are present and of correct type.
     Will exit the program on error.

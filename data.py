@@ -7,9 +7,13 @@ import struct
 
 import adafruit_logging as logging
 
+from sensors import Sensors
+
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def pack_data(mqtt_topic, battery_level, co2_ppm, humidity, temperature, lux):
+def pack_data(
+    mqtt_topic: str, battery_level, co2_ppm, humidity, temperature, lux
+) -> bytes:
     """
     Pack the structure with data.
     """
@@ -39,7 +43,9 @@ def pack_data(mqtt_topic, battery_level, co2_ppm, humidity, temperature, lux):
     return data
 
 
-def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
+def send_data(
+    rfm69, mqtt_client, mqtt_topic: str, sensors: Sensors, battery_capacity
+) -> None:
     """
     Pick a transport, acquire sensor data and send them.
     """
@@ -85,7 +91,19 @@ def send_data(rfm69, mqtt_client, mqtt_topic, sensors, battery_capacity):
         if lux is None:
             lux = 0
 
-        data = pack_data(mqtt_topic, battery_level, co2_ppm, humidity, temperature, lux)
+        #
+        # mypy gets confused by the 'data' variable assignment in the adjacent
+        # if branch above and thinks it should be of type dict and complains:
+        #
+        #  Incompatible types in assignment (expression has type "bytes",
+        #  variable has type "dict[Any, Any] | None")
+        #
+        # So, the warning has to be suppressed (after several things were tried
+        # to make it happy).
+        #
+        data = pack_data(
+            mqtt_topic, battery_level, co2_ppm, humidity, temperature, lux
+        )  # type: ignore [assignment]
         logger.debug(f"Raw data to be sent: {data}")
         rfm69.send(data)
     else:

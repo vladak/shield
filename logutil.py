@@ -26,7 +26,7 @@ logging utilities
 import adafruit_logging as logging
 
 
-def get_log_level(level):
+def get_log_level(level: str | int) -> int:
     """
     :param level: expressed in string (upper or lower case) or integer or None
     :return: integer representation of the log level, default log level or None

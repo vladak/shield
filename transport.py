@@ -12,7 +12,7 @@ from names import *
 
 
 # pylint: disable=too-many-locals
-def setup_transport(secrets):
+def setup_transport(secrets: dict):
     """
     Setup transport to send data.
     Return a tuple of RFM69 object and MQTT client object, either can be None.

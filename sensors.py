@@ -54,7 +54,7 @@ class Sensors:
     """Sensor abstraction"""
 
     # pylint: disable=too-many-statements,too-many-branches
-    def __init__(self, i2c, light_gain: int = None) -> None:
+    def __init__(self, i2c, light_gain: int| None = None) -> None:
         """
         Initialize the sensor objects. Assumes I2C.
         """

@@ -17,7 +17,7 @@ on priority given by the list above, from highest to lowest.
 import time
 
 try:
-    from typing import Dict, Optional, Union
+    from typing import Dict, Optional, Tuple, Union
 except ImportError:
     pass
 
@@ -127,12 +127,12 @@ class Sensors:
     # pylint: disable=too-many-branches
     def get_measurements(
         self,
-    ) -> (
-        Optional[Union[float, int]],
-        Optional[Union[float, int]],
-        Optional[int],
-        Optional[int],
-    ):
+    ) -> Tuple[
+        float | int | type[None],
+        float | int | type[None],
+        int | type[None],
+        int | type[None],
+    ]:
         """
         Acquire temperature, humidity, CO2 and lux measurements.
         Try various sensors, prefer higher precision measurements.

@@ -54,7 +54,7 @@ class Sensors:
     """Sensor abstraction"""
 
     # pylint: disable=too-many-statements,too-many-branches
-    def __init__(self, i2c, light_gain=None) -> None:
+    def __init__(self, i2c, light_gain: int = None) -> None:
         """
         Initialize the sensor objects. Assumes I2C.
         """
@@ -118,6 +118,7 @@ class Sensors:
                     light_gain = adafruit_veml7700.VEML7700.ALS_GAIN_2
                 else:
                     raise ValueError(f"invalid light gain value: {light_gain}")
+                logger.info(f"Setting light gain to {light_gain}")
                 self.veml_sensor.light_gain = light_gain
         except ValueError as exception:
             logger.error(f"cannot find VEML7700 sensor: {exception}")

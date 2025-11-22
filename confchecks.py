@@ -14,7 +14,7 @@ class ConfCheckException(Exception):
     """
 
 
-def check_string(secrets: dict, name: str, mandatory=True) -> None:
+def check_string(secrets: dict, name: str, mandatory: bool = True) -> None:
     """
     Check is string with given name is present in secrets.
     """
@@ -29,7 +29,7 @@ def check_string(secrets: dict, name: str, mandatory=True) -> None:
 
 
 def check_int(
-    secrets: dict, name: str, mandatory=True, min_val=None, max_val=None
+    secrets: dict, name: str, mandatory: bool = True, min_val=None, max_val=None
 ) -> None:
     """
     Check is integer with given name is present in secrets.
@@ -50,7 +50,7 @@ def check_int(
         raise ConfCheckException(f"{name} value {value} higher than maximum {max_val}")
 
 
-def check_list(secrets: dict, name: str, subtype, mandatory=True) -> None:
+def check_list(secrets: dict, name: str, subtype, mandatory: bool = True) -> None:
     """
     Check whether list with given name is present in secrets.
     """
@@ -60,9 +60,6 @@ def check_list(secrets: dict, name: str, subtype, mandatory=True) -> None:
             raise ConfCheckException(f"{name} is missing")
         return
 
-    if value is None:
-        raise ValueError(f"{name} should not be None")
-
     if value and not isinstance(value, list):
         raise ConfCheckException(f"not a integer value for {name}: {value}")
 
@@ -71,7 +68,7 @@ def check_list(secrets: dict, name: str, subtype, mandatory=True) -> None:
             raise ConfCheckException(f"not a {subtype}: {item}")
 
 
-def check_bytes(secrets: dict, name: str, length: int, mandatory=True) -> None:
+def check_bytes(secrets: dict, name: str, length: int, mandatory: bool = True) -> None:
     """
     Check is bytes with given name is present in secrets.
     """

@@ -4,7 +4,7 @@ conftest tests
 
 import pytest
 
-from confchecks import ConfCheckException, check_int
+from confchecks import ConfCheckException, check_int, check_string
 
 
 def test_check_int_missing():
@@ -58,3 +58,26 @@ def test_check_int_min_negative():
     """
     with pytest.raises(ConfCheckException):
         check_int({"foo": 42}, "foo", min_val=50)
+
+
+def test_check_string_missing():
+    """
+    Test the case of missing name to check.
+    """
+    with pytest.raises(ConfCheckException):
+        check_string({"foo": "bar"}, "nonexistent")
+
+
+def test_check_string_missing_optional():
+    """
+    Test the case of missing optional name.
+    """
+    check_string({"foo": "bar"}, "nonexistent", mandatory=False)
+
+
+def test_check_string_invalid_value_type():
+    """
+    Test the case of invalid value type.
+    """
+    with pytest.raises(ConfCheckException):
+        check_string({"foo": 42}, "foo")

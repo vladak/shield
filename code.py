@@ -67,7 +67,7 @@ def blink(pixel) -> None:
 # pylint: disable=too-many-locals,too-many-statements,too-many-branches
 def main():
     """
-    Collect temperature/humidity/lux and battery level
+    Collect environment metrics and battery level
     and publish to MQTT topic or send over RFM69 radio.
     """
 

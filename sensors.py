@@ -65,7 +65,7 @@ class Sensors:
             self.tmp117 = adafruit_tmp117.TMP117(i2c)
             logger.info("TMP117 sensor initialized")
         except NameError:
-            logger.info("No library for the tmp117 sensor")
+            logger.warning("No library for the tmp117 sensor")
         except ValueError as value_exc:
             logger.info(f"No tmp117 sensor found: {value_exc}")
 
@@ -74,7 +74,7 @@ class Sensors:
             self.sht40 = adafruit_sht4x.SHT4x(i2c)
             logger.info("SHT40 initialized")
         except NameError:
-            logger.info("No library for the sht40 sensor")
+            logger.warning("No library for the sht40 sensor")
         except ValueError as value_exc:
             logger.info(f"No sht40 sensor found: {value_exc}")
 
@@ -83,7 +83,7 @@ class Sensors:
             self.aht20 = adafruit_ahtx0.AHTx0(i2c)
             logger.info("AHT20 sensor initialized")
         except NameError:
-            logger.info("No library for the ath20 sensor")
+            logger.warning("No library for the ath20 sensor")
         except ValueError as value_exc:
             logger.info(f"No ath20 sensor found: {value_exc}")
 
@@ -92,7 +92,7 @@ class Sensors:
             self.bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
             logger.info("BME280 sensor initialized")
         except NameError:
-            logger.info("No library for the bme280 sensor")
+            logger.warning("No library for the bme280 sensor")
         except ValueError as value_exc:
             logger.info(f"No bme280 sensor found: {value_exc}")
 
@@ -104,9 +104,9 @@ class Sensors:
                 self.scd4x_sensor.start_periodic_measurement()
             logger.info("SCD-40 sensor initialized")
         except ValueError as exception:
-            logger.error(f"cannot find SCD4x sensor: {exception}")
+            logger.info(f"cannot find SCD4x sensor: {exception}")
         except NameError:
-            logger.info("No library for the scd4x sensor")
+            logger.warning("No library for the scd4x sensor")
 
         self.veml_sensor = None
         try:
@@ -121,9 +121,9 @@ class Sensors:
                 logger.info(f"Setting light gain to {light_gain}")
                 self.veml_sensor.light_gain = light_gain
         except ValueError as exception:
-            logger.error(f"cannot find VEML7700 sensor: {exception}")
+            logger.info(f"cannot find VEML7700 sensor: {exception}")
         except NameError:
-            logger.info("No library for the VEML7700 sensor")
+            logger.warning("No library for the VEML7700 sensor")
 
     # pylint: disable=too-many-branches
     def get_measurements(

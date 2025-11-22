@@ -183,13 +183,13 @@ def hard_reset(exception):
 try:
     main()
 except ConnectionError as e:
-    # When this happens, it usually means that the microcontroller's wifi/networking is botched.
+    # When this happens, it usually means that the microcontroller's Wi-Fi/networking is botched.
     # The only way to recover is to perform hard reset.
     hard_reset(e)
 except MemoryError as e:
-    # This is usually the case of delayed exception from the 'import wifi' statement,
+    # This is usually the case of delayed exception from the 'import Wi-Fi' statement,
     # possibly caused by a bug (resource leak) in CircuitPython that manifests
-    # after a sequence of ConnectionError exceptions thrown from withing the wifi module.
+    # after a sequence of ConnectionError exceptions thrown from withing the Wi-Fi module.
     # Should not happen given the above 'except ConnectionError',
     # however adding that here just in case.
     hard_reset(e)

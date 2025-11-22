@@ -19,8 +19,10 @@ def check_string(secrets: dict, name: str, mandatory=True) -> None:
     Check is string with given name is present in secrets.
     """
     value = secrets.get(name)
-    if value is None and mandatory:
-        raise ConfCheckException(f"{name} is missing")
+    if value is None:
+        if mandatory:
+            raise ConfCheckException(f"{name} is missing")
+        return
 
     if value and not isinstance(value, str):
         raise ConfCheckException(f"not a string value for {name}: {value}")
@@ -33,8 +35,10 @@ def check_int(
     Check is integer with given name is present in secrets.
     """
     value = secrets.get(name)
-    if value is None and mandatory:
-        raise ConfCheckException(f"{name} is missing")
+    if value is None:
+        if mandatory:
+            raise ConfCheckException(f"{name} is missing")
+        return
 
     if value is not None and not isinstance(value, int):
         raise ConfCheckException(f"not a integer value for {name}: {value}")
@@ -51,8 +55,10 @@ def check_list(secrets: dict, name: str, subtype, mandatory=True) -> None:
     Check whether list with given name is present in secrets.
     """
     value = secrets.get(name)
-    if value is None and mandatory:
-        raise ConfCheckException(f"{name} is missing")
+    if value is None:
+        if mandatory:
+            raise ConfCheckException(f"{name} is missing")
+        return
 
     if value is None:
         raise ValueError(f"{name} should not be None")
@@ -70,8 +76,10 @@ def check_bytes(secrets: dict, name: str, length: int, mandatory=True) -> None:
     Check is bytes with given name is present in secrets.
     """
     value = secrets.get(name)
-    if value is None and mandatory:
-        raise ConfCheckException(f"{name} is missing")
+    if value is None:
+        if mandatory:
+            raise ConfCheckException(f"{name} is missing")
+        return
 
     if value and not isinstance(value, bytes):
         raise ConfCheckException(f"not a byte value for {name}: {value}")

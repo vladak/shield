@@ -40,7 +40,7 @@ def check_int(
             raise ConfCheckException(f"{name} is missing")
         return
 
-    if value is not None and not isinstance(value, int):
+    if not isinstance(value, int):
         raise ConfCheckException(f"not a integer value for {name}: {value}")
 
     if min_val is not None and value < min_val:

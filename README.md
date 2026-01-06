@@ -219,6 +219,7 @@ Adafruit has largely such a good documentation that the links are worth putting 
 - [CircuitPython for RFM69](https://learn.adafruit.com/radio-featherwing/circuitpython-for-rfm69)
 - [VEML7700 light levels](https://learn.adafruit.com/adafruit-veml7700/adjusting-for-different-light-levels) and [their adjustment](https://docs.circuitpython.org/projects/veml7700/en/latest/api.html#adafruit_veml7700.VEML7700.light_gain)
 - [RFM69 library API](https://docs.circuitpython.org/projects/rfm69/en/latest/api.html)
+- [testing a thermistor](https://learn.adafruit.com/thermistor/testing-a-thermistor)
 
 ## Lessons learned
 

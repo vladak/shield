@@ -43,7 +43,7 @@ def pack_data(
         battery_level = battery_capacity
 
     if co2_ppm is None:
-        co2_ppm = -1
+        co2_ppm = 0
 
     if lux is None:
         lux = float("nan")

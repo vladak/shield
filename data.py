@@ -20,7 +20,7 @@ DATA_PACK_FMT = f">{len(MQTT_PREFIX)}s{MAX_MQTT_TOPIC_LEN}sffIff"
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def pack_data(
-    mqtt_topic: str, battery_level, co2_ppm, humidity, temperature, lux
+    mqtt_topic: str, battery_capacity, co2_ppm, humidity, temperature, lux
 ) -> bytes:
     """
     Pack the structure with data.
@@ -31,9 +31,24 @@ def pack_data(
         # Assuming ASCII encoding.
         raise ValueError(f"Maximum MQTT topic length is {MAX_MQTT_TOPIC_LEN}")
 
-    logger.info(
-        f"Sending data over radio: {(humidity, temperature, co2_ppm, battery_level, lux)}"
-    )
+    if temperature is None:
+        temperature = float("nan")
+
+    if humidity is None:
+        humidity = float("nan")
+
+    if battery_capacity is None:
+        battery_level = float("nan")
+    else:
+        battery_level = battery_capacity
+
+    if co2_ppm is None:
+        co2_ppm = -1
+
+    if lux is None:
+        lux = float("nan")
+
+    logger.info(f"Packing data: {(humidity, temperature, co2_ppm, battery_level, lux)}")
     data = struct.pack(
         DATA_PACK_FMT,
         MQTT_PREFIX.encode("ascii"),
@@ -85,23 +100,6 @@ def send_data(
             logger.warning("No sensor data available, will not send anything")
             return
 
-        if temperature is None:
-            temperature = float("nan")
-
-        if humidity is None:
-            humidity = float("nan")
-
-        if battery_capacity is None:
-            battery_level = float("nan")
-        else:
-            battery_level = battery_capacity
-
-        if co2_ppm is None:
-            co2_ppm = -1
-
-        if lux is None:
-            lux = float("nan")
-
         #
         # mypy gets confused by the 'data' variable assignment in the adjacent
         # if branch above and thinks it should be of type dict and complains:
@@ -113,7 +111,7 @@ def send_data(
         # to make it happy).
         #
         data = pack_data(
-            mqtt_topic, battery_level, co2_ppm, humidity, temperature, lux
+            mqtt_topic, battery_capacity, co2_ppm, humidity, temperature, lux
         )  # type: ignore [assignment]
         logger.debug(f"Raw data to be sent: {data}")
         rfm69.send(data)

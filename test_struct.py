@@ -24,7 +24,7 @@ def test_pack_none():
     """
     expected_topic = "foo/bar"
     data = pack_data(expected_topic, None, None, None, None, None)
-    mqtt_prefix, topic_unpacked, battery_level, co2_ppm, humidity, temperature, lux = (
+    mqtt_prefix, topic_unpacked, humidity, temperature, co2_ppm, battery_level, lux = (
         unpack_data(data)
     )
     assert mqtt_prefix.decode("ascii") == "MQTT:"

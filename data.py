@@ -31,19 +31,19 @@ def pack_data(
         # Assuming ASCII encoding.
         raise ValueError(f"Maximum MQTT topic length is {MAX_MQTT_TOPIC_LEN}")
 
+    if humidity is None:
+        humidity = float("nan")
+
     if temperature is None:
         temperature = float("nan")
 
-    if humidity is None:
-        humidity = float("nan")
+    if co2_ppm is None:
+        co2_ppm = 0
 
     if battery_capacity is None:
         battery_level = float("nan")
     else:
         battery_level = battery_capacity
-
-    if co2_ppm is None:
-        co2_ppm = 0
 
     if lux is None:
         lux = float("nan")

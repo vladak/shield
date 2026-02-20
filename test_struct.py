@@ -2,9 +2,11 @@
 test structure packing
 """
 
+import math
+
 import pytest
 
-from data import pack_data
+from data import pack_data, unpack_data
 
 
 def test_pack():
@@ -13,6 +15,22 @@ def test_pack():
     """
     data = pack_data("foo/bar", 80, 1200, 33, 21, 4000)
     assert len(data) <= 60
+
+
+def test_pack_none():
+    """
+    call the pack_data() to ensure it packs the None values as float('nan')
+    or -1 in case of float and integer, respectively.
+    """
+    topic = "foo/bar"
+    data = pack_data(topic, None, None, None, None, None)
+    topic_unpacked, battery_level, co2_ppm, humidity, temperature, lux = unpack(data)
+    assert topic_unpacked == topic
+    assert math.isnan(battery_level)
+    assert co2_ppm == -1
+    assert math.isnan(humidity)
+    assert math.isnan(temperature)
+    assert math.isnan(lux)
 
 
 def test_mqtt_topic_length_max():

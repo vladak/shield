@@ -9,6 +9,14 @@ import adafruit_logging as logging
 
 from sensors import Sensors
 
+#
+# Note: at most 60 bytes can be sent in single packet so pack the data.
+# The following encoding scheme was designed to fit that constraint.
+#
+MAX_MQTT_TOPIC_LEN = 32
+MQTT_PREFIX = "MQTT:"
+DATA_PACK_FMT = f">{len(MQTT_PREFIX)}s{MAX_MQTT_TOPIC_LEN}sffIff"
+
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def pack_data(
@@ -19,20 +27,16 @@ def pack_data(
     """
     logger = logging.getLogger("")
 
-    # Note: at most 60 bytes can be sent in single packet so pack the data.
-    # The following encoding scheme was designed to fit that constraint.
-    mqtt_prefix = "MQTT:"
-    max_mqtt_topic_len = 32
-    if len(mqtt_topic) > max_mqtt_topic_len:
+    if len(mqtt_topic) > MAX_MQTT_TOPIC_LEN:
         # Assuming ASCII encoding.
-        raise ValueError(f"Maximum MQTT topic length is {max_mqtt_topic_len}")
-    fmt = f">{len(mqtt_prefix)}s{max_mqtt_topic_len}sffIff"
+        raise ValueError(f"Maximum MQTT topic length is {MAX_MQTT_TOPIC_LEN}")
+
     logger.info(
         f"Sending data over radio: {(humidity, temperature, co2_ppm, battery_level, lux)}"
     )
     data = struct.pack(
-        fmt,
-        mqtt_prefix.encode("ascii"),
+        DATA_PACK_FMT,
+        MQTT_PREFIX.encode("ascii"),
         mqtt_topic.encode("ascii"),
         humidity,
         temperature,
@@ -41,6 +45,13 @@ def pack_data(
         lux,
     )
     return data
+
+
+def unpack_data(data):
+    """
+    Unpack data into tuple. Used only for testing.
+    """
+    return struct.unpack(DATA_PACK_FMT, data)
 
 
 def send_data(
@@ -75,21 +86,21 @@ def send_data(
             return
 
         if temperature is None:
-            temperature = 0
+            temperature = float("nan")
 
         if humidity is None:
-            humidity = 0
+            humidity = float("nan")
 
         if battery_capacity is None:
-            battery_level = 0
+            battery_level = float("nan")
         else:
             battery_level = battery_capacity
 
         if co2_ppm is None:
-            co2_ppm = 0
+            co2_ppm = -1
 
         if lux is None:
-            lux = 0
+            lux = float("nan")
 
         #
         # mypy gets confused by the 'data' variable assignment in the adjacent

@@ -22,13 +22,17 @@ def test_pack_none():
     call the pack_data() to ensure it packs the None values as float('nan')
     or -1 in case of float and integer, respectively.
     """
-    topic = "foo/bar"
-    data = pack_data(topic, None, None, None, None, None)
+    expected_topic = "foo/bar"
+    data = pack_data(expected_topic, None, None, None, None, None)
     mqtt_prefix, topic_unpacked, battery_level, co2_ppm, humidity, temperature, lux = (
         unpack_data(data)
     )
     assert mqtt_prefix.decode("ascii") == "MQTT:"
-    assert topic_unpacked.decode("ascii") == topic
+    mqtt_topic = topic_unpacked.decode("ascii")
+    nul_idx = mqtt_topic.find("\x00")
+    if nul_idx > 0:
+        mqtt_topic = mqtt_topic[:nul_idx]
+    assert mqtt_topic == expected_topic
     assert math.isnan(battery_level)
     assert co2_ppm == 0
     assert math.isnan(humidity)

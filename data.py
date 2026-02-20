@@ -9,30 +9,49 @@ import adafruit_logging as logging
 
 from sensors import Sensors
 
+#
+# Note: at most 60 bytes can be sent in single packet so pack the data.
+# The following encoding scheme was designed to fit that constraint.
+#
+MAX_MQTT_TOPIC_LEN = 32
+MQTT_PREFIX = "MQTT:"
+DATA_PACK_FMT = f">{len(MQTT_PREFIX)}s{MAX_MQTT_TOPIC_LEN}sffIff"
+
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def pack_data(
-    mqtt_topic: str, battery_level, co2_ppm, humidity, temperature, lux
+    mqtt_topic: str, battery_capacity, co2_ppm, humidity, temperature, lux
 ) -> bytes:
     """
     Pack the structure with data.
     """
     logger = logging.getLogger("")
 
-    # Note: at most 60 bytes can be sent in single packet so pack the data.
-    # The following encoding scheme was designed to fit that constraint.
-    mqtt_prefix = "MQTT:"
-    max_mqtt_topic_len = 32
-    if len(mqtt_topic) > max_mqtt_topic_len:
+    if len(mqtt_topic) > MAX_MQTT_TOPIC_LEN:
         # Assuming ASCII encoding.
-        raise ValueError(f"Maximum MQTT topic length is {max_mqtt_topic_len}")
-    fmt = f">{len(mqtt_prefix)}s{max_mqtt_topic_len}sffIff"
-    logger.info(
-        f"Sending data over radio: {(humidity, temperature, co2_ppm, battery_level, lux)}"
-    )
+        raise ValueError(f"Maximum MQTT topic length is {MAX_MQTT_TOPIC_LEN}")
+
+    if humidity is None:
+        humidity = float("nan")
+
+    if temperature is None:
+        temperature = float("nan")
+
+    if co2_ppm is None:
+        co2_ppm = 0
+
+    if battery_capacity is None:
+        battery_level = float("nan")
+    else:
+        battery_level = battery_capacity
+
+    if lux is None:
+        lux = float("nan")
+
+    logger.info(f"Packing data: {(humidity, temperature, co2_ppm, battery_level, lux)}")
     data = struct.pack(
-        fmt,
-        mqtt_prefix.encode("ascii"),
+        DATA_PACK_FMT,
+        MQTT_PREFIX.encode("ascii"),
         mqtt_topic.encode("ascii"),
         humidity,
         temperature,
@@ -41,6 +60,13 @@ def pack_data(
         lux,
     )
     return data
+
+
+def unpack_data(data):
+    """
+    Unpack data into tuple. Used only for testing.
+    """
+    return struct.unpack(DATA_PACK_FMT, data)
 
 
 def send_data(
@@ -74,23 +100,6 @@ def send_data(
             logger.warning("No sensor data available, will not send anything")
             return
 
-        if temperature is None:
-            temperature = 0
-
-        if humidity is None:
-            humidity = 0
-
-        if battery_capacity is None:
-            battery_level = 0
-        else:
-            battery_level = battery_capacity
-
-        if co2_ppm is None:
-            co2_ppm = 0
-
-        if lux is None:
-            lux = 0
-
         #
         # mypy gets confused by the 'data' variable assignment in the adjacent
         # if branch above and thinks it should be of type dict and complains:
@@ -102,7 +111,7 @@ def send_data(
         # to make it happy).
         #
         data = pack_data(
-            mqtt_topic, battery_level, co2_ppm, humidity, temperature, lux
+            mqtt_topic, battery_capacity, co2_ppm, humidity, temperature, lux
         )  # type: ignore [assignment]
         logger.debug(f"Raw data to be sent: {data}")
         rfm69.send(data)

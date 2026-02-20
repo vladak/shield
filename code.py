@@ -5,6 +5,7 @@ Acquire values from various sensors, publish to MQTT topic or send via RFM69, en
 
 This is meant for battery powered devices such as QtPy or ESP32 based devices from Adafruit.
 """
+
 import time
 import traceback
 

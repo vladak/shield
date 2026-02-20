@@ -24,12 +24,13 @@ def test_pack_none():
     """
     topic = "foo/bar"
     data = pack_data(topic, None, None, None, None, None)
-    topic_unpacked, battery_level, co2_ppm, humidity, temperature, lux = unpack_data(
-        data
+    mqtt_prefix, topic_unpacked, battery_level, co2_ppm, humidity, temperature, lux = (
+        unpack_data(data)
     )
+    assert mqtt_prefix == "MQTT:"
     assert topic_unpacked == topic
     assert math.isnan(battery_level)
-    assert co2_ppm == -1
+    assert co2_ppm == 0
     assert math.isnan(humidity)
     assert math.isnan(temperature)
     assert math.isnan(lux)

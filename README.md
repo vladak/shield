@@ -131,7 +131,7 @@ Then the following can be used:
   - if running on battery power, use `.mpy` files as this reduces run time. download the build artifacts (see the Summary link for the ['mpy-cross' workflow](https://github.com/vladak/shield/actions/workflows/mpy.yml)), unzip them and upload like this (CP needs `code.py`)
   - web workflow, assumes system with `curl` installed:
   ```
-  # battery powerved
+  # battery powered
   for f in code.py safemode.py *.mpy; do curl -v -u :XXX -T $f -L --location-trusted http://172.40.0.x/fs/$f; done
   # otherwise
   for f in *.py; do curl -v -u :XXX -T $f -L --location-trusted http://172.40.0.x/fs/$f; done

@@ -8,6 +8,7 @@ The following sensors are supported:
   - AHT20
   - BME280
   - SCD-40
+  - STCC4
   - VEML-7700
 
 If multiple temperature/humidity sensors are present, the values are taken based
@@ -40,6 +41,10 @@ try:
 except ImportError:
     pass
 try:
+    import adafruit_stcc4
+except ImportError:
+    pass
+try:
     from adafruit_bme280 import basic as adafruit_bme280
 except ImportError:
     pass
@@ -67,7 +72,7 @@ class Sensors:
         except NameError:
             logger.warning("No library for the tmp117 sensor")
         except ValueError as value_exc:
-            logger.info(f"No tmp117 sensor found: {value_exc}")
+            logger.info(f"No TMP117 sensor found: {value_exc}")
 
         self.sht40 = None
         try:
@@ -76,7 +81,7 @@ class Sensors:
         except NameError:
             logger.warning("No library for the sht40 sensor")
         except ValueError as value_exc:
-            logger.info(f"No sht40 sensor found: {value_exc}")
+            logger.info(f"No SHT40 sensor found: {value_exc}")
 
         self.aht20 = None
         try:
@@ -85,7 +90,7 @@ class Sensors:
         except NameError:
             logger.warning("No library for the ath20 sensor")
         except ValueError as value_exc:
-            logger.info(f"No ath20 sensor found: {value_exc}")
+            logger.info(f"No AHT20 sensor found: {value_exc}")
 
         self.bme280 = None
         try:
@@ -94,7 +99,7 @@ class Sensors:
         except NameError:
             logger.warning("No library for the bme280 sensor")
         except ValueError as value_exc:
-            logger.info(f"No bme280 sensor found: {value_exc}")
+            logger.info(f"No BME280 sensor found: {value_exc}")
 
         self.scd4x_sensor = None
         try:
@@ -106,7 +111,21 @@ class Sensors:
         except ValueError as exception:
             logger.info(f"cannot find SCD4x sensor: {exception}")
         except NameError:
-            logger.warning("No library for the scd4x sensor")
+            logger.warning("No library for the SCD4x sensor")
+
+        self.stcc4_sensor = None
+        # Only initialize STCC4 if SCD4x is not present (priority handling)
+        if self.scd4x_sensor is None:
+            try:
+                self.stcc4_sensor = adafruit_stcc4.STCC4(i2c)
+                if self.stcc4_sensor:
+                    logger.info("Starting continuous measurement on STCC4 sensor...")
+                    self.stcc4_sensor.continuous_measurement = True
+                logger.info("STCC4 sensor initialized")
+            except RuntimeError as exception:
+                logger.info(f"cannot find STCC4 sensor: {exception}")
+            except NameError:
+                logger.warning("No library for the STCC4 sensor")
 
         self.veml_sensor = None
         try:
@@ -125,7 +144,7 @@ class Sensors:
         except NameError:
             logger.warning("No library for the VEML7700 sensor")
 
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches,too-many-locals
     def get_measurements(
         self,
     ) -> Tuple[
@@ -150,7 +169,7 @@ class Sensors:
 
         humidity = None
         if self.sht40:
-            if not temperature:
+            if temperature is None:
                 temperature = self.sht40.temperature
                 logger.debug("Acquired temperature from sht40")
             humidity = self.sht40.relative_humidity
@@ -158,19 +177,19 @@ class Sensors:
 
         if self.aht20:
             # Prefer temperature measurement from the tmp117/sht40 as they have higher accuracy.
-            if not temperature:
+            if temperature is None:
                 temperature = self.aht20.temperature
                 logger.debug("Acquired temperature from aht20")
             # Prefer humidity measurement from sht40 as it has higher accuracy.
-            if not humidity:
+            if humidity is None:
                 humidity = self.aht20.relative_humidity
                 logger.debug("Acquired humidity from aht20")
 
         if self.bme280:
-            if not temperature:
+            if temperature is None:
                 temperature = self.bme280.temperature
                 logger.debug("Acquired temperature from bme280")
-            if not humidity:
+            if humidity is None:
                 humidity = self.bme280.relative_humidity
                 logger.debug("Acquired humidity from bme280")
 
@@ -182,16 +201,30 @@ class Sensors:
                     time.sleep(0.5)
 
             co2_ppm = self.scd4x_sensor.CO2
-            if co2_ppm:
+            if co2_ppm is not None:
                 logger.debug(f"CO2 ppm={co2_ppm}")
 
-            if not temperature:
+            if temperature is None:
                 temperature = self.scd4x_sensor.temperature
                 logger.debug("Acquired temperature from SCD4x")
 
-            if not humidity:
+            if humidity is None:
                 humidity = self.scd4x_sensor.relative_humidity
                 logger.debug("Acquired humidity from SCD4x")
+
+        # Fallback to STCC4 only if SCD4x is not available.
+        if self.stcc4_sensor and self.scd4x_sensor is None:
+            co2_ppm = self.stcc4_sensor.CO2
+            if co2_ppm is not None:
+                logger.debug(f"CO2 ppm={co2_ppm}")
+
+            if temperature is None:
+                temperature = self.stcc4_sensor.temperature
+                logger.debug("Acquired temperature from STCC4")
+
+            if humidity is None:
+                humidity = self.stcc4_sensor.relative_humidity
+                logger.debug("Acquired humidity from STCC4")
 
         lux = None
         if self.veml_sensor:
@@ -213,16 +246,16 @@ class Sensors:
 
         humidity, temperature, co2_ppm, lux = self.get_measurements()
 
-        if temperature:
+        if temperature is not None:
             logger.info(f"Temperature: {temperature:.1f} C")
             data["temperature"] = f"{temperature:.1f}"
-        if humidity:
+        if humidity is not None:
             logger.info(f"Humidity: {humidity:.1f} %")
             data["humidity"] = f"{humidity:.1f}"
-        if co2_ppm:
+        if co2_ppm is not None:
             logger.info(f"CO2 = {co2_ppm} ppm")
             data["co2_ppm"] = f"{co2_ppm}"
-        if lux:
+        if lux is not None:
             logger.info(f"light = {lux} lux")
             data["lux"] = f"{lux}"
 

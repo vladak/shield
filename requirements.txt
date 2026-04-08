@@ -10,3 +10,4 @@ adafruit-circuitpython-bme280
 adafruit-circuitpython-rfm69
 adafruit-circuitpython-scd4x
 adafruit-circuitpython-veml7700
+adafruit-circuitpython-stcc4

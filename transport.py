@@ -44,6 +44,7 @@ def setup_transport(secrets: dict):
     rfm69 = None
     # Try packetized radio first. If that does not work, fall back to WiFi.
     try:
+        # pylint: disable=no-member
         spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
         # The D-pin values assume certain wiring of the Radio FeatherWing.
         try:
@@ -51,7 +52,9 @@ def setup_transport(secrets: dict):
             cs = digitalio.DigitalInOut(board.D5)
         except AttributeError:
             # ESP32V2
+            # pylint: disable=no-member
             reset = digitalio.DigitalInOut(board.D32)
+            # pylint: disable=no-member
             cs = digitalio.DigitalInOut(board.D14)
 
         # pylint: disable=import-outside-toplevel

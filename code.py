@@ -90,8 +90,8 @@ def main():
     try:
         i2c = board.I2C()
     except RuntimeError:
-        # QtPy
-        i2c = busio.I2C(board.SCL1, board.SDA1)
+        # pylint: disable=no-member
+        i2c = busio.I2C(board.SCL1, board.SDA1)  # QtPy
 
     #
     # The presence of battery monitor changes the flow (see below),
@@ -109,6 +109,7 @@ def main():
         # pylint: disable=import-outside-toplevel
         import neopixel
 
+        # pylint: disable=no-member
         pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
 
     sensors = Sensors(i2c, light_gain=secrets.get(LIGHT_GAIN))

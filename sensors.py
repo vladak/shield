@@ -11,7 +11,7 @@ The following sensors are supported:
   - STCC4
   - VEML-7700
 
-If multiple temperature/humidity/CO2sensors are present, the values are taken based
+If multiple temperature/humidity/CO2 sensors are present, the values are taken based
 on priority given by the list above, from highest to lowest.
 """
 

@@ -245,3 +245,4 @@ Adafruit has largely such a good documentation that the links are worth putting 
   - destroyed the solar battery charger that way (also maybe because of too high temperature)
  - it is possible to make grave mistakes due to the dynamic type system of Python (e.g. by re-assigning value with completely different type to pre-existing variable)
    - the limits of the type checking based on hints are suprisingly easy to hit even with simple code (see some source code comments)
+- the battery has to be disconnected when performing updates via USB-C

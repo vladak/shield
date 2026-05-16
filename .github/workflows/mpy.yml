@@ -26,7 +26,7 @@ jobs:
       - name: List files
         run: ls
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mpy-files-shield-${{ matrix.cp-version }}
           path: '*.mpy'

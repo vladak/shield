@@ -195,6 +195,8 @@ except MemoryError as e:
     # Should not happen given the above 'except ConnectionError',
     # however adding that here just in case.
     hard_reset(e)
+except WatchDogTimeout as e:
+    hard_reset(e)
 except Exception as e:  # pylint: disable=broad-except
     # This assumes that such exceptions are quite rare.
     # Otherwise, this would drain the battery quickly by restarting
@@ -206,5 +208,3 @@ except Exception as e:  # pylint: disable=broad-except
     print(f"Performing a supervisor reload in {RELOAD_TIME} seconds")
     time.sleep(RELOAD_TIME)
     supervisor.reload()
-except WatchDogTimeout as e:
-    hard_reset(e)
